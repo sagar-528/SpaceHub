@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SpaceHub</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBP8VeiGKaJ9BT1iP5LC329tbNcOIuaDTA</string>
+</resources>
