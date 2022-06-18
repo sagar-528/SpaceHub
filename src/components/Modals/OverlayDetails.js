@@ -132,7 +132,6 @@ const OverlayDetails = props => {
                     latitude: lat,
                     longitude: long,
                   }}
-                  image={require('../../assets/icons/marker.png')}
                 />
               </MapView>
             </View>
@@ -234,7 +233,6 @@ const OverlayDetails = props => {
                     latitude: lat,
                     longitude: long,
                   }}
-                  image={require('../../assets/icons/marker.png')}
                 />
               </MapView>
             </View>

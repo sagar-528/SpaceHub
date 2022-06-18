@@ -7,6 +7,7 @@ import {
   Image,
   ActivityIndicator,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import {colors, typography} from '../../themes';
@@ -45,29 +46,6 @@ const LikeVideos = props => {
   }, []);
 
   function Item({item, index}) {
-    const [opacity, setOpacity] = useState(0);
-
-    const onError = error => {
-      console.log('error', error);
-      // displayToast('The request timed out.')
-    };
-
-    const onLoadStart = () => {
-      setOpacity(1);
-    };
-
-    const onLoad = () => {
-      setOpacity(0);
-    };
-
-    const onBuffer = ({isBuffering}) => {
-      if (isBuffering) {
-        setOpacity(1);
-      } else {
-        setOpacity(0);
-      }
-    };
-
     const handleDisLike = (item, index) => {
       console.log('item', item);
       AxiosBase.put(`app/user/likedVideos?propertyId=${item._id}&flag=${false}`)
@@ -99,33 +77,25 @@ const LikeVideos = props => {
             style={styles.icon}
           />
         </TouchableOpacity>
-        <View style={{marginHorizontal: 8}}>
-          <Video
-            videoRef={videoRef}
-            onBuffer={onBuffer}
-            onError={onError}
-            paused={true}
-            resizeMode="cover"
+        <TouchableOpacity
+          style={{marginEnd: 6,}}
+          key={index}
+          activeOpacity={0.8}
+          onPress={() => {
+            navigation.navigate('SingleReel', {
+              item: item,
+              index: index,
+              // navigation: navigation,
+            });
+          }}>
+          <Image
             source={{
-              uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`,
+              uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
             }}
-            poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
-            posterResizeMode="cover"
-            muted={true}
-            style={{
-              width: 125,
-              height: 180,
-            }}
-            onLoad={onLoad}
-            onLoadStart={onLoadStart}
+            resizeMode="cover"
+            style={{height: 180, width: 120}}
           />
-          {/* <ActivityIndicator
-            animating
-            size="large"
-            color={colors.darkSky}
-            style={[styles.activityIndicator, {opacity: opacity}]}
-          /> */}
-        </View>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -135,7 +105,9 @@ const LikeVideos = props => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      style={{backgroundColor: colors.backgroundShadow, opacity: 0.95}}>
       <Loader visible={loading} />
       <View style={{marginTop: 47, flex: 1}}>
         <TouchableOpacity
@@ -152,7 +124,11 @@ const LikeVideos = props => {
         </TouchableOpacity>
         <View style={styles.divider} />
         <Text style={styles.title}>Liked Videos</Text>
-        <View>
+        <View
+          style={{
+            flex: 1,
+            marginVertical: 14,
+          }}>
           <FlatList
             data={likeVideoData}
             renderItem={(item, index) => renderItem(item, index)}
@@ -162,14 +138,12 @@ const LikeVideos = props => {
             numColumns={3}
             columnWrapperStyle={{
               flex: 1,
-              // justifyContent: 'space-between',
-              marginBottom: 14,
-              flexWrap: 'wrap',
+              marginBottom: 6,
             }}
           />
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -178,8 +152,9 @@ export default LikeVideos;
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: colors.backgroundShadow,
-    opacity: 0.95,
+    // backgroundColor: colors.backgroundShadow,
+    // opacity: 0.95,
+    // paddingVertical: 24,
   },
   divider: {
     height: 1,

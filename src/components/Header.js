@@ -50,6 +50,7 @@ export default Header;
 const styles = StyleSheet.create({
   headerContainer: {
     height: 54,
-    backgroundColor: 'rgba(48, 48, 48, 0.95)',
+    backgroundColor: colors.backgroundShadow,
+    opacity: 0.95
   },
 });

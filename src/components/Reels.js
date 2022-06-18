@@ -77,19 +77,12 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   loadString('token')
-  //     .then(response => {
-  //       if (response === null) {
-  //         setLike(false);
-  //       } else {
-  //         setToken(true);
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.log('error', error);
-  //     });
-  // }, []);
+  useEffect(() => {
+    // console.log('ref', videoRef);
+    if (!!videoRef.current) {
+      videoRef.current.seek(0);
+    }
+  }, [currentIndex]);
 
   const onError = ({error}) => {
     // console.log('error of video', error);
@@ -183,7 +176,6 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
 
   return (
     <>
-      {/* {console.log('like count', item.likeCount.length)} */}
       <View
         style={{
           width: windowWidth,
@@ -307,7 +299,7 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
           </View>
         </View>
         <Video
-          videoRef={videoRef}
+          ref={videoRef}
           onBuffer={onBuffer}
           onVideoLoad={() => {
             console.log('load');
@@ -315,7 +307,7 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
           onError={onError}
           repeat
           resizeMode="cover"
-          paused={currentIndex == index ? false : true}
+          paused={currentIndex === index ? false : true}
           source={{
             uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`,
           }}

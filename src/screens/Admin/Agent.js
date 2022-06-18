@@ -70,31 +70,13 @@ const Agent = props => {
               // navigation: navigation,
             });
           }}>
-          <Video
-            videoRef={videoRef}
-            onBuffer={onBuffer}
-            onError={onError}
-            resizeMode="cover"
+          <Image
             source={{
-              uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`,
+              uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
             }}
-            poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
-            posterResizeMode="cover"
-            muted={true}
-            paused={true}
-            style={{
-              width: 125,
-              height: 180,
-            }}
-            onLoad={onLoad}
-            onLoadStart={onLoadStart}
+            resizeMode="cover"
+            style={{height: 180, width: 125}}
           />
-          {/* <ActivityIndicator
-            animating
-            size="large"
-            color={colors.darkSky}
-            style={[styles.activityIndicator, {opacity: opacity}]}
-          /> */}
         </TouchableOpacity>
       </View>
     );
@@ -147,7 +129,7 @@ const Agent = props => {
           numColumns={3}
           columnWrapperStyle={{
             flex: 1,
-            marginBottom: 8,
+            marginBottom: 6,
             // justifyContent: 'space-between',
             // backgroundColor: 'pink'
           }}

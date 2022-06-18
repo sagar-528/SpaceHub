@@ -49,7 +49,9 @@ const CustomMarker = props => {
           flex: 1,
           borderRadius: 6,
         }}
-        onPress={() => handleSingleMarker(item, index)}>
+        onPress={() => handleSingleMarker(item, index)}
+        activeOpacity={0.8}
+        >
         <Text
           style={{
             textAlign: 'center',
