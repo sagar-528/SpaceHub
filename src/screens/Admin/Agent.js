@@ -58,9 +58,9 @@ const Agent = props => {
     };
 
     return (
-      <View style={{}} key={index}>
+      <View style={{flex:1,margin:4}} key={index}>
         <TouchableOpacity
-          style={{marginEnd: 6}}
+          // style={{marginEnd: 6}}
           key={index}
           activeOpacity={0.8}
           onPress={() => {
@@ -75,7 +75,7 @@ const Agent = props => {
               uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
             }}
             resizeMode="cover"
-            style={{height: 180, width: 125}}
+            style={{height: 180, width:'100%'}}
           />
         </TouchableOpacity>
       </View>
@@ -88,6 +88,7 @@ const Agent = props => {
 
   return (
     <ScrollView
+    showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.container}
       style={{backgroundColor: colors.backgroundShadow, opacity: 0.95}}>
       <View style={{flex: 1}} />
@@ -121,18 +122,21 @@ const Agent = props => {
           marginVertical: 14,
         }}>
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={Details.videoUrls}
           renderItem={(item, index) => renderItem(item, index)}
           keyExtractor={(item, index) => {
             return index.toString();
           }}
           numColumns={3}
-          columnWrapperStyle={{
-            flex: 1,
-            marginBottom: 6,
-            // justifyContent: 'space-between',
-            // backgroundColor: 'pink'
-          }}
+          // columnWrapperStyle={{
+          //   flex: 1,
+          //   marginBottom: 6,
+          //   // justifyContent: 'space-between',
+          //   // backgroundColor: 'pink'
+          // }}
+          columnWrapperStyle={{justifyContent:'space-between'}}
+          style={{marginHorizontal:4,flex:1}}
         />
       </View>
     </ScrollView>

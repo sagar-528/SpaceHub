@@ -27,12 +27,14 @@ import NetInfo from '@react-native-community/netinfo';
 import {useIsFocused} from '@react-navigation/native';
 
 const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
-  const windowWidth = Dimensions.get('window').width;
-  const windowHeight = Dimensions.get('window').height;
+  const windowWidth = Dimensions.get('screen').width;
+  const windowHeight = Dimensions.get('screen').height;
 
   const videoRef = useRef(null);
   const bottomSheetRef = useRef(null);
   const isFocused = useIsFocused();
+  const [pause, setPause] = useState(false)
+
 
   // variables
   const snapPoints = useMemo(() => ['30%', '90%'], []);
@@ -76,6 +78,22 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
       }
     });
   }, []);
+
+  useEffect(() => {
+      const blur = navigation.addListener('blur', () => {
+      setPause(true)
+      if (!!videoRef.current) {
+        videoRef.current.seek(0);
+      }
+    });
+
+    const focus = navigation.addListener('focus', () => {
+    setPause(false)
+    // videoRef.current.seek(0);
+  });
+
+  return blur, focus;
+  }, [navigation]);
 
   useEffect(() => {
     // console.log('ref', videoRef);
@@ -166,6 +184,17 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
       });
   };
 
+  const moreHandler=()=>{
+    navigation.navigate('More',{
+      item:item,
+      agentImage:agentImage,
+      agentData:agentData,
+      like:like,
+      handleLike:handleLike,
+      handleShareVideo:handleShareVideo
+    })
+  }
+
   const handlePresentModalPress = useCallback(() => {
     bottomSheetRef.current?.present();
   }, []);
@@ -179,22 +208,23 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
       <View
         style={{
           width: windowWidth,
-          height:
-            Platform.OS === 'android' ? windowHeight * 1 - 38 : windowHeight,
-          position: 'relative',
+          // height: Platform.OS === 'android' ? windowHeight * 1 - 38 : windowHeight,
+          height:windowHeight,
+          // flex:1,
+          // position: 'relative',
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: 'black',
         }}>
         <View
           style={{
-            paddingEnd: 12,
+            // paddingEnd: 12,
             position: 'absolute',
             zIndex: 1,
             bottom: 212,
-            right: 3,
+            right: 16,
           }}>
-          <View style={{marginBottom: 34}}>
+          <View style={{marginBottom: 40,}}>
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('Admin', {
@@ -218,7 +248,7 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
               />
             </TouchableOpacity>
           </View>
-          <View style={{}}>
+          <View style={{marginBottom:22,}}>
             <TouchableOpacity activeOpacity={0.7} onPress={() => handleLike()}>
               <Image
                 source={
@@ -240,7 +270,7 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
               </Text>
             )}
           </View>
-          <View style={{marginTop: 24, paddingBottom: 16}}>
+          <View style={{paddingBottom:28,}}>
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => handleShareVideo()}>
@@ -255,7 +285,7 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
         <View style={[styles.overcontainer]}>
           <View style={styles.rootContainer}>
             <View style={styles.row}>
-              <View style={styles.details}>
+              <TouchableOpacity style={styles.details} onPress={handlePresentModalPress}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -265,7 +295,7 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
                   <Text style={styles.rate}>
                     £{item?.price.toLocaleString()}
                   </Text>
-                  <TouchableOpacity onPress={handlePresentModalPress}>
+                  <TouchableOpacity onPress={moreHandler}>
                     <Image
                       source={require('../assets/icons/more.png')}
                       resizeMode="contain"
@@ -274,7 +304,7 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
                   </TouchableOpacity>
                 </View>
                 <Text style={[styles.buldingDetails, {paddingTop: 4}]}>
-                  {item?.beds} beds | {item?.bath} bath | {item?.sqft} sqft
+                {(item?.beds && item.beds!==0) ? `${item?.beds} beds |` : null} {(item?.bath && item?.bath!==0) ? `${item?.bath} bath |` : null} {(item?.sqft && item.sqft!==0) ? `${item?.sqft} sqft` : null} 
                 </Text>
                 <Text style={styles.buldingDetails}>
                   {item?.address?.road}, {item?.address?.postCode},{' '}
@@ -287,14 +317,7 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
                     Click for more details...
                   </Text>
                 </TouchableOpacity>
-              </View>
-              {/* <TouchableOpacity onPress={handlePresentModalPress}>
-                <Image
-                  source={require('../assets/icons/more.png')}
-                  resizeMode="contain"
-                  style={styles.icon}
-                />
-              </TouchableOpacity> */}
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -314,8 +337,8 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
           // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
           // posterResizeMode="cover"
           style={{
-            width: '100%',
-            height: '100%',
+            width: windowWidth,
+            height: windowHeight,
             position: 'absolute',
           }}
           onLoad={onLoad}
@@ -382,8 +405,8 @@ const styles = StyleSheet.create({
   },
   rootContainer: {
     flex: 1,
-    paddingTop: 8,
-    paddingHorizontal: 12,
+    paddingTop: 10,
+    paddingHorizontal: 16,
   },
   row: {
     flexDirection: 'row',

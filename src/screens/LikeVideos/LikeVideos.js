@@ -60,7 +60,7 @@ const LikeVideos = props => {
     };
 
     return (
-      <View style={{}} key={index}>
+      <View style={{margin:4,flex:1}} key={index}>
         <TouchableOpacity
           activeOpacity={0.6}
           style={{
@@ -78,7 +78,7 @@ const LikeVideos = props => {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          style={{marginEnd: 6,}}
+          // style={{margin: 6,}}
           key={index}
           activeOpacity={0.8}
           onPress={() => {
@@ -93,7 +93,7 @@ const LikeVideos = props => {
               uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
             }}
             resizeMode="cover"
-            style={{height: 180, width: 120}}
+            style={{height: 180, width: '100%'}}
           />
         </TouchableOpacity>
       </View>
@@ -127,7 +127,7 @@ const LikeVideos = props => {
         <View
           style={{
             flex: 1,
-            marginVertical: 14,
+            marginVertical: 10,
           }}>
           <FlatList
             data={likeVideoData}
@@ -136,10 +136,12 @@ const LikeVideos = props => {
               return index.toString();
             }}
             numColumns={3}
-            columnWrapperStyle={{
-              flex: 1,
-              marginBottom: 6,
-            }}
+            // columnWrapperStyle={{
+            //   flex: 1,
+            //   marginBottom: 6,
+            // }}
+            columnWrapperStyle={{justifyContent:'space-between'}}
+            style={{marginHorizontal:4,flex:1}}
           />
         </View>
       </View>

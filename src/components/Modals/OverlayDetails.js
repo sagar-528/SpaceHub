@@ -79,7 +79,7 @@ const OverlayDetails = props => {
             <Text style={styles.title}>PROPERTY DETAILS</Text>
             <Text style={styles.price}>£{item?.price.toLocaleString()}</Text>
             <Text style={[styles.buldingDetails, {paddingTop: 4}]}>
-              {item?.beds} beds | {item?.bath} bath | {item?.sqft} sqft
+              {(item?.beds && item.beds!==0) ? `${item?.beds} beds |` : null} {(item?.bath && item?.bath!==0) ? `${item?.bath} bath |` : null} {(item?.sqft && item.sqft!==0) ? `${item?.sqft} sqft` : null} 
             </Text>
             <Text style={styles.buldingDetails}>
               {item?.address?.road}, {item?.address?.postCode},{' '}

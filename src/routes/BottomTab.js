@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, StatusBar } from "react-native";
+import { StyleSheet, Text, View, Image, StatusBar,Platform } from "react-native";
 import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { colors } from "../themes";
@@ -10,6 +10,7 @@ import { Key } from "../Constant/constant";
 import SignUp from "../screens/Auth/SignUp";
 import Login from "../screens/Auth/Login";
 import LikeVideos from "../screens/LikeVideos/LikeVideos";
+import More from "../screens/Feeds/more";
 
 const ProfileStack = createNativeStackNavigator();
 function ProfileScreen() {
@@ -40,6 +41,7 @@ function HomeScreen(){
           headerShown: false
         }}
       />
+      
     </HomeStack.Navigator>
   )
 }
@@ -59,9 +61,11 @@ const BottomTab = () => {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: 65,
+          height: 66,
+          paddingTop:6,
           position: "absolute",
-          bottom: 16,
+          // alignItems:'center',
+          bottom: Platform.OS==='android' ? 16 : 16,
           right: 16,
           left: 16,
           borderRadius: 24,

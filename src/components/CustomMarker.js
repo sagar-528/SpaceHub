@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View, ImageBackground} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {colors} from '../themes';
 
@@ -37,31 +37,37 @@ const CustomMarker = props => {
     setBorderWidth(2);
   };
 
+  const image = item.isVideoPresent ? require('../assets/icons/videoProperty.png') : require('../assets/icons/imageProperty.png')
+
   return (
-    <View style={{flex: 1, alignItems: 'center'}}>
-      <TouchableOpacity
-        style={{
-          backgroundColor:
-            item.isVideoPresent === false ? colors.white : colors.darkSky,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderWidth: borderWidth,
-          flex: 1,
-          borderRadius: 6,
-        }}
-        onPress={() => handleSingleMarker(item, index)}
-        activeOpacity={0.8}
-        >
-        <Text
+    <View style={{flex: 1,}}>
+      <ImageBackground source={image} style={{}}>
+        <TouchableOpacity
           style={{
-            textAlign: 'center',
-            padding: 5,
-            fontSize: 12,
-            color: item.isVideoPresent === false ? 'black' : colors.white,
-          }}>
-          {`£${nFormatter(item.price)}`}
-        </Text>
-      </TouchableOpacity>
+            // backgroundColor:
+            //   item.isVideoPresent === false ? colors.white : colors.darkSky,
+            // alignItems: 'center',
+            // justifyContent: 'center',
+            // backgroundColor:'red'
+            // borderWidth: borderWidth,
+            // flex: 1,
+            // borderRadius: 6,
+          }}
+          onPress={() => handleSingleMarker(item, index)}
+          activeOpacity={0.8}
+          >
+          <Text
+            style={{
+              textAlign: 'center',
+              padding: 6,
+              paddingBottom:12,
+              fontSize: 12,
+              color: item.isVideoPresent === false ? 'black' : colors.white,
+            }}>
+            {`£${nFormatter(item.price)}`}
+          </Text>
+        </TouchableOpacity>
+      </ImageBackground>
     </View>
   );
 };

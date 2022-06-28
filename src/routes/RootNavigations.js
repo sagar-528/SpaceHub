@@ -9,6 +9,7 @@ import SingleReel from '../screens/SingleReel/SingleReel';
 import TermsOfServices from '../screens/Supports/TermsOfServices';
 import Support from '../screens/Supports/Support';
 import Header from '../components/Header';
+import More from '../screens/Feeds/more';
 
 const Stack = createNativeStackNavigator();
 const RootNavigations = () => {
@@ -27,6 +28,13 @@ const RootNavigations = () => {
         options={{
           header: props => <Header {...props} />,
           headerShown: true,
+        }}
+      />
+      <Stack.Screen 
+        name="More"
+        component={More}
+        options={{
+          headerShown: false
         }}
       />
       <Stack.Screen name="SingleReel" component={SingleReel} />

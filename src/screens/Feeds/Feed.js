@@ -77,31 +77,34 @@ const Feed = props => {
 
   console.log('resfresh', refreshing);
   return (
-    <SwiperFlatList
-      data={feedData}
-      windowSize={4}
-      initialNumToRender={0}
-      maxToRenderPerBatch={2}
-      vertical
-      removeClippedSubviews
-      onChangeIndex={handleChangeIndexValue}
-      renderItem={({item, index}) => (
-        <Reels
-          item={item}
-          index={index}
-          currentIndex={currentIndex}
-          navigation={navigation}
-          setHook={setHook}
-          hook={hook}
-        />
-      )}
-      keyExtractor={(items, index) => {
-        return items._id;
-      }}
-      decelerationRate={'normal'}
-      refreshing={refreshing}
-      onRefresh={getData}
-    />
+    <View style={{flex:1}}>
+      <SwiperFlatList
+        // style={{flex:1}}
+        data={feedData}
+        windowSize={4}
+        initialNumToRender={0}
+        maxToRenderPerBatch={2}
+        vertical
+        removeClippedSubviews={false}
+        onChangeIndex={handleChangeIndexValue}
+        renderItem={({item, index}) => (
+          <Reels
+            item={item}
+            index={index}
+            currentIndex={currentIndex}
+            navigation={navigation}
+            setHook={setHook}
+            hook={hook}
+          />
+        )}
+        keyExtractor={(items, index) => {
+          return items._id;
+        }}
+        decelerationRate={'normal'}
+        refreshing={refreshing}
+        onRefresh={getData}
+      />
+    </View>
   );
 };
 
