@@ -14,7 +14,7 @@ const url = API_URL + '/staticPages/terms';
     <>
       <Loader visible={loading} />
       <WebView
-        source={{uri: url}}
+        source={{uri: 'https://www.spacehub.fun/terms'}}
         style={{flex: 1}}
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}

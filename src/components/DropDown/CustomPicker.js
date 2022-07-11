@@ -41,9 +41,14 @@ export default function CustomPicker(props) {
 
   return (
     <View style={styles.container}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{flexDirection: 'row', alignItems: 'center',}}>
         {title !== '1' ? (
-          <>
+          <TouchableOpacity
+          onPress={() => {
+            setIsVisible(true);
+          }}
+          style={{flexDirection: 'row', alignItems: 'center',paddingVertical:4}}
+          activeOpacity={0.7}>
             <Text style={styles.range}>{title}</Text>
             {chooseData === undefined ? (
               <TouchableOpacity
@@ -60,9 +65,14 @@ export default function CustomPicker(props) {
             ) : (
               <Text style={styles.price}>£{nFormatter(chooseData)}</Text>
             )}
-          </>
+          </TouchableOpacity>
         ) : (
-          <>
+          <TouchableOpacity
+          onPress={() => {
+            setIsVisible(true);
+          }}
+          style={{flexDirection: 'row', alignItems: 'center'}}
+          activeOpacity={0.7}>
             <Text style={styles.range}>{chooseData}</Text>
             <TouchableOpacity
               onPress={() => {
@@ -75,7 +85,7 @@ export default function CustomPicker(props) {
                 style={{height: 16, width: 16, marginStart: 40}}
               />
             </TouchableOpacity>
-          </>
+          </TouchableOpacity>
         )}
       </View>
       {/* {console.log('option', OPTIONS)} */}

@@ -47,6 +47,7 @@ const SignUp = props => {
   }, [isFocused]);
 
   const handleSignUp = () => {
+    setLoading(true)
     const info = {
       name: name,
       email: email,
@@ -60,18 +61,22 @@ const SignUp = props => {
         AxiosBase.post('app/user/createUser', qs.stringify(info))
           .then(response => {
             if (response.status === 200) {
+              setLoading(false)
               save('userData', response?.data?.data?.user);
               saveString(
                 'token',
                 response?.data?.data?.token?.access?.accessToken,
               );
+              Key.token=response?.data?.data?.token?.access?.accessToken
               setEmail('');
               setName('');
               setPassword('');
-              navigation.navigate('Feeds');
+              // navigation.navigate('Profile');
+              setVisible(true)
             }
           })
           .catch(error => {
+            setLoading(false)
             if (error.response.data.code === 400) {
               displayToast(error.response.data.message);
             }
@@ -84,11 +89,12 @@ const SignUp = props => {
 
   return (
     <>
+      <Loader visible={loading} />
       {visible === false ? (
         <ScrollView
           style={{backgroundColor: colors.backgroundShadow, opacity: 0.95}}
           contentContainerStyle={styles.container}>
-          <Loader visible={loading} />
+          {/* <Loader visible={loading} /> */}
           <ScrollContainer>
             <SafeAreaView />
             <Text style={[styles.title, {color: colors.white}]}>
@@ -180,7 +186,7 @@ const SignUp = props => {
           </View>
         </ScrollView>
       ) : (
-        <Profile navigation={navigation} />
+        <Profile navigation={navigation} setVisible={setVisible}/>
       )}
     </>
   );

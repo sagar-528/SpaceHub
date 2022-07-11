@@ -23,6 +23,7 @@ import {useIsFocused} from '@react-navigation/native';
 import Profile from '../Clients/Profile';
 import NetInfo from '@react-native-community/netinfo';
 import ForgotPassword from '../../components/Modals/ForgotPassword';
+import { Key } from '../../Constant/constant';
 
 const Login = props => {
   const navigation = props.navigation;
@@ -70,10 +71,12 @@ const Login = props => {
                 'token',
                 response?.data?.data?.token?.access?.accessToken,
               );
+              Key.token=response?.data?.data?.token?.access?.accessToken
               setEmail('');
               setPassword('');
               setLoading(false);
-              navigation.navigate('Feeds');
+              // navigation.navigate('Feeds');
+              setVisible(true)
             }
           })
           .catch(error => {
@@ -181,7 +184,7 @@ const Login = props => {
           {/* </ScrollContainer> */}
         </ScrollView>
       ) : (
-        <Profile navigation={navigation} />
+        <Profile navigation={navigation} setVisible={setVisible}/>
       )}
     </>
   );

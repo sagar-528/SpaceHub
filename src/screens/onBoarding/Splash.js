@@ -29,95 +29,95 @@ const Splash = props => {
     });
   }, []);
 
-  useEffect(() => {
-    load('coords').then(res => {
-      if (res === null) {
-        location();
-      } else {
-        console.log('cords');
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   load('coords').then(res => {
+  //     if (res === null) {
+  //       location();
+  //     } else {
+  //       console.log('cords');
+  //     }
+  //   });
+  // }, []);
 
-  useEffect(() => {
-    location();
-  }, [isFocused]);
+  // useEffect(() => {
+  //   location();
+  // }, [isFocused]);
 
-  const location = async () => {
-    if (Platform.OS === 'ios') {
-      Geolocation.requestAuthorization('whenInUse')
-        .then(result => {
-          if (result === 'granted') {
-            Geolocation.getCurrentPosition(
-              info => {
-                // console.log('geo location', info);
-                save('coords', info);
-              },
-              error => {
-                console.log(error.message);
-              },
-              {enableHighAccuracy: false, timeout: 20000, maximumAge: 1000},
-            );
-          } else {
-            displayToast('in error');
-            Alert.alert(
-              `Turn on Location Services to allow SpaceHub to determine your location.`,
-              '',
-              [
-                {text: 'Go to Settings', onPress: openSetting},
-                // {text: "Don't Use Location", onPress: () => {}},
-              ],
-            );
-          }
-        })
-        .catch(error => console.log(error));
-    } else {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          {
-            title: 'Device current location permission',
-            message: 'Allow app to get your current location',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          Geolocation.getCurrentPosition(
-            info => {
-              // console.log('firsrt lat long', info);
-              save('coords', info);
-            },
-            error => {
-              console.log(error.message);
-            },
-            {
-              enableHighAccuracy: false,
-              timeout: 20000,
-              maximumAge: 1000,
-              forceLocationManager: true,
-              forceRequestLocation: true,
-            },
-          );
-        } else {
-          Alert.alert(
-            `Turn on Location Services to allow SpaceHub to determine your location.`,
-            '',
-            [{text: 'Go to Settings', onPress: openSetting}],
-          );
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    }
-  };
+  // const location = async () => {
+  //   if (Platform.OS === 'ios') {
+  //     Geolocation.requestAuthorization('whenInUse')
+  //       .then(result => {
+  //         if (result === 'granted') {
+  //           Geolocation.getCurrentPosition(
+  //             info => {
+  //               // console.log('geo location', info);
+  //               save('coords', info);
+  //             },
+  //             error => {
+  //               console.log(error.message);
+  //             },
+  //             {enableHighAccuracy: false, timeout: 20000, maximumAge: 1000},
+  //           );
+  //         } else {
+  //           displayToast('in error');
+  //           Alert.alert(
+  //             `Turn on Location Services to allow SpaceHub to determine your location.`,
+  //             '',
+  //             [
+  //               {text: 'Go to Settings', onPress: openSetting},
+  //               // {text: "Don't Use Location", onPress: () => {}},
+  //             ],
+  //           );
+  //         }
+  //       })
+  //       .catch(error => console.log(error));
+  //   } else {
+  //     try {
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //         {
+  //           title: 'Device current location permission',
+  //           message: 'Allow app to get your current location',
+  //           buttonNeutral: 'Ask Me Later',
+  //           buttonNegative: 'Cancel',
+  //           buttonPositive: 'OK',
+  //         },
+  //       );
+  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //         Geolocation.getCurrentPosition(
+  //           info => {
+  //             // console.log('firsrt lat long', info);
+  //             save('coords', info);
+  //           },
+  //           error => {
+  //             console.log(error.message);
+  //           },
+  //           {
+  //             enableHighAccuracy: false,
+  //             timeout: 20000,
+  //             maximumAge: 1000,
+  //             forceLocationManager: true,
+  //             forceRequestLocation: true,
+  //           },
+  //         );
+  //       } else {
+  //         Alert.alert(
+  //           `Turn on Location Services to allow SpaceHub to determine your location.`,
+  //           '',
+  //           [{text: 'Go to Settings', onPress: openSetting}],
+  //         );
+  //       }
+  //     } catch (err) {
+  //       console.warn(err);
+  //     }
+  //   }
+  // };
 
-  const openSetting = () => {
-    Linking.openSettings().catch(() => {
-      Alert.alert('Unable to open settings');
-    });
-  };
+  // const openSetting = () => {
+  //   Linking.openSettings().catch(() => {
+  //     Alert.alert('Unable to open settings');
+  //   });
+  // };
 
   return (
     <View style={styles.container}>

@@ -10,10 +10,16 @@ import {
   FlatList,
   Dimensions,
   SafeAreaView,
+  Linking,
+  Platform,
+  Alert
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import {colors, typography} from '../../themes';
 import Slides from '../../components/Slides';
+
+import {displayToast, load, loadString, save} from '../../utils';
+import Geolocation from 'react-native-geolocation-service';
 
 const OnBoarding = props => {
   const navigation = props.navigation;
@@ -31,11 +37,93 @@ const OnBoarding = props => {
   }, [viewableItems]);
 
   const handleNext = () => {
+    console.log('current',currentPage);
+    if(currentPage===1){
+      location()
+    }
     if (currentPage == Slides.length - 1) return;
+    console.log('currentPage',currentPage);
 
     flatlistRef.current.scrollToIndex({
       animated: true,
       index: currentPage + 1,
+    });
+  };
+
+
+  const location = async () => {
+    if (Platform.OS === 'ios') {
+      Geolocation.requestAuthorization('whenInUse')
+        .then(result => {
+          if (result === 'granted') {
+            Geolocation.getCurrentPosition(
+              info => {
+                // console.log('geo location', info);
+                save('coords', info);
+              },
+              error => {
+                console.log(error.message);
+              },
+              {enableHighAccuracy: false, timeout: 20000, maximumAge: 1000},
+            );
+          } else {
+            displayToast('in error');
+            Alert.alert(
+              `Turn on Location Services to allow SpaceHub to determine your location.`,
+              '',
+              [
+                {text: 'Go to Settings', onPress: openSetting},
+                // {text: "Don't Use Location", onPress: () => {}},
+              ],
+            );
+          }
+        })
+        .catch(error => console.log(error));
+    } else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Device current location permission',
+            message: 'Allow app to get your current location',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          Geolocation.getCurrentPosition(
+            info => {
+              // console.log('firsrt lat long', info);
+              save('coords', info);
+            },
+            error => {
+              console.log(error.message);
+            },
+            {
+              enableHighAccuracy: false,
+              timeout: 20000,
+              maximumAge: 1000,
+              forceLocationManager: true,
+              forceRequestLocation: true,
+            },
+          );
+        } else {
+          Alert.alert(
+            `Turn on Location Services to allow SpaceHub to determine your location.`,
+            '',
+            [{text: 'Go to Settings', onPress: openSetting}],
+          );
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  };
+
+  const openSetting = () => {
+    Linking.openSettings().catch(() => {
+      Alert.alert('Unable to open settings');
     });
   };
 
@@ -50,7 +138,7 @@ const OnBoarding = props => {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          {item.key === '1' ? (
+          {item.key === '1' ? 
             <>
               <Image
                 source={require('../../assets/Illustrations/mobile.png')}
@@ -69,7 +157,9 @@ const OnBoarding = props => {
                 }}
               />
             </>
-          ) : (
+           : 
+           <>
+           {item.key==='2' ?
             <View style={{flexDirection: 'row', marginBottom: 44}}>
               <Image
                 source={require('../../assets/Illustrations/mobile.png')}
@@ -96,7 +186,53 @@ const OnBoarding = props => {
                 />
               </View>
             </View>
-          )}
+            :
+            <View style={{flexDirection: 'row', marginBottom: 44,}}>
+              <View>
+                <ImageBackground
+                  source={require('../../assets/Illustrations/mobile.png')}
+                  resizeMode="contain"
+                  style={{
+                    height: 370,
+                    width: 272,
+                    alignItems:'center',
+                    justifyContent:'center'
+                  }}
+                  
+                >
+                  <View style={{marginBottom:40}}>
+                    <Image
+                      source={require('../../assets/Illustrations/locationPopUp.png')}
+                      resizeMode="contain"
+                      style={{
+                        height: 200,
+                        width: 100,
+                      }}
+                    />
+                  </View>
+                </ImageBackground>
+              </View>
+              <View
+                style={{
+                  alignSelf: 'flex-end',
+                  position: 'absolute',
+                  right: 0,
+                  bottom: -12,
+                }}>
+                <Image
+                  source={require('../../assets/Illustrations/sideArrow.png')}
+                  resizeMode="cover"
+                  style={{
+                    height: 90,
+                    width: 60,
+                  }}
+                />
+              </View>
+            </View>
+
+           }
+           </>
+          }
           <Text style={styles.title}>{item.description}</Text>
         </View>
       </SafeAreaView>
@@ -131,6 +267,29 @@ const OnBoarding = props => {
     );
   };
 
+
+  const renderDots=()=>{
+    return(
+      <View style={styles.dotContainer}>
+        <View style={{
+          ...styles.dot,
+          backgroundColor:currentPage===0 ? '#fff' : 'rgba(255,255,255,0.6)',
+          margin:4
+        }}/>
+        <View style={{
+          ...styles.dot,
+          backgroundColor:currentPage===1 ? '#fff' : 'rgba(255,255,255,0.6)',
+          margin:4
+        }}/>
+        <View style={{
+          ...styles.dot,
+          backgroundColor:currentPage===2 ? '#fff' : 'rgba(255,255,255,0.6)',
+          margin:4
+        }}/>
+      </View>
+    )
+  }
+
   // console.log('current page', currentPage);
   return (
     <View style={styles.container}>
@@ -150,6 +309,7 @@ const OnBoarding = props => {
           viewabilityConfig={{viewAreaCoveragePercentThreshold: 100}}
           initialNumToRender={1}
         />
+        {renderDots()}
         {renderBottomSection()}
       </ImageBackground>
     </View>
@@ -173,7 +333,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
-    width: 150,
+    marginHorizontal:52
+    // width: 150,
   },
   btnView: {
     backgroundColor: colors.darkSky,
@@ -187,4 +348,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.white,
   },
+  dotContainer:{
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+    marginBottom:36
+  },
+  dot:{
+    width:8,
+    height:8,
+    borderRadius:4,
+  }
 });

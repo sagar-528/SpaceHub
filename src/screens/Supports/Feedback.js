@@ -4,7 +4,7 @@ import { Loader } from '../../components/Loader'
 import WebView from 'react-native-webview';
 import { API_URL } from "@env";
 
-const Support = () => {
+const Feedback = () => {
 
     const [loading, setLoading] = useState(false)
 
@@ -23,6 +23,6 @@ const Support = () => {
   )
 }
 
-export default Support
+export default Feedback
 
 const styles = StyleSheet.create({})

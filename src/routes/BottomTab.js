@@ -11,9 +11,21 @@ import SignUp from "../screens/Auth/SignUp";
 import Login from "../screens/Auth/Login";
 import LikeVideos from "../screens/LikeVideos/LikeVideos";
 import More from "../screens/Feeds/more";
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const ProfileStack = createNativeStackNavigator();
-function ProfileScreen() {
+function ProfileScreen({navigation,route}) {
+  React.useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route);
+    if (routeName === "SignUp") {
+      console.log('route:--',routeName);
+      // navigation.setOptions({ headerShown: false });
+    } else {
+      // navigation.setOptions({ headerShown: true });
+      console.log('route:--',routeName);
+
+    }
+  }, [navigation, route]);
   
   return (
     <ProfileStack.Navigator
@@ -96,7 +108,7 @@ const BottomTab = () => {
                     width: 4,
                     backgroundColor: colors.darkSky,
                     borderRadius: 2,
-                    marginTop: 4,
+                    marginTop: 8,
                   }}
                 />
               ) : null}
@@ -121,7 +133,7 @@ const BottomTab = () => {
                     width: 4,
                     backgroundColor: colors.darkSky,
                     borderRadius: 2,
-                    marginTop: 2,
+                    marginTop: 8,
                   }}
                 />
               ) : null}
@@ -146,7 +158,7 @@ const BottomTab = () => {
                     width: 4,
                     backgroundColor: colors.darkSky,
                     borderRadius: 2,
-                    marginTop: 4,
+                    marginTop: 8,
                   }}
                 />
               ) : null}

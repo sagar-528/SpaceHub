@@ -7,18 +7,24 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Linking,
+  Dimensions,
   FlatList,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import {colors, typography} from '../../themes';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Video from 'react-native-video';
+import FastImage from 'react-native-fast-image'
+
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
 
 const Agent = props => {
   const navigation = props.navigation;
-  const {Details} = props.route.params;
+  const {Details,setPaused} = props.route.params;
+  // const { videoRef } = props.route?.params
 
-  const videoRef = useRef(null);
+  // const videoRef = useRef(null);
 
   const handleAgent = e => {
     let phoneNo = `${e.countryCode}${e.phoneNumber}`;
@@ -58,7 +64,7 @@ const Agent = props => {
     };
 
     return (
-      <View style={{flex:1,margin:4}} key={index}>
+      <View style={{margin:4}} key={index}>
         <TouchableOpacity
           // style={{marginEnd: 6}}
           key={index}
@@ -70,12 +76,12 @@ const Agent = props => {
               // navigation: navigation,
             });
           }}>
-          <Image
+          <FastImage
             source={{
               uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
             }}
             resizeMode="cover"
-            style={{height: 180, width:'100%'}}
+            style={{height: 180, width:(windowWidth/3)-10}}
           />
         </TouchableOpacity>
       </View>
@@ -129,15 +135,37 @@ const Agent = props => {
             return index.toString();
           }}
           numColumns={3}
-          // columnWrapperStyle={{
-          //   flex: 1,
-          //   marginBottom: 6,
-          //   // justifyContent: 'space-between',
-          //   // backgroundColor: 'pink'
-          // }}
-          columnWrapperStyle={{justifyContent:'space-between'}}
-          style={{marginHorizontal:4,flex:1}}
+          columnWrapperStyle={{
+            flex: 1,
+            // marginBottom: 6,
+            // justifyContent: 'space-between',
+            // backgroundColor: 'pink'
+          }}
+          style={{marginHorizontal:4}}
+          // columnWrapperStyle={{justifyContent:'space-between'}}
+          // style={{marginHorizontal:4,flex:1}}
         />
+      </View>
+      <View
+        style={{
+          paddingLeft: 24,
+          paddingTop: 22,
+          position: 'absolute',
+          right: 0,
+        }}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+            // setPaused(false)
+          }}
+          activeOpacity={0.8}
+          style={{alignSelf: 'flex-end', marginEnd: 24, marginBottom: 14}}>
+          <Image
+            source={require('../../assets/icons/close.png')}
+            resizeMode="contain"
+            style={{height: 24, width: 24}}
+          />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

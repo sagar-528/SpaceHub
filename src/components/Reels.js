@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Platform,
   ImageBackground,
+  Modal
 } from 'react-native';
 import React, {useRef, useState, useEffect, useMemo, useCallback} from 'react';
 import {colors, typography} from '../themes';
@@ -25,22 +26,31 @@ import BottomSheet, {
 import Close from './Close';
 import NetInfo from '@react-native-community/netinfo';
 import {useIsFocused} from '@react-navigation/native';
+import More from '../screens/Feeds/more';
+import ReelInfo from '../screens/Feeds/reelInfo';
 
-const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
+import InViewPort from "@coffeebeanslabs/react-native-inviewport";
+import { createSharedElementStackNavigator,SharedElement } from 'react-navigation-shared-element';
+import VisibilitySensor from '@svanboxel/visibility-sensor-react-native'
+
+const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,currentVisibleIndex}) => {
   const windowWidth = Dimensions.get('screen').width;
   const windowHeight = Dimensions.get('screen').height;
 
   const videoRef = useRef(null);
-  const bottomSheetRef = useRef(null);
-  const isFocused = useIsFocused();
+  // const bottomSheetRef = useRef(null);
+  // const isFocused = useIsFocused();
   const [pause, setPause] = useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  let pauseOnModal=true;
+  const [disable, setDisable] = useState(false)
 
 
   // variables
-  const snapPoints = useMemo(() => ['30%', '90%'], []);
+  const snapPoints = useMemo(() => ['100%', '100%'], []);
 
   // const [mute, setMute] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [agentImage, setAgentImage] = useState('');
   const [agentData, setAgentData] = useState();
   const [like, setLike] = useState(false);
@@ -49,13 +59,14 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
   const [opacity, setOpacity] = useState(0);
   // const [token, setToken] = useState(false);
   const [expandVisible, setExpandVisible] = useState(true);
+  const [isScreenFocused, setIsScreenFocused] = useState(false)
   // const [likeOpacity, setLikeOpacity] = useState(0);
 
-  useEffect(() => {
-    if (currentIndex !== index) {
-      bottomSheetRef.current?.dismiss();
-    }
-  }, [currentIndex]);
+  // useEffect(() => {
+  //   if (currentIndex !== index) {
+  //     bottomSheetRef.current?.dismiss();
+  //   }
+  // }, [currentIndex]);
 
   useEffect(() => {
     NetInfo.fetch().then(isConnected => {
@@ -81,26 +92,33 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
 
   useEffect(() => {
       const blur = navigation.addListener('blur', () => {
+        // setIsScreenFocused(false)
       setPause(true)
-      if (!!videoRef.current) {
-        videoRef.current.seek(0);
-      }
+      setDisable(true)
+      
     });
 
     const focus = navigation.addListener('focus', () => {
-    setPause(false)
-    // videoRef.current.seek(0);
-  });
+      
+      setPause(false)
+      if (!!videoRef.current) {
+        videoRef.current.seek(0);
+      }
+      setDisable(false)
+      // setIsScreenFocused(false)
+      // videoRef.current.seek(0);
+    });
+
 
   return blur, focus;
   }, [navigation]);
 
-  useEffect(() => {
-    // console.log('ref', videoRef);
-    if (!!videoRef.current) {
-      videoRef.current.seek(0);
-    }
-  }, [currentIndex]);
+  // useEffect(() => {
+  //   // console.log('ref', videoRef);
+  //   if (!!videoRef.current) {
+  //     videoRef.current.seek(0);
+  //   }
+  // }, [currentIndex]);
 
   const onError = ({error}) => {
     // console.log('error of video', error);
@@ -123,10 +141,12 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
     }
   };
 
+  const message = `Hey, checkout this new property I found on the SpaceHub App \n https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`
+
   const handleShareVideo = async () => {
     const options = {
       message:
-        'Hey, checkout this new property \n`https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}` ',
+      message,
     };
     try {
       const result = await Share.share(options);
@@ -151,32 +171,42 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
         if (response === null) {
           displayToast('Please Login First.');
         } else {
-          if (like === false) {
-            setLike(true);
+          let temp = [...data]
+          if (item.isLiked === false) {
+            // setLike(true);
+            temp[index].isLiked = true
+                setData(temp)
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${true}`,
             )
               .then(response => {
                 console.log('response of like', response.data.data);
-                setLikeData(response.data.data.likedVideos);
+                // setLikeData(response.data.data.likedVideos);
                 setHook(!hook);
+                // let temp = [...data]
+                
               })
               .catch(error => {
                 console.log('error', error.response.data);
               });
           } else {
-            setLike(false);
+            // setLike(false);
+            temp[index].isLiked = false
+                setData(temp)
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${false}`,
             )
               .then(response => {
-                setLikeData(response.data.data.likedVideos);
+                // setLikeData(response.data.data.likedVideos);
                 setHook(!hook);
+                // let temp = [...data]
+                
               })
               .catch(error => {
                 console.log('error', error.response.data);
               });
           }
+          
         }
       })
       .catch(error => {
@@ -185,26 +215,75 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
   };
 
   const moreHandler=()=>{
+    // if (!!videoRef.current) {
+    //   videoRef.current.seek(0);
+    // }
+    // setPause(true)
+    pauseOnModal=false
     navigation.navigate('More',{
       item:item,
+      index:index,
       agentImage:agentImage,
       agentData:agentData,
       like:like,
       handleLike:handleLike,
-      handleShareVideo:handleShareVideo
+      handleShareVideo:handleShareVideo,
+      // handleDismissParentModalPress:handleDismissModalPress,
+      expandVisible:expandVisible,
+      parentVisible:visible,
+      setPause:setPause,
+      pause:pause,
+      setDisable:setDisable,
+      data:data,
+      setData:setData
     })
+    // navigation.navigate('TransionalReelView',{reel:item})
   }
 
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetRef.current?.present();
-  }, []);
+  // const handlePresentModalPress = useCallback(() => {
+  //   setPause(true)
+  //   // pauseOnModal = true
+  //   bottomSheetRef.current?.present();
+  //   if (!!videoRef.current) {
+  //       videoRef.current.seek(0);
+  //     }
+  // }, []);
 
-  const handleDismissModalPress = useCallback(() => {
-    bottomSheetRef.current?.dismiss();
-  }, []);
+  // const handleDismissModalPress = useCallback(() => {
+  //   pauseOnModal = false
+  //   bottomSheetRef.current?.dismiss();
+  //   setPause(false)
+  // }, []);
+
+
+  const checkVisible = (isVisible) => {
+    if(isVisible){
+      console.log('isVisible 1',isVisible);
+      setPause(false)
+    }else{
+      console.log('isVisible 2',isVisible);
+      setPause(true)
+    }
+  }
+
+  // console.log('pause at reel',pause);
+
+    useEffect(() => {
+      // setIsScreenFocused(true)
+      setLike(item.isLiked)
+    }, [])
+    
 
   return (
-    <>
+    <InViewPort 
+      onChange={(isVisible) => {
+        // if(!pause){
+          console.log(isVisible);
+          checkVisible(isVisible)
+        // }
+      }}
+      // disabled={disable}
+      >
       <View
         style={{
           width: windowWidth,
@@ -248,19 +327,19 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
               />
             </TouchableOpacity>
           </View>
-          <View style={{marginBottom:22,}}>
+          <View style={{marginBottom:40,}}>
             <TouchableOpacity activeOpacity={0.7} onPress={() => handleLike()}>
               <Image
                 source={
-                  like === false
+                  item.isLiked === false
                     ? require('../assets/icons/like.png')
                     : require('../assets/icons/redicon.png')
                 }
-                resizeMode="contain"
+                // resizeMode="contain"
                 style={styles.icon}
               />
             </TouchableOpacity>
-            {item.likeCount.length === 0 ? (
+            {/* {item.likeCount.length === 0 ? (
               <Text style={[styles.likes, {opacity: 0}]}>
                 {item.likeCount.length}
               </Text>
@@ -268,7 +347,7 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
               <Text style={[styles.likes, {opacity: 1}]}>
                 {item.likeCount.length}
               </Text>
-            )}
+            )} */}
           </View>
           <View style={{paddingBottom:28,}}>
             <TouchableOpacity
@@ -285,7 +364,15 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
         <View style={[styles.overcontainer]}>
           <View style={styles.rootContainer}>
             <View style={styles.row}>
-              <TouchableOpacity style={styles.details} onPress={handlePresentModalPress}>
+              <Pressable 
+                style={styles.details} 
+                onPress={()=>{
+                  pauseOnModal=false
+                  setDisable(true)
+                  moreHandler(),
+                  setPause(true)
+                }}
+                >
                 <View
                   style={{
                     flexDirection: 'row',
@@ -295,13 +382,19 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
                   <Text style={styles.rate}>
                     £{item?.price.toLocaleString()}
                   </Text>
-                  <TouchableOpacity onPress={moreHandler}>
-                    <Image
-                      source={require('../assets/icons/more.png')}
-                      resizeMode="contain"
-                      style={[styles.icon, {}]}
-                    />
-                  </TouchableOpacity>
+                  <Pressable 
+                    // onPress={handlePresentModalPress}
+                    onPress={moreHandler}
+                    // onPress={()=>setIsModalVisible(true)}
+                    >
+                      {/* <SharedElement id={item._id}> */}
+                        <Image
+                          source={require('../assets/icons/more.png')}
+                          resizeMode="contain"
+                          style={[styles.icon, {}]}
+                        />
+                      {/* </SharedElement> */}
+                  </Pressable>
                 </View>
                 <Text style={[styles.buldingDetails, {paddingTop: 4}]}>
                 {(item?.beds && item.beds!==0) ? `${item?.beds} beds |` : null} {(item?.bath && item?.bath!==0) ? `${item?.bath} bath |` : null} {(item?.sqft && item.sqft!==0) ? `${item?.sqft} sqft` : null} 
@@ -310,61 +403,72 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
                   {item?.address?.road}, {item?.address?.postCode},{' '}
                   {item?.address?.city}.
                 </Text>
-                <TouchableOpacity
+                <View
                   activeOpacity={0.6}
-                  onPress={handlePresentModalPress}>
+                  // onPress={handlePresentModalPress}
+                  >
                   <Text style={styles.buldingDetails}>
                     Click for more details...
                   </Text>
-                </TouchableOpacity>
-              </TouchableOpacity>
+                </View>
+              </Pressable>
             </View>
           </View>
         </View>
-        <Video
-          ref={videoRef}
-          onBuffer={onBuffer}
-          onVideoLoad={() => {
-            console.log('load');
-          }}
-          onError={onError}
-          repeat
-          resizeMode="cover"
-          paused={currentIndex === index ? false : true}
-          source={{
-            uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`,
-          }}
-          // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
-          // posterResizeMode="cover"
-          style={{
-            width: windowWidth,
-            height: windowHeight,
-            position: 'absolute',
-          }}
-          onLoad={onLoad}
-          onLoadStart={onLoadStart}
-        />
-        <ActivityIndicator
+        <SharedElement id={item._id} style={{flex:1,width:'100%'}}>
+          <Video
+            ref={videoRef}
+            onBuffer={onBuffer}
+            playInBackground={false}
+            onVideoLoad={() => {
+              console.log('load');
+            }}
+            onError={onError}
+            repeat
+            volume={10}
+            // ignoreSilentSwitch="ignore"
+            resizeMode="cover"
+            // paused={currentIndex === index ? false : true}
+            // paused={currentIndex !== currentVisibleIndex ? false:true}
+            paused={pause}
+            // source={{
+            //   uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`,
+            // }}
+            source={require('../assets/Illustrations/space_testing.mp4')}
+            // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
+            // posterResizeMode="cover"
+            style={{
+              width: windowWidth,
+              height: windowHeight,
+              position: 'absolute',
+            }}
+            onLoad={onLoad}
+            onLoadStart={onLoadStart}
+            muted={false}
+          />
+        </SharedElement>
+        {/* <ActivityIndicator
           animating
           size="large"
           color={colors.darkSky}
           style={[styles.activityIndicator, {opacity: opacity}]}
-        />
+        /> */}
       </View>
-      <BottomSheetModal
+      {/* <BottomSheetModal
         ref={bottomSheetRef}
         snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        enableDismissOnClose
+        enablePanDownToClose={false}
+        enableDismissOnClose={true}
         onClose={() => {
           setVisible(false);
         }}
         backgroundStyle={{
-          backgroundColor: colors.backgroundShadow,
-          opacity: 0.95,
+          backgroundColor:'#000',
+          opacity: 1,
+          borderRadius:0,
         }}
         onChange={e => {
-          // console.log('index', e);
+          console.log('index', e);
           if (e === 1) {
             setExpandVisible(false);
           } else {
@@ -377,12 +481,65 @@ const Reels = ({item, index, currentIndex, navigation, setHook, hook}) => {
             handleDismissModalPress={handleDismissModalPress}
             expandVisible={expandVisible}
           />
-        )}>
+        )}
+        >
         <BottomSheetScrollView>
           <OverlayDetails item={item} />
+          <More
+            item={item}
+            agentImage={agentImage}
+            agentData={agentData}
+            like={like}
+            handleLike={handleLike}
+            handleShareVideo={handleShareVideo}
+            handleDismissParentModalPress={handleDismissModalPress}
+            navigation={navigation}
+            expandVisible={expandVisible}
+            parentVisible={visible}
+            setPause={setPause}
+            pause={pause}
+          />
+          <ReelInfo
+            item={item}
+            agentImage={agentImage}
+            agentData={agentData}
+            like={like}
+            handleLike={handleLike}
+            handleShareVideo={handleShareVideo}
+            handleDismissParentModalPress={handleDismissModalPress}
+            navigation={navigation}
+          />
         </BottomSheetScrollView>
-      </BottomSheetModal>
-    </>
+      </BottomSheetModal> */}
+      {/* <Modal
+          animationType='fade'
+          transparent={true}
+          visible={isModalVisible}
+          avoidKeyboard={true}
+          autoFocus={true}
+          onRequestClose={() => setIsModalVisible(false)}
+          // style={{flex:1}}
+      >
+        <View
+            style={styles.modalView}
+        // onPress={onPress}
+        >
+          <ReelInfo
+            item={item}
+            agentImage={agentImage}
+            agentData={agentData}
+            like={like}
+            handleLike={handleLike}
+            handleShareVideo={handleShareVideo}
+            handleDismissParentModalPress={handleDismissModalPress}
+            navigation={navigation}
+            setIsModalVisible={setIsModalVisible}
+          />
+        </View>
+        
+      </Modal> */}
+      
+    </InViewPort>
   );
 };
 
@@ -444,4 +601,8 @@ const styles = StyleSheet.create({
     width: 42,
     // backgroundColor:'pink'
   },
+  modalView: {
+    flex: 1,
+    backgroundColor:colors.white
+},
 });

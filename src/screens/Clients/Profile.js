@@ -17,6 +17,7 @@ import {Key} from '../../Constant/constant';
 
 const Profile = props => {
   const navigation = props.navigation;
+  const setVisible = props.setVisible
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
@@ -42,7 +43,9 @@ const Profile = props => {
         text: 'OK',
         onPress: () => {
           remove('token', 'userData');
-          navigation.navigate('Feeds');
+          Key.token=''
+          navigation.navigate('SignUp');
+          setVisible(false)
         },
       },
     ]);
@@ -90,7 +93,12 @@ const Profile = props => {
         </View>
         <View style={styles.box}>
           <View style={styles.view}>
-            <Pressable style={styles.row}>
+            <Pressable 
+              style={styles.row}
+              onPress={() => {
+                navigation.navigate('Feedback');
+              }}
+              >
               <Text style={styles.userName}>Feedback</Text>
               <Image
                 source={require('../../assets/icons/Vector.png')}
@@ -106,7 +114,8 @@ const Profile = props => {
               activeOpacity={0.7}
               onPress={() => {
                 navigation.navigate('Terms');
-              }}>
+              }}
+              >
               <Text style={styles.form}>Terms Of Service</Text>
             </TouchableOpacity>
             <TouchableOpacity

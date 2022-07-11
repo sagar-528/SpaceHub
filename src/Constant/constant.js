@@ -1,5 +1,6 @@
 export const Key = {
   token: '',
+  refresh:false,
 };
 
 export const Amount = {
