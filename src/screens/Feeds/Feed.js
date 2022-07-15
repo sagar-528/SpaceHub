@@ -35,6 +35,7 @@ const Feed = props => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [page, setPage] = useState(0)
 
   const [hook, setHook] = useState(false);
 
@@ -48,33 +49,51 @@ const Feed = props => {
   }, []);
 
   const getData = () => {
+    console.log('PAGE',page);
     NetInfo.fetch().then(isConnected => {
       if (isConnected.isConnected === true) {
         AxiosBase.get('app/property/videoProperty', {
           params: {
-            limit: 1000000000,
-            page: 0,
+            limit: 10,
+            page: page,
             isVideoPresent: true,
           },
         })
           .then(response => {
             // setLoading(true);
-            // console.log('feeds response', response?.data?.data);
-            setFeedData(response?.data?.data);
-            // if(response?.data?.data.length>0){
-            //   for(i=0;i<response?.data?.data.length;i++){
-            //     // setVideoRefs(prev=>[...prev,videoRef])
-            //     // setPaused(prev=>[...prev,true])
-            //   }
-            // }
-            setLoading(false);
-            // setRefreshing(!refreshing)
+            console.log('feeds response', response?.data?.data);
+            let data = response?.data?.data
+            if(data.length===0){
+              // setFeedData([])
+              // setPage(0)
+              AxiosBase.get('app/property/videoProperty', {
+                params: {
+                  limit: 10,
+                  page: 0,
+                  isVideoPresent: true,
+                },
+              }).then(res=>{
+                let initialDataToShowAtFirst = res?.data?.data
+                console.log('initialDataToShowAtFirst',initialDataToShowAtFirst);
+                setFeedData(initialDataToShowAtFirst);
+              }).catch(err=>{
+                setLoading(false)
+                setRefreshing(false);
+                console.log('error in feeds api', error.message);
+              })
+              // getData()
+            }else{
+              setFeedData(prev=>[...prev,...data]);
+              setLoading(false);
+              setPage(page+1)
+              // setRefreshing(!refreshing)
+            }
           })
           .catch(error => {
             setLoading(false);
             setRefreshing(false);
             // setRefreshing(!refreshing)
-            console.log('error in feeds api', error.response);
+            console.log('error in feeds api', error.message);
           })
           .finally(() => {
             // setRefreshing(false);
@@ -89,56 +108,8 @@ const Feed = props => {
 
   const handleChangeIndexValue = ({index}) => {
     setCurrentIndex(index);
-    // const temp = [...paused]
-    // paused.map((item,indx)=>{
-    //   if(indx===index){
-    //     temp[index] = false
-    //     // setPaused(temp)
-    //   }else{
-    //     temp[index] = true
-    //     // setPaused(temp)
-    //   }
-    // })
-    // setPaused(temp)
   };
 
-
-  // const _onViewableItemsChanged=(props)=>{
-  //   console.log('_onViewableItemsChanged',props)
-  //   const changed = props.changed
-  //   const temp = [...paused]
-  //   changed.forEach(item=>{
-  //     const cell = videoRefs[item.index]
-  //     console.log('cellpre',item);
-  //     if(cell){
-  //       if(item.isViewable){
-  //         console.log('cell',cell);
-  //         // cell.current.setNativeProps({ paused: false })
-  //         // temp[item.index] = false
-  //         // setPaused(temp)
-          
-  //       }else{
-  //         // cell.current.setNativeProps({ paused: true })
-  //         // temp[item.index] = true
-  //         // setPaused(temp)
-  //       }
-  //     }
-  //   })
-  // }
-
-  // const onViewRef = React.useRef((viewableItems)=> {
-  //   if (viewableItems && viewableItems.length > 0) {
-  //     setCurrentVisibleIndex(viewableItems[0].index);
-  // }
-  // })
-
-  // const _onViewableItemsChanged = ({ viewableItems, changed }) => {
-  //   if (viewableItems && viewableItems.length > 0) {
-  //       setCurrentVisibleIndex(viewableItems[0].index);
-  //   }
-  // };
-
-  // const viewConfigRef = React.useRef({ viewAreaCoveragePercentThreshold: 50 })
 
   useEffect(() => {
     // subscribe event
@@ -154,6 +125,11 @@ const Feed = props => {
     };
   }, [])
 
+  const LoadMoreData=()=>{
+    // alert('ghjgjhgjh')
+    getData()
+  }
+
 
   // console.log('resfresh',feedData);
   return (
@@ -164,13 +140,13 @@ const Feed = props => {
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={getData} />
       }
-      extraData={refreshing}
+      // extraData={refreshing}
         data={feedData}
-        windowSize={4}
+        // windowSize={4}
         initialNumToRender={0}
-        maxToRenderPerBatch={2}
+        // maxToRenderPerBatch={2}
         vertical
-        removeClippedSubviews={false}
+        // removeClippedSubviews={false}
         onChangeIndex={handleChangeIndexValue}
         renderItem={({item, index}) => (
           <Reels
@@ -193,7 +169,9 @@ const Feed = props => {
           return items._id;
         }}
         decelerationRate={'normal'}
-        refreshing={refreshing}
+        onEndReached={LoadMoreData}
+        onEndReachedThreshold={0.1}
+        // refreshing={refreshing}
         // onRefresh={getData}
         // onViewableItemsChanged={onViewRef.current}
         // viewabilityConfig={viewConfigRef.current}

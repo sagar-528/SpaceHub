@@ -32,22 +32,25 @@ const OnBoarding = props => {
   });
 
   useEffect(() => {
+    // console.log(viewableItems);
     if (!viewableItems[0] || currentPage === viewableItems[0].index) return;
     setCurrentPage(viewableItems[0].index);
   }, [viewableItems]);
 
   const handleNext = () => {
     console.log('current',currentPage);
-    if(currentPage===1){
-      location()
-    }
+    // if(currentPage===2){
+    //   location()
+    // }
     if (currentPage == Slides.length - 1) return;
     console.log('currentPage',currentPage);
 
-    flatlistRef.current.scrollToIndex({
-      animated: true,
-      index: currentPage + 1,
-    });
+    if(currentPage!==2){
+      flatlistRef.current.scrollToIndex({
+        animated: true,
+        index: currentPage + 1,
+      });
+    }
   };
 
 
@@ -58,7 +61,7 @@ const OnBoarding = props => {
           if (result === 'granted') {
             Geolocation.getCurrentPosition(
               info => {
-                // console.log('geo location', info);
+                console.log('geo location', info);
                 save('coords', info);
               },
               error => {
@@ -257,6 +260,7 @@ const OnBoarding = props => {
               style={styles.btnView}
               activeOpacity={0.8}
               onPress={() => {
+                location()
                 navigation.navigate('BottomTab');
               }}>
               <Text style={styles.btn}>next</Text>

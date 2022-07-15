@@ -1,6 +1,7 @@
 export const Key = {
   token: '',
   refresh:false,
+  initialViewPort:false
 };
 
 export const Amount = {

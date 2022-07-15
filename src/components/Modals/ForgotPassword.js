@@ -40,6 +40,7 @@ const ForgotPassword = props => {
       .catch(error => {
         console.log('error for api', error);
         props.setModalVisible(false);
+        displayToast('Something went wrong')
         setEmail('')
         setLoading(false)
       });

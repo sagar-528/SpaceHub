@@ -222,6 +222,7 @@ export default function More({route,navigation}) {
                             source={{
                             uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.videoUrl}`,
                             }}
+                            // source={require('../../assets/Illustrations/space_testing.mp4')}
                             // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
                             // posterResizeMode="cover"
                             style={{

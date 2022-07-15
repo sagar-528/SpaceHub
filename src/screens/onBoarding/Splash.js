@@ -23,6 +23,7 @@ const Splash = props => {
   useEffect(() => {
     loadString('token').then(res => {
       // console.log('token', res);
+      Key.token = res
       setTimeout(() => {
         navigation.replace(res !== null ? 'BottomTab' : 'OnBoarding');
       }, 3000);

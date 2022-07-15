@@ -113,12 +113,12 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   return blur, focus;
   }, [navigation]);
 
-  // useEffect(() => {
-  //   // console.log('ref', videoRef);
-  //   if (!!videoRef.current) {
-  //     videoRef.current.seek(0);
-  //   }
-  // }, [currentIndex]);
+  useEffect(() => {
+    // console.log('ref', videoRef);
+    if (!!videoRef.current) {
+      videoRef.current.seek(0);
+    }
+  }, [currentIndex]);
 
   const onError = ({error}) => {
     // console.log('error of video', error);
@@ -278,11 +278,11 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
     <InViewPort 
       onChange={(isVisible) => {
         // if(!pause){
-          console.log(isVisible);
+          // console.log(isVisible);
           checkVisible(isVisible)
         // }
       }}
-      // disabled={disable}
+      disabled={disable}
       >
       <View
         style={{
@@ -339,15 +339,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                 style={styles.icon}
               />
             </TouchableOpacity>
-            {/* {item.likeCount.length === 0 ? (
-              <Text style={[styles.likes, {opacity: 0}]}>
-                {item.likeCount.length}
-              </Text>
-            ) : (
-              <Text style={[styles.likes, {opacity: 1}]}>
-                {item.likeCount.length}
-              </Text>
-            )} */}
           </View>
           <View style={{paddingBottom:28,}}>
             <TouchableOpacity
@@ -387,13 +378,11 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                     onPress={moreHandler}
                     // onPress={()=>setIsModalVisible(true)}
                     >
-                      {/* <SharedElement id={item._id}> */}
                         <Image
                           source={require('../assets/icons/more.png')}
                           resizeMode="contain"
                           style={[styles.icon, {}]}
                         />
-                      {/* </SharedElement> */}
                   </Pressable>
                 </View>
                 <Text style={[styles.buldingDetails, {paddingTop: 4}]}>
@@ -431,10 +420,10 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
             // paused={currentIndex === index ? false : true}
             // paused={currentIndex !== currentVisibleIndex ? false:true}
             paused={pause}
-            // source={{
-            //   uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`,
-            // }}
-            source={require('../assets/Illustrations/space_testing.mp4')}
+            source={{
+              uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`,
+            }}
+            // source={require('../assets/Illustrations/space_testing.mp4')}
             // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
             // posterResizeMode="cover"
             style={{
@@ -447,98 +436,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
             muted={false}
           />
         </SharedElement>
-        {/* <ActivityIndicator
-          animating
-          size="large"
-          color={colors.darkSky}
-          style={[styles.activityIndicator, {opacity: opacity}]}
-        /> */}
       </View>
-      {/* <BottomSheetModal
-        ref={bottomSheetRef}
-        snapPoints={snapPoints}
-        enablePanDownToClose={false}
-        enableDismissOnClose={true}
-        onClose={() => {
-          setVisible(false);
-        }}
-        backgroundStyle={{
-          backgroundColor:'#000',
-          opacity: 1,
-          borderRadius:0,
-        }}
-        onChange={e => {
-          console.log('index', e);
-          if (e === 1) {
-            setExpandVisible(false);
-          } else {
-            setExpandVisible(true);
-          }
-        }}
-        handleComponent={props => (
-          <Close
-            {...props}
-            handleDismissModalPress={handleDismissModalPress}
-            expandVisible={expandVisible}
-          />
-        )}
-        >
-        <BottomSheetScrollView>
-          <OverlayDetails item={item} />
-          <More
-            item={item}
-            agentImage={agentImage}
-            agentData={agentData}
-            like={like}
-            handleLike={handleLike}
-            handleShareVideo={handleShareVideo}
-            handleDismissParentModalPress={handleDismissModalPress}
-            navigation={navigation}
-            expandVisible={expandVisible}
-            parentVisible={visible}
-            setPause={setPause}
-            pause={pause}
-          />
-          <ReelInfo
-            item={item}
-            agentImage={agentImage}
-            agentData={agentData}
-            like={like}
-            handleLike={handleLike}
-            handleShareVideo={handleShareVideo}
-            handleDismissParentModalPress={handleDismissModalPress}
-            navigation={navigation}
-          />
-        </BottomSheetScrollView>
-      </BottomSheetModal> */}
-      {/* <Modal
-          animationType='fade'
-          transparent={true}
-          visible={isModalVisible}
-          avoidKeyboard={true}
-          autoFocus={true}
-          onRequestClose={() => setIsModalVisible(false)}
-          // style={{flex:1}}
-      >
-        <View
-            style={styles.modalView}
-        // onPress={onPress}
-        >
-          <ReelInfo
-            item={item}
-            agentImage={agentImage}
-            agentData={agentData}
-            like={like}
-            handleLike={handleLike}
-            handleShareVideo={handleShareVideo}
-            handleDismissParentModalPress={handleDismissModalPress}
-            navigation={navigation}
-            setIsModalVisible={setIsModalVisible}
-          />
-        </View>
-        
-      </Modal> */}
-      
     </InViewPort>
   );
 };

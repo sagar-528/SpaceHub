@@ -36,8 +36,8 @@ const LocationDetails = props => {
 
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [longitude, setLongitude] = useState();
-  const [latitude, setLatitude] = useState();
+  const [longitude, setLongitude] = useState(-0.118092); // london long
+  const [latitude, setLatitude] = useState(51.509865);  // london lat
   const [projects, setProjects] = useState([]);
   const bottomSheetRef = useRef(null);
 
@@ -46,8 +46,11 @@ const LocationDetails = props => {
   useEffect(() => {
     load('coords')
       .then(response => {
-        setLatitude(response?.coords?.latitude);
-        setLongitude(response?.coords?.longitude);
+        console.log('geo response',response);
+        if(response){
+          setLatitude(response?.coords?.latitude);
+          setLongitude(response?.coords?.longitude);
+        }
       })
       .catch(error => {
         console.log(error.message);
@@ -135,6 +138,12 @@ const LocationDetails = props => {
             Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
           }
           initialRegion={{
+            latitude: latitude,
+            longitude: longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          region={{
             latitude: latitude,
             longitude: longitude,
             latitudeDelta: 0.0922,
