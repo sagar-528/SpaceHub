@@ -30,6 +30,7 @@ const App = () => {
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
+    {/* <View style={{flex:1}}> */}
       <StatusBar barStyle="default" translucent backgroundColor="transparent" />
       <SafeAreaProvider>
         <NavigationContainer>
@@ -39,6 +40,7 @@ const App = () => {
         </NavigationContainer>
       </SafeAreaProvider>
     </GestureHandlerRootView>
+    // </View>
   );
 };
 

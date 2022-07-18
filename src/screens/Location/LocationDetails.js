@@ -29,6 +29,7 @@ import BottomSheet, {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
+import { Key } from '../../Constant/constant';
 
 const LocationDetails = props => {
   const navigation = props.navigation;
@@ -36,8 +37,11 @@ const LocationDetails = props => {
 
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [longitude, setLongitude] = useState(-0.118092); // london long
-  const [latitude, setLatitude] = useState(51.509865);  // london lat
+  const [longitude, setLongitude] = useState(Key.longitude); // london long
+  const [longitudeDelta, setLongitudeDelta] = useState(0.0421)
+  const [latitude, setLatitude] = useState(Key.latitude);  // london lat
+  const [latitudeDelta, setLatitudeDelta] = useState(0.0922)
+
   const [projects, setProjects] = useState([]);
   const bottomSheetRef = useRef(null);
 
@@ -58,7 +62,7 @@ const LocationDetails = props => {
 
 
       // navigation.dispatch(StackActions.popToTop());
-  }, [isFocused]);
+  }, []);
 
   useEffect(() => {
     NetInfo.fetch().then(isConnected => {
@@ -85,8 +89,21 @@ const LocationDetails = props => {
     });
   }, [isFocused]);
 
-  const _onRegionChangeComplete = e => {
-    setLatitude(e.latitude), setLongitude(e.longitude);
+  const mapRef = useRef(null)
+
+  const _onRegionChangeComplete = location => {
+    // setMemoLatitude(location.latitude), setMemoLongitude(location.longitude);
+    // setMemoLatitudeDelta(location.latitudeDelta),setMemoLongitudeDelta(location.longitudeDelta)
+    // console.log(e);
+    if (location) {
+      console.log('change location, location: ', location)
+      mapRef.current.animateToRegion({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta: location.latitudeDelta,
+        longitudeDelta: location.longitudeDelta,
+      })
+    }
   };
 
   function nFormatter(num) {
@@ -106,7 +123,9 @@ const LocationDetails = props => {
     // alert('hkjj')
     navigation.navigate('SingleReel', {
       item: item,
-      index:index
+      index:index,
+      projects:projects,
+      setProjects:setProjects
     });
     // setBorderWidth(2);
 
@@ -114,6 +133,24 @@ const LocationDetails = props => {
     
 
   };
+
+  useEffect(() => {
+  const blur = navigation.addListener('blur', () => {
+     console.log('blured');
+    
+  });
+
+  const focus = navigation.addListener('focus', () => {
+    console.log('focused');
+    // setLatitude(memoLatitude), setLongitude(memoLongitude);
+    // setLatitudeDelta(memoLatitudeDelta),setLongitudeDelta(memoLongitudeDelta)
+  });
+
+
+  return blur, focus;
+  }, [navigation]);
+
+
 
   return (
     <View style={{flex:1}}>
@@ -134,22 +171,24 @@ const LocationDetails = props => {
       {latitude && longitude && (
         <MapView
           style={styles.map}
+          ref={mapRef}
           provider={
             Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
           }
           initialRegion={{
             latitude: latitude,
             longitude: longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitudeDelta: latitudeDelta,
+            longitudeDelta: longitudeDelta,
           }}
-          region={{
-            latitude: latitude,
-            longitude: longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          clustering={true}
+          // region={{
+          //   latitude: latitude,
+          //   longitude: longitude,
+          //   latitudeDelta: latitudeDelta,
+          //   longitudeDelta: longitudeDelta,
+          // }}
+          // onRegionChangeComplete={_onRegionChangeComplete}
+          // clustering={true}
           showsUserLocation
           // mapType
         >
@@ -161,12 +200,13 @@ const LocationDetails = props => {
                 longitude: item.address.loc.coordinates[0],
               }}
               // onCalloutPress={()=>handleSingleMarker(item,index)}
-              onSelect={()=>handleSingleMarker(item,index)}
+              // onSelect={()=>handleSingleMarker(item,index)}
+              onPress={()=>handleSingleMarker(item,index)}
               >
                   {/* <CustomMarker item={item} index={index}/> */}
                   <View style={{}}>
                     <TouchableOpacity
-                      // onPress={() => handleSingleMarker()}
+                      // onPress={() => handleSingleMarker(item,index)}
                       // activeOpacity={0.8}
                       >
                       <Image 

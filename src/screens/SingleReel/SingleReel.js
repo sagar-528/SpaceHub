@@ -4,6 +4,7 @@ import {
   View,
   TouchableOpacity,
   Image,
+  Share,
   ActivityIndicator,
   Dimensions,
 } from 'react-native';
@@ -40,7 +41,7 @@ import PagerView from 'react-native-pager-view';
 
 const SingleReel = ({route,navigation}) => {
   // const navigation = props.navigation;
-  const {item, index} = route.params;
+  const {item, index,projects,setProjects} = route.params;
   // console.log('navigation', item);
 
   
@@ -56,7 +57,7 @@ const SingleReel = ({route,navigation}) => {
   const [visible, setVisible] = useState(false);
   const [agentImage, setAgentImage] = useState('');
   const [agentData, setAgentData] = useState();
-  const [like, setLike] =useState(item.isLiked);
+  const [like, setLike] =useState(false);
   const [itemId, setItemId] = useState('');
   const [likeData, setLikeData] = useState([]);
   const [token, setToken] = useState(false);
@@ -129,8 +130,11 @@ const SingleReel = ({route,navigation}) => {
         if (response === null) {
           displayToast('Please Login First.');
         } else {
-          if (like === false) {
-            setLike(true);
+          let temp = [...projects]
+          if (item.isLiked === false) {
+            // setLike(true);
+            temp[index].isLiked = true
+                setProjects(temp)
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${true}`,
             )
@@ -143,7 +147,9 @@ const SingleReel = ({route,navigation}) => {
                 console.log('error', error.response.data);
               });
           } else {
-            setLike(false);
+            // setLike(false);
+            temp[index].isLiked = false
+                setData(temp)
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${false}`,
             )
@@ -192,7 +198,7 @@ const SingleReel = ({route,navigation}) => {
   }, []);
 
   const handleLikeHandler=()=>{
-    setLike(!like)
+    // setLike(!like)
     handleLike()
 }
 
@@ -210,6 +216,7 @@ const SingleReel = ({route,navigation}) => {
         setMediaFiles(prev=>[item.videoUrl,...prev])
     }
     // setPause(true)
+    setLike(item.isLiked)
 }, [])
 
 useEffect(() => {
@@ -229,355 +236,358 @@ const long = item?.address?.loc?.coordinates[0];
     const lat = item?.address?.loc?.coordinates[1];
 
   return (
-    <SharedElement id={item._id} style={{flex:1,backgroundColor: 'black',}}>
-        <View style={{flex:1,backgroundColor: 'black',}}>
-            <View style={{flex:1,}}>
-                <PagerView 
-                    style={styles.pagerView} 
-                    initialPage={0}
-                    // onPageScroll={(e)=>console.log(e.nativeEvent)}
-                    onPageSelected={e=>{
-                        if(item.isVideoPresent && e.nativeEvent.position===0){
-                            videoRef.current.seek(0)
-                            setPaused(false)
-                        }else{
-                            setPaused(true)
-                        }
-                        setPageNumber(e.nativeEvent.position+1)}
-                    }
-                    >
-                    {mediaFiles && mediaFiles.map((element,index)=>
-                    <View>
-                        {(item.isVideoPresent && index===0) ?
-                        <Video
-                            // key={index}
-                            ref={videoRef}
-                            // onBuffer={onBuffer}
-                            playInBackground={false}
-                            onVideoLoad={() => {
-                            console.log('load');
-                            }}
-                            onError={onError}
-                            repeat
-                            resizeMode="cover"
-                            paused={paused}
-                            source={{
-                            uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.videoUrl}`,
-                            }}
-                            // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
-                            // posterResizeMode="cover"
-                            style={{
-                            // width: windowWidth,
-                            // height: windowHeight,
-                            flex:1
-                            // position: 'absolute',
-                            }}
-                            // onLoad={onLoad}
-                            // onLoadStart={onLoadStart}
-                            poster={thumbnail}
-                            posterResizeMode='cover'
-                        />
-                        :
-                        
-                        <FastImage 
-                            source={{uri:`https://andspace.s3.ap-south-1.amazonaws.com/${element}`}} 
-                            style={{flex:1,height:'100%',width:'100%'}}
-                        />
-                        
-                        }
-                    </View>
-                    )}
-                </PagerView>
-                {mediaFiles.length>1 &&
-                <View style={{
-                    position:'absolute',
-                    bottom:10,
-                    right:10,
-                    backgroundColor:'black',
-                    borderRadius:12,
-                    paddingHorizontal:12,
-                    paddingVertical:2
-                }}>
-                    <Text style={styles.pageNumber}>{pageNumber} / {mediaFiles.length}</Text>
-                </View>
-                }
-            </View>
-            <TouchableOpacity style={{
-                backgroundColor:'black',
-                padding:8,
-                borderRadius:50,
-                position:'absolute',
-                right:20,
-                top:20
-                }}
-                onPress={goBackHandler}
-                >
-                <Image 
-                    source={require('../../assets/icons/close.png')} 
-                    style={{width:24,height:24}}
-                />
-            </TouchableOpacity>
-            <View style={{height:'24%'}}/>
-            
-            <BottomSheetModal
-                ref={bottomSheetRef}
-                snapPoints={snapPoints}
-                enablePanDownToClose={false}
-                backgroundStyle={{
-                backgroundColor: '#000',
-                opacity: 1,
-                borderRadius:0
-                }}
-                >
-                <BottomSheetScrollView>
-                    <View>
-                        {expand === false ? (
-                        <View style={{flexGrow: 1, paddingHorizontal: 24}}>
-                            <View style={{...styles.iconContainer,paddingHorizontal:0,paddingTop:0}}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        navigation.navigate('Admin', {
-                                        Details: agentData,
-                                        });
-                                    }}
-                                    activeOpacity={0.7}>
-                                    <Image
-                                        source={{
-                                        uri: `https://andspace.s3.ap-south-1.amazonaws.com/${agentImage}`,
-                                        }}
-                                        resizeMode="contain"
-                                        style={[
-                                        styles.icon,
-                                        {
-                                            borderRadius: 50,
-                                            borderWidth: 1.5,
-                                            borderColor: colors.white,
-                                        },
-                                        ]}
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity activeOpacity={0.7} onPress={() => handleLikeHandler()}>
-                                    <Image
-                                        source={
-                                            like === false
-                                            ? require('../../assets/icons/like.png')
-                                            : require('../../assets/icons/redicon.png')
-                                        }
-                                        resizeMode="contain"
-                                        style={styles.icon}
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    activeOpacity={0.7}
-                                    onPress={() => handleShareVideo()}>
-                                    <Image
-                                        source={require('../../assets/icons/share.png')}
-                                        resizeMode="contain"
-                                        style={styles.icon}
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={goBackHandler}>
-                                    <Image
-                                        source={require('../../assets/icons/more.png')}
-                                        resizeMode="contain"
-                                        style={[styles.icon, {}]}
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                            <View style={{...styles.details}} 
-                                // onPress={handlePresentModalPress}
-                                >
-                                <View>
-                                    <Text style={styles.rate}>
-                                    £{item?.price.toLocaleString()}
-                                    </Text>
-                                </View>
-                                <Text style={[styles.buldingDetails, {paddingTop: 4}]}>
-                                {(item?.beds && item.beds!==0) ? `${item?.beds} beds |` : null} {(item?.bath && item?.bath!==0) ? `${item?.bath} bath |` : null} {(item?.sqft && item.sqft!==0) ? `${item?.sqft} sqft` : null} 
-                                </Text>
-                                <Text style={styles.buldingDetails}>
-                                    {item?.address?.road}, {item?.address?.postCode},{' '}
-                                    {item?.address?.city}.
-                                </Text>
-                                <View
-                                    activeOpacity={0.6}
-                                    style={{paddingTop:12}}
-                                    // onPress={handlePresentModalPress}
-                                    >
-                                    <Text style={{...styles.buldingDetails,color:colors.darkSky}}>
-                                        Scroll for more information
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={{marginTop: 24}}>
-                                <Text style={[styles.buldingDetails, {textAlign: 'left'}]}>
-                                {item?.description}
-                                </Text>
-                            </View>
-                            <View style={{marginVertical: 14}}>
-                                <Text style={styles.buldingDetails}>Tenure: {item?.tenure}</Text>
-                            </View>
-                            <View style={{flex: 1}}>
-                                <TouchableOpacity
-                                style={{
-                                    alignSelf: 'flex-end',
-                                    backgroundColor: 'rgba(55, 55, 55, 0.8)',
-                                    borderRadius: 16,
-                                    position: 'absolute',
-                                    zIndex: 1,
-                                    top: 8,
-                                    right: 8,
-                                }}
-                                activeOpacity={0.6}
-                                onPress={() => {
-                                    setExpand(true);
-                                }}>
-                                <Image
-                                    source={require('../../assets/icons/expand.png')}
-                                    style={{height: 10, width: 10, margin: 8}}
-                                    resizeMode="cover"
-                                />
-                                </TouchableOpacity>
-                                <View style={{flex: 1}}>
-                                    <MapView
-                                        style={{height: 190, width: '100%', borderRadius: 16}}
-                                        provider={
-                                        Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-                                        }
-                                        initialRegion={{
-                                        latitude: lat,
-                                        longitude: long,
-                                        latitudeDelta: 0.0421,
-                                        longitudeDelta: 0.0421,
-                                        }}>
-                                        <Marker
-                                        coordinate={{
-                                            latitude: lat,
-                                            longitude: long,
-                                        }}
-                                        />
-                                    </MapView>
-                                </View>
-                            </View>
-                            <TouchableOpacity
-                                style={{
-                                marginTop: 40,
-                                backgroundColor: colors.darkSky,
-                                borderRadius: 12,
-                                }}
-                                activeOpacity={0.7}
-                                onPress={() => handleMessageAgent(agentData)}>
-                                <Text
-                                style={[
-                                    styles.price,
-                                    {
-                                    paddingVertical: 12,
-                                    alignSelf: 'center',
-                                    fontSize: 17,
-                                    marginBottom: 0,
-                                    },
-                                ]}>
-                                message agent
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={{
-                                marginTop: 12,
-                                marginBottom: 24,
-                                backgroundColor: colors.darkSky,
-                                borderRadius: 12,
-                                }}
-                                activeOpacity={0.7}
-                                onPress={() => handleAgent(agentData)}>
-                                <Text
-                                style={[
-                                    styles.price,
-                                    {
-                                    paddingVertical: 12,
-                                    alignSelf: 'center',
-                                    fontSize: 17,
-                                    marginBottom: 0,
-                                    },
-                                ]}>
-                                call agent
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                        ) : (
-                        <View style={{flexGrow: 1, paddingHorizontal: 24}}>
-                            <View style={{flex: 1, marginVertical: 30}}>
-                                <TouchableOpacity
-                                style={{
-                                    alignSelf: 'flex-end',
-                                    backgroundColor: 'rgba(55, 55, 55, 0.8)',
-                                    borderRadius: 16,
-                                    position: 'absolute',
-                                    zIndex: 1,
-                                    top: 8,
-                                    right: 8,
-                                }}
-                                activeOpacity={0.6}
-                                onPress={() => {
-                                    setExpand(false);
-                                }}>
-                                <Image
-                                    source={require('../../assets/icons/minimized.png')}
-                                    style={{height: 10, width: 10, margin: 8}}
-                                    resizeMode="cover"
-                                />
-                                </TouchableOpacity>
-                                <View style={{flex: 1}}>
-                                    <MapView
-                                        style={{height: 550, width: '100%', borderRadius: 16}}
-                                        provider={
-                                        Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-                                        }
-                                        initialRegion={{
-                                        latitude: lat,
-                                        longitude: long,
-                                        latitudeDelta: 0.0321,
-                                        longitudeDelta: 0.0321,
-                                        }}>
-                                        <Marker
-                                        coordinate={{
-                                            latitude: lat,
-                                            longitude: long,
-                                        }}
-                                        />
-                                    </MapView>
-                                </View>
-                                <View
-                                style={{
-                                    position: 'absolute',
-                                    zIndex: 1,
-                                    bottom: 12,
-                                    alignSelf: 'center',
-                                    backgroundColor: colors.backgroundShadow,
-                                    borderRadius: 12,
-                                }}>
-                                    <Text
-                                        style={[
-                                        styles.buldingDetails,
-                                        {
-                                            padding: 14,
-                                            color: colors.white,
-                                            flexShrink: 1,
-                                            flexWrap: 'wrap',
-                                        },
-                                        ]}>
-                                        {' '}
-                                        {item?.address?.street}, {item?.address?.city},{' '}
-                                        {item?.address?.state}, {item?.address?.country}.
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                        )}
-                    </View>
-                </BottomSheetScrollView>
-            </BottomSheetModal>
-        </View>
-    </SharedElement>
+    // <BottomSheetModalProvider>
+
+      <SharedElement id={item._id} style={{flex:1,backgroundColor: 'black',}}>
+          <View style={{flex:1,backgroundColor: 'black',}}>
+              <View style={{flex:1,}}>
+                  <PagerView 
+                      style={styles.pagerView} 
+                      initialPage={0}
+                      // onPageScroll={(e)=>console.log(e.nativeEvent)}
+                      onPageSelected={e=>{
+                          if(item.isVideoPresent && e.nativeEvent.position===0){
+                              videoRef.current.seek(0)
+                              setPaused(false)
+                          }else{
+                              setPaused(true)
+                          }
+                          setPageNumber(e.nativeEvent.position+1)}
+                      }
+                      >
+                      {mediaFiles && mediaFiles.map((element,index)=>
+                      <View>
+                          {(item.isVideoPresent && index===0) ?
+                          <Video
+                              // key={index}
+                              ref={videoRef}
+                              // onBuffer={onBuffer}
+                              playInBackground={false}
+                              onVideoLoad={() => {
+                              console.log('load');
+                              }}
+                              onError={onError}
+                              repeat
+                              resizeMode="cover"
+                              paused={paused}
+                              source={{
+                              uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.videoUrl}`,
+                              }}
+                              // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
+                              // posterResizeMode="cover"
+                              style={{
+                              // width: windowWidth,
+                              // height: windowHeight,
+                              flex:1
+                              // position: 'absolute',
+                              }}
+                              // onLoad={onLoad}
+                              // onLoadStart={onLoadStart}
+                              poster={thumbnail}
+                              posterResizeMode='cover'
+                          />
+                          :
+                          
+                          <FastImage 
+                              source={{uri:`https://andspace.s3.ap-south-1.amazonaws.com/${element}`}} 
+                              style={{flex:1,height:'100%',width:'100%'}}
+                          />
+                          
+                          }
+                      </View>
+                      )}
+                  </PagerView>
+                  {mediaFiles.length>1 &&
+                  <View style={{
+                      position:'absolute',
+                      bottom:10,
+                      right:10,
+                      backgroundColor:'black',
+                      borderRadius:12,
+                      paddingHorizontal:12,
+                      paddingVertical:2
+                  }}>
+                      <Text style={styles.pageNumber}>{pageNumber} / {mediaFiles.length}</Text>
+                  </View>
+                  }
+              </View>
+              <TouchableOpacity style={{
+                  backgroundColor:'black',
+                  padding:8,
+                  borderRadius:50,
+                  position:'absolute',
+                  right:20,
+                  top:20
+                  }}
+                  onPress={goBackHandler}
+                  >
+                  <Image 
+                      source={require('../../assets/icons/close.png')} 
+                      style={{width:24,height:24}}
+                  />
+              </TouchableOpacity>
+              <View style={{height:'24%'}}/>
+              
+              <BottomSheetModal
+                  ref={bottomSheetRef}
+                  snapPoints={snapPoints}
+                  enablePanDownToClose={false}
+                  backgroundStyle={{
+                  backgroundColor: '#000',
+                  opacity: 1,
+                  borderRadius:0
+                  }}
+                  >
+                  <BottomSheetScrollView>
+                      <View>
+                          {expand === false ? (
+                          <View style={{flexGrow: 1, paddingHorizontal: 24}}>
+                              <View style={{...styles.iconContainer,paddingHorizontal:0,paddingTop:0}}>
+                                  <TouchableOpacity
+                                      onPress={() => {
+                                          navigation.navigate('Admin', {
+                                          Details: agentData,
+                                          });
+                                      }}
+                                      activeOpacity={0.7}>
+                                      <Image
+                                          source={{
+                                          uri: `https://andspace.s3.ap-south-1.amazonaws.com/${agentImage}`,
+                                          }}
+                                          resizeMode="contain"
+                                          style={[
+                                          styles.icon,
+                                          {
+                                              borderRadius: 50,
+                                              borderWidth: 1.5,
+                                              borderColor: colors.white,
+                                          },
+                                          ]}
+                                      />
+                                  </TouchableOpacity>
+                                  <TouchableOpacity activeOpacity={0.7} onPress={() => handleLikeHandler()}>
+                                      <Image
+                                          source={
+                                              item.isLiked === false
+                                              ? require('../../assets/icons/like.png')
+                                              : require('../../assets/icons/redicon.png')
+                                          }
+                                          resizeMode="contain"
+                                          style={styles.icon}
+                                      />
+                                  </TouchableOpacity>
+                                  <TouchableOpacity
+                                      activeOpacity={0.7}
+                                      onPress={() => handleShareVideo()}>
+                                      <Image
+                                          source={require('../../assets/icons/share.png')}
+                                          resizeMode="contain"
+                                          style={styles.icon}
+                                      />
+                                  </TouchableOpacity>
+                                  <TouchableOpacity onPress={goBackHandler}>
+                                      <Image
+                                          source={require('../../assets/icons/more.png')}
+                                          resizeMode="contain"
+                                          style={[styles.icon, {}]}
+                                      />
+                                  </TouchableOpacity>
+                              </View>
+                              <View style={{...styles.details}} 
+                                  // onPress={handlePresentModalPress}
+                                  >
+                                  <View>
+                                      <Text style={styles.rate}>
+                                      £{item?.price.toLocaleString()}
+                                      </Text>
+                                  </View>
+                                  <Text style={[styles.buldingDetails, {paddingTop: 4}]}>
+                                  {(item?.beds && item.beds!==0) ? `${item?.beds} beds |` : null} {(item?.bath && item?.bath!==0) ? `${item?.bath} bath |` : null} {(item?.sqft && item.sqft!==0) ? `${item?.sqft} sqft` : null} 
+                                  </Text>
+                                  <Text style={styles.buldingDetails}>
+                                      {item?.address?.road}, {item?.address?.postCode},{' '}
+                                      {item?.address?.city}.
+                                  </Text>
+                                  <View
+                                      activeOpacity={0.6}
+                                      style={{paddingTop:12}}
+                                      // onPress={handlePresentModalPress}
+                                      >
+                                      <Text style={{...styles.buldingDetails,color:colors.darkSky}}>
+                                          Scroll for more information
+                                      </Text>
+                                  </View>
+                              </View>
+                              <View style={{marginTop: 24}}>
+                                  <Text style={[styles.buldingDetails, {textAlign: 'left'}]}>
+                                  {item?.description}
+                                  </Text>
+                              </View>
+                              <View style={{marginVertical: 14}}>
+                                  <Text style={styles.buldingDetails}>Tenure: {item?.tenure}</Text>
+                              </View>
+                              <View style={{flex: 1}}>
+                                  <TouchableOpacity
+                                  style={{
+                                      alignSelf: 'flex-end',
+                                      backgroundColor: 'rgba(55, 55, 55, 0.8)',
+                                      borderRadius: 16,
+                                      position: 'absolute',
+                                      zIndex: 1,
+                                      top: 8,
+                                      right: 8,
+                                  }}
+                                  activeOpacity={0.6}
+                                  onPress={() => {
+                                      setExpand(true);
+                                  }}>
+                                  <Image
+                                      source={require('../../assets/icons/expand.png')}
+                                      style={{height: 10, width: 10, margin: 8}}
+                                      resizeMode="cover"
+                                  />
+                                  </TouchableOpacity>
+                                  <View style={{flex: 1}}>
+                                      <MapView
+                                          style={{height: 190, width: '100%', borderRadius: 16}}
+                                          provider={
+                                          Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+                                          }
+                                          initialRegion={{
+                                          latitude: lat,
+                                          longitude: long,
+                                          latitudeDelta: 0.0421,
+                                          longitudeDelta: 0.0421,
+                                          }}>
+                                          <Marker
+                                          coordinate={{
+                                              latitude: lat,
+                                              longitude: long,
+                                          }}
+                                          />
+                                      </MapView>
+                                  </View>
+                              </View>
+                              <TouchableOpacity
+                                  style={{
+                                  marginTop: 40,
+                                  backgroundColor: colors.darkSky,
+                                  borderRadius: 12,
+                                  }}
+                                  activeOpacity={0.7}
+                                  onPress={() => handleMessageAgent(agentData)}>
+                                  <Text
+                                  style={[
+                                      styles.price,
+                                      {
+                                      paddingVertical: 12,
+                                      alignSelf: 'center',
+                                      fontSize: 17,
+                                      marginBottom: 0,
+                                      },
+                                  ]}>
+                                  message agent
+                                  </Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity
+                                  style={{
+                                  marginTop: 12,
+                                  marginBottom: 24,
+                                  backgroundColor: colors.darkSky,
+                                  borderRadius: 12,
+                                  }}
+                                  activeOpacity={0.7}
+                                  onPress={() => handleAgent(agentData)}>
+                                  <Text
+                                  style={[
+                                      styles.price,
+                                      {
+                                      paddingVertical: 12,
+                                      alignSelf: 'center',
+                                      fontSize: 17,
+                                      marginBottom: 0,
+                                      },
+                                  ]}>
+                                  call agent
+                                  </Text>
+                              </TouchableOpacity>
+                          </View>
+                          ) : (
+                          <View style={{flexGrow: 1, paddingHorizontal: 24}}>
+                              <View style={{flex: 1, marginVertical: 30}}>
+                                  <TouchableOpacity
+                                  style={{
+                                      alignSelf: 'flex-end',
+                                      backgroundColor: 'rgba(55, 55, 55, 0.8)',
+                                      borderRadius: 16,
+                                      position: 'absolute',
+                                      zIndex: 1,
+                                      top: 8,
+                                      right: 8,
+                                  }}
+                                  activeOpacity={0.6}
+                                  onPress={() => {
+                                      setExpand(false);
+                                  }}>
+                                  <Image
+                                      source={require('../../assets/icons/minimized.png')}
+                                      style={{height: 10, width: 10, margin: 8}}
+                                      resizeMode="cover"
+                                  />
+                                  </TouchableOpacity>
+                                  <View style={{flex: 1}}>
+                                      <MapView
+                                          style={{height: 550, width: '100%', borderRadius: 16}}
+                                          provider={
+                                          Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+                                          }
+                                          initialRegion={{
+                                          latitude: lat,
+                                          longitude: long,
+                                          latitudeDelta: 0.0321,
+                                          longitudeDelta: 0.0321,
+                                          }}>
+                                          <Marker
+                                          coordinate={{
+                                              latitude: lat,
+                                              longitude: long,
+                                          }}
+                                          />
+                                      </MapView>
+                                  </View>
+                                  <View
+                                  style={{
+                                      position: 'absolute',
+                                      zIndex: 1,
+                                      bottom: 12,
+                                      alignSelf: 'center',
+                                      backgroundColor: colors.backgroundShadow,
+                                      borderRadius: 12,
+                                  }}>
+                                      <Text
+                                          style={[
+                                          styles.buldingDetails,
+                                          {
+                                              padding: 14,
+                                              color: colors.white,
+                                              flexShrink: 1,
+                                              flexWrap: 'wrap',
+                                          },
+                                          ]}>
+                                          {' '}
+                                          {item?.address?.street}, {item?.address?.city},{' '}
+                                          {item?.address?.state}, {item?.address?.country}.
+                                      </Text>
+                                  </View>
+                              </View>
+                          </View>
+                          )}
+                      </View>
+                  </BottomSheetScrollView>
+              </BottomSheetModal>
+          </View>
+      </SharedElement>
+    // </BottomSheetModalProvider>
   );
 };
 

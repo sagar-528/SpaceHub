@@ -1,7 +1,9 @@
 export const Key = {
   token: '',
   refresh:false,
-  initialViewPort:false
+  initialViewPort:false,
+  latitude:51.509865,
+  longitude:-0.118092
 };
 
 export const Amount = {

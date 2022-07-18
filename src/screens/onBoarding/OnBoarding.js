@@ -20,6 +20,7 @@ import Slides from '../../components/Slides';
 
 import {displayToast, load, loadString, save} from '../../utils';
 import Geolocation from 'react-native-geolocation-service';
+import { Key } from '../../Constant/constant';
 
 const OnBoarding = props => {
   const navigation = props.navigation;
@@ -63,6 +64,8 @@ const OnBoarding = props => {
               info => {
                 console.log('geo location', info);
                 save('coords', info);
+                Key.latitude = info?.coords?.latitude
+                Key.longitude = info?.coords?.longitude
               },
               error => {
                 console.log(error.message);

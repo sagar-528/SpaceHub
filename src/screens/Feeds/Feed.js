@@ -18,6 +18,12 @@ import Video from 'react-native-video';
 import NetInfo from '@react-native-community/netinfo';
 import { Key } from '../../Constant/constant';
 import { EventRegister } from 'react-native-event-listeners'
+import BottomSheet, {
+  BottomSheetScrollView,
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+import { load } from '../../utils';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -36,6 +42,7 @@ const Feed = props => {
   const [refreshing, setRefreshing] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [page, setPage] = useState(0)
+  const [swiper, setSwiper] = useState(true)
 
   const [hook, setHook] = useState(false);
 
@@ -44,8 +51,21 @@ const Feed = props => {
   }, []);
 
   useEffect(() => {
+    
     getData();
     // setRefreshing(!refreshing)
+
+    load('coords')
+      .then(response => {
+        console.log('geo response',response);
+        if(response){
+          Key.latitude = response?.coords?.latitude
+          Key.longitude = response?.coords?.longitude
+        }
+      })
+      .catch(error => {
+        console.log(error.message);
+      });
   }, []);
 
   const getData = () => {
@@ -54,8 +74,8 @@ const Feed = props => {
       if (isConnected.isConnected === true) {
         AxiosBase.get('app/property/videoProperty', {
           params: {
-            limit: 10,
-            page: page,
+            // limit: 10,
+            // page: page,
             isVideoPresent: true,
           },
         })
@@ -66,21 +86,21 @@ const Feed = props => {
             if(data.length===0){
               // setFeedData([])
               // setPage(0)
-              AxiosBase.get('app/property/videoProperty', {
-                params: {
-                  limit: 10,
-                  page: 0,
-                  isVideoPresent: true,
-                },
-              }).then(res=>{
-                let initialDataToShowAtFirst = res?.data?.data
-                console.log('initialDataToShowAtFirst',initialDataToShowAtFirst);
-                setFeedData(initialDataToShowAtFirst);
-              }).catch(err=>{
-                setLoading(false)
-                setRefreshing(false);
-                console.log('error in feeds api', error.message);
-              })
+              // AxiosBase.get('app/property/videoProperty', {
+              //   params: {
+              //     limit: 10,
+              //     page: 0,
+              //     isVideoPresent: true,
+              //   },
+              // }).then(res=>{
+              //   let initialDataToShowAtFirst = res?.data?.data
+              //   console.log('initialDataToShowAtFirst',initialDataToShowAtFirst);
+              //   setFeedData(initialDataToShowAtFirst);
+              // }).catch(err=>{
+              //   setLoading(false)
+              //   setRefreshing(false);
+              //   console.log('error in feeds api', error.message);
+              // })
               // getData()
             }else{
               setFeedData(prev=>[...prev,...data]);
@@ -133,51 +153,57 @@ const Feed = props => {
 
   // console.log('resfresh',feedData);
   return (
-    <View style={{flex:1}}>
-      
-      <SwiperFlatList
-        // style={{flex:1}}
-        refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={getData} />
-      }
-      // extraData={refreshing}
-        data={feedData}
-        // windowSize={4}
-        initialNumToRender={0}
-        // maxToRenderPerBatch={2}
-        vertical
-        // removeClippedSubviews={false}
-        onChangeIndex={handleChangeIndexValue}
-        renderItem={({item, index}) => (
-          <Reels
-            item={item}
-            index={index}
-            // cellRef={videoRefs[index]}
-            // paused={paused[index]}
-            currentIndex={currentIndex}
-            currentVisibleIndex={currentVisibleIndex}
-            navigation={navigation}
-            setHook={setHook}
-            hook={hook}
+    // <BottomSheetModalProvider>
+
+        <View style={{flex:1}}>
+          
+          <SwiperFlatList
+            // style={{flex:1}}
+            scrollEnabled={swiper}
+            refreshControl={
+              <RefreshControl refreshing={isRefreshing} onRefresh={getData} />
+          }
+          // extraData={refreshing}
             data={feedData}
-            setData={setFeedData}
-            refreshing={refreshing}
-            setRefreshing={setRefreshing}
+            // windowSize={4}
+            initialNumToRender={0}
+            // maxToRenderPerBatch={2}
+            vertical
+            // removeClippedSubviews={false}
+            onChangeIndex={handleChangeIndexValue}
+            renderItem={({item, index}) => (
+              <Reels
+                item={item}
+                index={index}
+                // cellRef={videoRefs[index]}
+                // paused={paused[index]}
+                currentIndex={currentIndex}
+                currentVisibleIndex={currentVisibleIndex}
+                navigation={navigation}
+                setHook={setHook}
+                hook={hook}
+                data={feedData}
+                setData={setFeedData}
+                refreshing={refreshing}
+                setRefreshing={setRefreshing}
+                swiper={swiper}
+                setSwiper={setSwiper}
+              />
+            )}
+            keyExtractor={(items, index) => {
+              return items._id;
+            }}
+            decelerationRate={'normal'}
+            onEndReached={LoadMoreData}
+            onEndReachedThreshold={0.1}
+            // refreshing={refreshing}
+            // onRefresh={getData}
+            // onViewableItemsChanged={onViewRef.current}
+            // viewabilityConfig={viewConfigRef.current}
           />
-        )}
-        keyExtractor={(items, index) => {
-          return items._id;
-        }}
-        decelerationRate={'normal'}
-        onEndReached={LoadMoreData}
-        onEndReachedThreshold={0.1}
-        // refreshing={refreshing}
-        // onRefresh={getData}
-        // onViewableItemsChanged={onViewRef.current}
-        // viewabilityConfig={viewConfigRef.current}
-      />
-      
-    </View>
+          
+        </View>
+    // </BottomSheetModalProvider>
   );
 };
 
