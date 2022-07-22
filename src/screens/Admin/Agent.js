@@ -15,6 +15,9 @@ import {colors, typography} from '../../themes';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Video from 'react-native-video';
 import FastImage from 'react-native-fast-image'
+import NetInfo from '@react-native-community/netinfo';
+import AxiosBase from '../../services/AxioBase';
+import { displayToast } from '../../utils';
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
@@ -22,9 +25,32 @@ const windowHeight = Dimensions.get('screen').height;
 const Agent = props => {
   const navigation = props.navigation;
   const {Details,setPaused} = props.route.params;
+  // const [agentImage, setAgentImage] = useState('');
+  const [agentData, setAgentData] = useState([]);
   // const { videoRef } = props.route?.params
 
   // const videoRef = useRef(null);
+
+  useEffect(() => {
+    NetInfo.fetch().then(isConnected => {
+      if (isConnected.isConnected === true) {
+        AxiosBase.get('app/agents/singleAgent', {
+          params: {
+            id: Details._id,
+          },
+        })
+          .then(response => {
+            console.log("response for agent", response.data.data);
+            setAgentData(response.data.data);
+          })
+          .catch(error => {
+            console.log('error for api', error);
+          });
+      } else {
+        displayToast('Internet Connection Problem');
+      }
+    });
+  }, []);
 
   const handleAgent = e => {
     let phoneNo = `${e.countryCode}${e.phoneNumber}`;
@@ -43,25 +69,26 @@ const Agent = props => {
 
     const [opacity, setOpacity] = useState(0);
 
-    const onError = ({error}) => {
-      console.log('error', error);
-    };
+    // const onError = ({error}) => {
+    //   console.log('error', error);
+    // };
 
     const onLoadStart = () => {
       setOpacity(1);
     };
 
-    const onLoad = () => {
-      // setOpacity(0);
-    };
+    // const onLoad = () => {
+    //   // setOpacity(0);
+    // };
 
-    const onBuffer = ({isBuffering}) => {
-      if (isBuffering) {
-        setOpacity(1);
-      } else {
-        setOpacity(0);
-      }
-    };
+    // const onBuffer = ({isBuffering}) => {
+    //   if (isBuffering) {
+    //     setOpacity(1);
+    //   } else {
+    //     setOpacity(0);
+    //   }
+    // };
+    // console.log(`https://andspace.s3.ap-south-1.amazonaws.com/${item}`);
 
     return (
       <View style={{margin:4}} key={index}>
@@ -92,6 +119,8 @@ const Agent = props => {
     return <Item item={item} index={index} />;
   };
 
+  // console.log('Details',Details);
+
   return (
     <ScrollView
     showsVerticalScrollIndicator={false}
@@ -113,7 +142,7 @@ const Agent = props => {
           <TouchableOpacity
             style={styles.btnView}
             activeOpacity={0.8}
-            onPress={() => handleAgent(Details)}>
+            onPress={() => handleAgent(agentData)}>
             <Text style={styles.btn}>Contact</Text>
           </TouchableOpacity>
         </View>
@@ -127,9 +156,10 @@ const Agent = props => {
           flex: 1,
           marginVertical: 14,
         }}>
+          {agentData.videoUrls &&
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={Details.videoUrls}
+          data={agentData.videoUrls}
           renderItem={(item, index) => renderItem(item, index)}
           keyExtractor={(item, index) => {
             return index.toString();
@@ -145,6 +175,7 @@ const Agent = props => {
           // columnWrapperStyle={{justifyContent:'space-between'}}
           // style={{marginHorizontal:4,flex:1}}
         />
+          }
       </View>
       <View
         style={{

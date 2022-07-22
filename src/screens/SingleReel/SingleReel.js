@@ -67,7 +67,7 @@ const SingleReel = ({route,navigation}) => {
   const [pageNumber, setPageNumber] = useState(1)
   // const [liked, setLiked] = useState(like)
   const [mediaFiles, setMediaFiles] = useState([])
-  const [thumbnail, setThumbnail] = useState('')
+  // const [thumbnail, setThumbnail] = useState('')
   const [paused, setPaused] = useState(false)
   const [expand, setExpand] = useState(false);
 
@@ -283,7 +283,7 @@ const long = item?.address?.loc?.coordinates[0];
                               }}
                               // onLoad={onLoad}
                               // onLoadStart={onLoadStart}
-                              poster={thumbnail}
+                              poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
                               posterResizeMode='cover'
                           />
                           :
@@ -405,8 +405,8 @@ const long = item?.address?.loc?.coordinates[0];
                                   {(item?.beds && item.beds!==0) ? `${item?.beds} beds |` : null} {(item?.bath && item?.bath!==0) ? `${item?.bath} bath |` : null} {(item?.sqft && item.sqft!==0) ? `${item?.sqft} sqft` : null} 
                                   </Text>
                                   <Text style={styles.buldingDetails}>
-                                      {item?.address?.road}, {item?.address?.postCode},{' '}
-                                      {item?.address?.city}.
+                                      {item?.address?.road}, {item?.address?.city},{' '}
+                                      {item?.address?.postCode}.
                                   </Text>
                                   <View
                                       activeOpacity={0.6}
@@ -555,7 +555,7 @@ const long = item?.address?.loc?.coordinates[0];
                                           />
                                       </MapView>
                                   </View>
-                                  <View
+                                  {/* <View
                                   style={{
                                       position: 'absolute',
                                       zIndex: 1,
@@ -578,7 +578,7 @@ const long = item?.address?.loc?.coordinates[0];
                                           {item?.address?.street}, {item?.address?.city},{' '}
                                           {item?.address?.state}, {item?.address?.country}.
                                       </Text>
-                                  </View>
+                                  </View> */}
                               </View>
                           </View>
                           )}

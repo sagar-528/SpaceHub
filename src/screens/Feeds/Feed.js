@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef,memo} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,7 @@ import {
   FlatList,
   Dimensions,
   RefreshControl,
+  ActivityIndicator,
   Image
 } from 'react-native';
 import {SwiperFlatList} from 'react-native-swiper-flatlist';
@@ -23,7 +24,9 @@ import BottomSheet, {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
-import { load } from '../../utils';
+import { load,displayToast } from '../../utils';
+import { Set } from "immutable";
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -43,14 +46,15 @@ const Feed = props => {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [page, setPage] = useState(0)
   const [swiper, setSwiper] = useState(true)
+  const [selectedItems, setSelectedItems] = useState(Set());
+  const [likedId, setLikedId] = useState('') // updating from liked screen
+
 
   const [hook, setHook] = useState(false);
 
+  
   useEffect(() => {
     StatusBar.setHidden(true);
-  }, []);
-
-  useEffect(() => {
     
     getData();
     // setRefreshing(!refreshing)
@@ -72,6 +76,7 @@ const Feed = props => {
     console.log('PAGE',page);
     NetInfo.fetch().then(isConnected => {
       if (isConnected.isConnected === true) {
+        setLoading(true)
         AxiosBase.get('app/property/videoProperty', {
           params: {
             // limit: 10,
@@ -80,8 +85,8 @@ const Feed = props => {
           },
         })
           .then(response => {
-            // setLoading(true);
-            console.log('feeds response', response?.data?.data);
+            setLoading(false);
+            // console.log('feeds response', response?.data?.data);
             let data = response?.data?.data
             if(data.length===0){
               // setFeedData([])
@@ -104,6 +109,7 @@ const Feed = props => {
               // getData()
             }else{
               setFeedData(prev=>[...prev,...data]);
+              // setFeedData(data);
               setLoading(false);
               setPage(page+1)
               // setRefreshing(!refreshing)
@@ -115,10 +121,11 @@ const Feed = props => {
             // setRefreshing(!refreshing)
             console.log('error in feeds api', error.message);
           })
-          .finally(() => {
-            // setRefreshing(false);
-            setRefreshing(!refreshing)
-          });
+          // .finally(() => {
+          //   // setRefreshing(false);
+          //   setLoading(false);
+          //   setRefreshing(!refreshing)
+          // });
       } else {
         setRefreshing(false);
         displayToast('Internet Connection Problem');
@@ -133,9 +140,12 @@ const Feed = props => {
 
   useEffect(() => {
     // subscribe event
-  let  listener = EventRegister.addEventListener('getFeeds', () => {
-    console.log('triggered,event');
-    getData()
+  let  listener = EventRegister.addEventListener('updateFeeds', (id) => {
+    setLikedId(id)
+    const updatedItemIndex = feedData.findIndex(obj => obj._id === likedId)
+    // feedData.map((item)=>console.log('logggggg111',item))
+    console.log('updatedItemIndex',updatedItemIndex);
+    // getData()
   })
 
     return () => {
@@ -145,13 +155,157 @@ const Feed = props => {
     };
   }, [])
 
+  useEffect(() => {
+    console.log('updating LIKED ID',likedId);
+    if(likedId!==''){
+      const updatedItemIndex = feedData.findIndex(obj => obj._id === likedId)
+      // feedData.map((item)=>console.log('logggggg111',item))
+      console.log('updatedItemIndex',updatedItemIndex);
+      let temp = [...feedData]
+      temp[updatedItemIndex].isLiked = false
+      setFeedData(temp)
+    }
+  }, [likedId])
+  
+
+
+  // const updateItem=(id)=>{
+  //   const updatedItemIndex = feedData.findIndex(obj => obj._id === id)
+  //   feedData.map((item)=>console.log('logggggg111',item))
+  //   console.log('updatedItemIndex',updatedItemIndex);
+  //   let temp = [...feedData]
+  //   temp[updatedItemIndex].isLiked = false
+  //   setFeedData(temp)
+  // }
+
   const LoadMoreData=()=>{
     // alert('ghjgjhgjh')
-    getData()
+    if(!loading){
+      getData()
+    }
   }
 
+  const _renderFooter=()=>{
+    return(
+      <View style={{height:20,marginTop:12}}>
+        <ActivityIndicator size={30}/>
+      </View>
+    )
+  }
 
-  // console.log('resfresh',feedData);
+  const windowSize = feedData.length > 50 ? feedData.length / 2 : 21;
+
+  // const onClickUseCallBack = React.useCallback(
+  //   id => {
+  //     setSelectedItems((selectedItems) => {
+  //       const newSelectedItems = selectedItems.has(id)
+  //         ? selectedItems.delete(id)
+  //         : selectedItems.add(id);
+
+  //       return newSelectedItems
+  //     });
+  //   },
+  //   []
+  // );
+
+  function itemEq(prevItem, nextItem) {
+    return prevItem.id === nextItem.id && prevItem.isLiked === nextItem.isLiked;
+  }
+
+  const MemoizedItem = memo(Reels,itemEq);
+
+  const Items = ({ data, selectedItems, }) => {
+    // const windowSize = feedData.length > 50 ? feedData.length / 2 : 21;
+    // const [hook, setHook] = useState(false);
+    // const [currentIndex, setCurrentIndex] = useState(0);
+    console.log("rendering items");
+    // Replace <Item /> with <MemoizedItem /> or <MemoizedItem2 /> to see effect
+    // const handleChangeIndexValue = ({index}) => {
+    //   setCurrentIndex(index);
+    // };
+    const _renderItem = ({ item,index }) => (
+      <MemoizedItem
+        id={index}
+        // title={`${item.name.title} ${item.name.first} ${item.name.last}`}
+        // avatarUrl={item.picture.thumbnail}
+        selected={selectedItems.has(item.isLiked)}
+        // onClick={onClick}
+        item={item}
+        index={index}
+        // cellRef={videoRefs[index]}
+        // paused={paused[index]}
+        // currentIndex={currentIndex}
+        // currentVisibleIndex={currentVisibleIndex}
+        navigation={navigation}
+        setHook={setHook}
+        hook={hook}
+        data={data}
+        setData={setFeedData}
+        // refreshing={refreshing}
+        // setRefreshing={setRefreshing}
+        swiper={swiper}
+        setSwiper={setSwiper}
+      />
+    );
+    return (
+      <SwiperFlatList
+        // style={{flex:1}}
+        scrollEnabled={swiper}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={getData} />
+      }
+      // extraData={refreshing}
+        data={feedData}
+        // windowSize={101}
+        maxToRenderPerBatch={windowSize}
+        // removeClippedSubviews={true}
+        // initialNumToRender={5}
+        vertical
+        // onChangeIndex={handleChangeIndexValue}
+        // renderItem={({item, index}) => (
+        //   <Reels
+        //     item={item}
+        //     index={index}
+        //     // cellRef={videoRefs[index]}
+        //     // paused={paused[index]}
+        //     currentIndex={currentIndex}
+        //     currentVisibleIndex={currentVisibleIndex}
+        //     navigation={navigation}
+        //     setHook={setHook}
+        //     hook={hook}
+        //     data={feedData}
+        //     setData={setFeedData}
+        //     refreshing={refreshing}
+        //     setRefreshing={setRefreshing}
+        //     swiper={swiper}
+        //     setSwiper={setSwiper}
+        //   />
+        // )}
+        renderItem={_renderItem}
+        keyExtractor={(items, index) => {
+          return index;
+        }}
+        decelerationRate={'fast'}
+        onEndReached={LoadMoreData}
+        onEndReachedThreshold={0.2}
+        // refreshing={refreshing}
+        // onRefresh={getData}
+        // onViewableItemsChanged={onViewRef.current}
+        // viewabilityConfig={viewConfigRef.current}
+        ListFooterComponent={_renderFooter}
+      />
+    );
+  };
+
+  const _onViewableItemsChanged = ({ viewableItems, changed }) => {
+    if (viewableItems && viewableItems.length > 0) {
+      console.log('currentVisibleIndex',viewableItems[0].index);
+        setCurrentVisibleIndex(viewableItems[0].index)
+    }
+  };
+
+
+  console.log('resfresh',feedData);
   return (
     // <BottomSheetModalProvider>
 
@@ -165,11 +319,11 @@ const Feed = props => {
           }
           // extraData={refreshing}
             data={feedData}
-            // windowSize={4}
-            initialNumToRender={0}
-            // maxToRenderPerBatch={2}
-            vertical
+            // windowSize={101}
+            maxToRenderPerBatch={windowSize}
             // removeClippedSubviews={false}
+            // initialNumToRender={5}
+            vertical
             onChangeIndex={handleChangeIndexValue}
             renderItem={({item, index}) => (
               <Reels
@@ -188,18 +342,21 @@ const Feed = props => {
                 setRefreshing={setRefreshing}
                 swiper={swiper}
                 setSwiper={setSwiper}
+                setLikedId={setLikedId} // to clear the id if pressed again for like
               />
             )}
-            keyExtractor={(items, index) => {
-              return items._id;
+            // renderItem={_renderItem}
+            keyExtractor={(item, index) => {
+              return item._id+index;
             }}
-            decelerationRate={'normal'}
+            decelerationRate={'fast'}
             onEndReached={LoadMoreData}
             onEndReachedThreshold={0.1}
             // refreshing={refreshing}
             // onRefresh={getData}
-            // onViewableItemsChanged={onViewRef.current}
+            onViewableItemsChanged={_onViewableItemsChanged}
             // viewabilityConfig={viewConfigRef.current}
+            ListFooterComponent={_renderFooter}
           />
           
         </View>

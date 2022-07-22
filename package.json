@@ -22,6 +22,7 @@
     "@svanboxel/visibility-sensor-react-native": "^1.0.2",
     "axios": "^0.27.2",
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "immutable": "^4.1.0",
     "qs": "^6.10.3",
     "react": "17.0.2",
     "react-native": "0.68.2",

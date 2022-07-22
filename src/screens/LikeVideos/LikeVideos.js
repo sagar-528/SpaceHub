@@ -73,14 +73,14 @@ const LikeVideos = props => {
 
   function Item({item, index}) {
     const handleDisLike = (item, index) => {
-      console.log('item', item);
+      // console.log('item', item);
       AxiosBase.put(`app/user/likedVideos?propertyId=${item._id}&flag=${false}`)
         .then(response => {
-          // console.log('remove from like screen', response?.data?.data);
+          console.log('remove from like screen', response?.data?.data);
           let data = likeVideoData.filter((item, idx) => idx !== index);
           setLikeVideoData(data);
           
-          EventRegister.emit('getFeeds')
+          EventRegister.emit('updateFeeds',item._id)
         })
         .catch(error => {
           console.log('error', error.response.data);
@@ -123,7 +123,7 @@ const LikeVideos = props => {
           }}>
           <FastImage
             source={{
-              uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
+              uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`,
               priority: FastImage.priority.high
             }}
             resizeMode="cover"

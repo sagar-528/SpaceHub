@@ -11,9 +11,10 @@ import {
   Platform,
   ImageBackground,
   Modal,
-  Animated
+  Animated,
+  Easing
 } from 'react-native';
-import React, {useRef, useState, useEffect, useMemo, useCallback} from 'react';
+import React, {useRef, useState, useEffect, useMemo, useCallback,memo} from 'react';
 import {colors, typography} from '../themes';
 import OverlayDetails from './Modals/OverlayDetails';
 import {displayToast, load, loadString} from '../utils';
@@ -45,13 +46,13 @@ import SystemNavigationBar from 'react-native-system-navigation-bar';
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
-const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,currentVisibleIndex,swiper,setSwiper}) => {
+const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,swiper,setSwiper,currentVisibleIndex,setLikedId}) => {
 
   const videoRef = useRef(null);
   const bottomSheetRef = useRef(null);
   // const isFocused = useIsFocused();
   const [pause, setPause] = useState(false)
-  const [isModalVisible, setIsModalVisible] = useState(false)
+  // const [isModalVisible, setIsModalVisible] = useState(false)
   let pauseOnModal=true;
   const [disable, setDisable] = useState(false)
   const [pagerEnabled, setPagerEnabled] = useState(false)
@@ -63,16 +64,16 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   const snapPoints = useMemo(() => ['24%', '90%'], []);
 
   // const [mute, setMute] = useState(false);
-  const [visible, setVisible] = useState(true);
+  // const [visible, setVisible] = useState(true);
   const [agentImage, setAgentImage] = useState('');
   const [agentData, setAgentData] = useState();
   const [like, setLike] = useState(false);
   // const [itemId, setItemId] = useState('');
-  const [likeData, setLikeData] = useState([]);
-  const [opacity, setOpacity] = useState(0);
+  // const [likeData, setLikeData] = useState([]);
+  // const [opacity, setOpacity] = useState(0);
   // const [token, setToken] = useState(false);
-  const [expandVisible, setExpandVisible] = useState(true);
-  const [isScreenFocused, setIsScreenFocused] = useState(false)
+  // const [expandVisible, setExpandVisible] = useState(true);
+  // const [isScreenFocused, setIsScreenFocused] = useState(false)
   const [mediaFiles, setMediaFiles] = useState([])
   const [pageNumber, setPageNumber] = useState(1)
   const [expand, setExpand] = useState(false);
@@ -98,27 +99,27 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
     // setPause(true)
 }, [])
 
-  useEffect(() => {
-    NetInfo.fetch().then(isConnected => {
-      if (isConnected.isConnected === true) {
-        AxiosBase.get('app/agents/singleAgent', {
-          params: {
-            id: item.agentId,
-          },
-        })
-          .then(response => {
-            // console.log("response for agent", response.data.data);
-            setAgentData(response.data.data);
-            setAgentImage(response?.data?.data?.imageUrl);
-          })
-          .catch(error => {
-            console.log('error for api', error);
-          });
-      } else {
-        displayToast('Internet Connection Problem');
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   NetInfo.fetch().then(isConnected => {
+  //     if (isConnected.isConnected === true) {
+  //       AxiosBase.get('app/agents/singleAgent', {
+  //         params: {
+  //           id: item.agentId,
+  //         },
+  //       })
+  //         .then(response => {
+  //           // console.log("response for agent", response.data.data);
+  //           setAgentData(response.data.data);
+  //           setAgentImage(response?.data?.data?.imageUrl);
+  //         })
+  //         .catch(error => {
+  //           console.log('error for api', error);
+  //         });
+  //     } else {
+  //       displayToast('Internet Connection Problem');
+  //     }
+  //   });
+  // }, []);
 
   useEffect(() => {
       const blur = navigation.addListener('blur', () => {
@@ -151,25 +152,25 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   }, [currentIndex]);
 
   const onError = ({error}) => {
-    // console.log('error of video', error);
-    displayToast(error.localizedDescription);
+    console.log('error of video', error);
+    // displayToast('error',error.localizedDescription);
   };
 
-  const onLoadStart = () => {
-    setOpacity(1);
-  };
+  // const onLoadStart = () => {
+  //   setOpacity(1);
+  // };
 
-  const onLoad = () => {
-    setOpacity(0);
-  };
+  // const onLoad = () => {
+  //   setOpacity(0);
+  // };
 
-  const onBuffer = ({isBuffering}) => {
-    if (isBuffering) {
-      setOpacity(1);
-    } else {
-      setOpacity(0);
-    }
-  };
+  // const onBuffer = ({isBuffering}) => {
+  //   if (isBuffering) {
+  //     setOpacity(1);
+  //   } else {
+  //     setOpacity(0);
+  //   }
+  // };
 
   const message = `Hey, checkout this new property I found on the SpaceHub App \n https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`
 
@@ -198,6 +199,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   };
 
   const handleLike = () => {
+    setLikedId('')
     loadString('token')
       .then(response => {
         if (response === null) {
@@ -251,7 +253,9 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
     //   setFadeAnim(fadeAnim)
     Animated.timing(animatedHeight, {
       toValue: windowHeight/1.30,
-      duration:400
+      duration:400,
+      easing:Easing.linear,
+      isInteraction:false
     }).start();
 
     
@@ -295,11 +299,13 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   //     }
   // }, []);
 
-  const DisablePagerView = useCallback(() => {
+  const DisablePagerView = () => {
     // pauseOnModal = false
     Animated.timing(animatedHeight, {
       toValue: windowHeight,
-      duration:400
+      duration:400,
+      easing:Easing.linear,
+      isInteraction:false
     }).start();
 
     fadeOutView()
@@ -307,7 +313,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
     setPagerEnabled(false)
     bottomSheetRef.current?.dismiss();
     // setPause(false)
-  }, []);
+  }
 
 
   const checkVisible = (isVisible) => {
@@ -363,17 +369,22 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
 
   return (
     <>
-    <InViewPort 
-        onChange={(isVisible) => {
-          // if(!pause){
-            // console.log(isVisible);
-            checkVisible(isVisible)
-          // }
-        }}
-        disabled={disable}
-        style={{backgroundColor:'#000',flex:1,}}
+    <View
+        // onChange={(isVisible) => {
+        //   // if(!pause){
+        //     // console.log(isVisible);
+        //     checkVisible(isVisible)
+        //   // }
+        // }}
+        // disabled={disable}
+        // style={{backgroundColor:'#000',flex:1,}}
         >
-          <Animated.View style={{backgroundColor:'#000',flex:1,opacity:fadeAnim,height:animatedHeight,}}>
+          <Animated.View style={{
+            backgroundColor:'#000',
+            flex:1,
+            opacity:fadeAnim,
+            height:animatedHeight
+            }}>
             <PagerView 
                 style={{
                   flex: 1,
@@ -394,10 +405,10 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                     setPageNumber(e.nativeEvent.position+1)}
                 }
                 >
-                {mediaFiles && mediaFiles.map((element,index)=>
-                <View>
+                {mediaFiles && mediaFiles.map((element,indx)=>
+                <View key={indx}>
                   
-                    {(item.isVideoPresent && index===0) ?
+                    {(item.isVideoPresent && indx===0) ?
                     <Video
                         // key={index}
                         ref={videoRef}
@@ -409,7 +420,8 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                         onError={onError}
                         repeat
                         resizeMode="cover"
-                        paused={pause}
+                        // paused={pause}
+                        paused={(index !== currentVisibleIndex || pause)}
                         source={{
                         uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.videoUrl}`,
                         }}
@@ -424,7 +436,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                         }}
                         // onLoad={onLoad}
                         // onLoadStart={onLoadStart}
-                        // poster={thumbnail}
+                        poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
                         posterResizeMode='cover'
                     />
                     :
@@ -471,13 +483,13 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate('Admin', {
-                      Details: agentData,
+                      Details: item.agentId,
                     });
                   }}
                   activeOpacity={0.7}>
                   <Image
                     source={{
-                      uri: `https://andspace.s3.ap-south-1.amazonaws.com/${agentImage}`,
+                      uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.agentId.imageUrl}`,
                     }}
                     resizeMode="contain"
                     style={[
@@ -524,8 +536,8 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                     onPress={()=>{
                       pauseOnModal=false
                       setDisable(true)
-                      moreHandler(),
-                      setPause(true)
+                      moreHandler()
+                      // setPause(true)
                     }}
                     >
                     <View
@@ -553,17 +565,50 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                     {(item?.beds && item.beds!==0) ? `${item?.beds} beds |` : null} {(item?.bath && item?.bath!==0) ? `${item?.bath} bath |` : null} {(item?.sqft && item.sqft!==0) ? `${item?.sqft} sqft` : null} 
                     </Text>
                     <Text style={styles.buldingDetails}>
-                      {item?.address?.road}, {item?.address?.postCode},{' '}
-                      {item?.address?.city}.
+                      {item?.address?.road}, {item?.address?.city},{' '}
+                      {item?.address?.postCode}.
                     </Text>
-                    <View
+                    {/* <View
                       activeOpacity={0.6}
                       // onPress={handlePresentModalPress}
                       >
                       <Text style={styles.buldingDetails}>
                         Click for more details...
                       </Text>
+                    </View> */}
+                    {item.propertyType==='INFORMATION' ?
+                    <View style={styles.propertyTypeContainer}>
+                      <Image source={require('../assets/propertyTypes/INFORMATION.png')} style={styles.propertyType}/>
                     </View>
+                    :
+                    <>
+                    {item.propertyType==='FOR SALE' ?
+                    <View style={styles.propertyTypeContainer}>
+                      <Image source={require('../assets/propertyTypes/FORSALE.png')} style={styles.propertyType}/>
+                    </View>
+                    :
+                    <>
+                    {item.propertyType==='INSPIRATION' ?
+                    <View style={styles.propertyTypeContainer}>
+                      <Image source={require('../assets/propertyTypes/INSPIRATION.png')} style={styles.propertyType}/>
+                    </View>
+                    :
+                    <>
+                    {item.propertyType==='SOLD' ?
+                    <View style={styles.propertyTypeContainer}>
+                      <Image source={require('../assets/propertyTypes/SOLD.png')} style={styles.propertyType}/>
+                    </View>
+                    :
+                    <View style={styles.propertyTypeContainer}>
+                      <Image source={require('../assets/propertyTypes/ADVERTISMENT.png')} style={styles.propertyType}/>
+                    </View>
+                    }
+                    </>
+                    }
+                    </>
+                    }
+                    </>
+                    }
                   </Pressable>
                 </View>
               </View>
@@ -587,10 +632,12 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                   style={{width:24,height:24}}
               />
           </TouchableOpacity>
+          {/* <View style={{height:200,backgroundColor:'#fff'}}/> */}
           </>
           }
-          {/* <View style={{height:200,backgroundColor:'#fff'}}/> */}
-      </InViewPort>
+          
+          
+      </View>
       <BottomSheetModal
                 ref={bottomSheetRef}
                 snapPoints={snapPoints}
@@ -613,15 +660,21 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                       setSwiper(true)
                                       bottomSheetRef.current?.dismiss();
                                         navigation.navigate('Admin', {
-                                        Details: agentData,
-                                        videoRef:videoRef
+                                        Details: item.agentId,
+                                        // videoRef:videoRef
                                         });
-                                        setPause(true)
+                                        setPause(true),
+                                        Animated.timing(animatedHeight, {
+                                          toValue: windowHeight,
+                                          duration:400,
+                                          easing:Easing.linear,
+                                          isInteraction:false
+                                        }).start();
                                     }}
                                     activeOpacity={0.7}>
                                     <Image
                                         source={{
-                                        uri: `https://andspace.s3.ap-south-1.amazonaws.com/${agentImage}`,
+                                        uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.agentId.imageUrl}`,
                                         }}
                                         resizeMode="contain"
                                         style={[
@@ -677,8 +730,8 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                 {(item?.beds && item.beds!==0) ? `${item?.beds} beds |` : null} {(item?.bath && item?.bath!==0) ? `${item?.bath} bath |` : null} {(item?.sqft && item.sqft!==0) ? `${item?.sqft} sqft` : null} 
                                 </Text>
                                 <Text style={styles.buldingDetails}>
-                                    {item?.address?.road}, {item?.address?.postCode},{' '}
-                                    {item?.address?.city}.
+                                    {item?.address?.road}, {item?.address?.city},{' '}
+                                    {item?.address?.postCode}.
                                 </Text>
                                 <View
                                     activeOpacity={0.6}
@@ -827,7 +880,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                         />
                                     </MapView>
                                 </View>
-                                <View
+                                {/* <View
                                 style={{
                                     position: 'absolute',
                                     zIndex: 1,
@@ -850,7 +903,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                         {item?.address?.street}, {item?.address?.city},{' '}
                                         {item?.address?.state}, {item?.address?.country}.
                                     </Text>
-                                </View>
+                                </View> */}
                             </View>
                         </View>
                         )}
@@ -861,7 +914,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   );
 };
 
-export default Reels;
+export default memo(Reels);
 
 const styles = StyleSheet.create({
   container: {
@@ -946,4 +999,11 @@ const styles = StyleSheet.create({
       // paddingHorizontal:20,
       // paddingTop:24
   },
+  propertyTypeContainer:{
+    marginTop:4
+  },
+  propertyType:{
+    width:140,
+    height:20
+  }
 });

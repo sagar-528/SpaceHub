@@ -211,7 +211,7 @@ const LocationDetails = props => {
                       >
                       <Image 
                         source={item.isVideoPresent ? require('../../assets/icons/videoProperty.png') : require('../../assets/icons/imageProperty.png')}  
-                        style={{width:40,height:30,aspectRatio:2}}/>
+                        style={{width:80,height:30,aspectRatio:2}}/>
                       <View style={{position:'absolute',left:14,top:4}}>
                         <Text
                           style={{
