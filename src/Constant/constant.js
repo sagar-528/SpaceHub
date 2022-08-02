@@ -3,7 +3,8 @@ export const Key = {
   refresh:false,
   initialViewPort:false,
   latitude:51.509865,
-  longitude:-0.118092
+  longitude:-0.118092,
+  backgroundPause:false
 };
 
 export const Amount = {
@@ -23,5 +24,5 @@ export const Amount = {
     9800000, 9900000, 10000000,
   ],
 
-  BED: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+  BED: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 };

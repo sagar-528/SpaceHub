@@ -7,6 +7,7 @@ import {
   Share,
   ActivityIndicator,
   Dimensions,
+  Linking
 } from 'react-native';
 import React, {useEffect, useState, useRef, useCallback, useMemo} from 'react';
 import {colors, typography} from '../../themes';
@@ -88,6 +89,25 @@ const SingleReel = ({route,navigation}) => {
       });
   }, []);
 
+  const handleAgent = e => {
+    let phoneNo = `${e.countryCode}${e.phoneNumber}`;
+
+    if (Platform.OS === 'android') {
+    phoneNo = `tel:${phoneNo}`;
+    } else {
+    phoneNo = `telprompt:${phoneNo}`;
+    }
+
+    Linking.openURL(phoneNo);
+  };
+
+  const handleMessageAgent = e => {
+    // console.log('e', e);
+    // let phoneNo = `${e.countryCode}${e.phoneNumber}`;
+    const operator = Platform.select({ios: '&', android: '?'});
+    Linking.openURL(`sms:${e.phoneNumber}${operator}body=hi`);
+  };
+
   // useEffect(() => {
   //   loadString('token')
   //     .then(response => {
@@ -149,7 +169,7 @@ const SingleReel = ({route,navigation}) => {
           } else {
             // setLike(false);
             temp[index].isLiked = false
-                setData(temp)
+            setProjects(temp)
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${false}`,
             )
@@ -246,12 +266,12 @@ const long = item?.address?.loc?.coordinates[0];
                       initialPage={0}
                       // onPageScroll={(e)=>console.log(e.nativeEvent)}
                       onPageSelected={e=>{
-                          if(item.isVideoPresent && e.nativeEvent.position===0){
-                              videoRef.current.seek(0)
-                              setPaused(false)
-                          }else{
-                              setPaused(true)
-                          }
+                          // if(item.isVideoPresent && e.nativeEvent.position===0){
+                          //     videoRef.current.seek(0)
+                          //     setPaused(false)
+                          // }else{
+                          //     setPaused(true)
+                          // }
                           setPageNumber(e.nativeEvent.position+1)}
                       }
                       >
@@ -397,9 +417,19 @@ const long = item?.address?.loc?.coordinates[0];
                                   // onPress={handlePresentModalPress}
                                   >
                                   <View>
-                                      <Text style={styles.rate}>
-                                      £{item?.price.toLocaleString()}
-                                      </Text>
+                                    {(item?.price && (item?.price!=='' && item?.price!==null)) ?
+                                    <Text style={styles.rate}>
+                                      
+                                      {item?.currency.toLocaleString()+item?.price.toLocaleString()}
+                                      
+                                    </Text>
+                                    :
+                                    <Text style={styles.rate}>
+                                      
+                                      {item?.heading.toLocaleString()}
+                                      
+                                    </Text>
+                                    }
                                   </View>
                                   <Text style={[styles.buldingDetails, {paddingTop: 4}]}>
                                   {(item?.beds && item.beds!==0) ? `${item?.beds} beds |` : null} {(item?.bath && item?.bath!==0) ? `${item?.bath} bath |` : null} {(item?.sqft && item.sqft!==0) ? `${item?.sqft} sqft` : null} 

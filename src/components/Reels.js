@@ -12,7 +12,10 @@ import {
   ImageBackground,
   Modal,
   Animated,
-  Easing
+  ScrollView,
+  Linking,
+  AppState
+  // Easing
 } from 'react-native';
 import React, {useRef, useState, useEffect, useMemo, useCallback,memo} from 'react';
 import {colors, typography} from '../themes';
@@ -25,6 +28,7 @@ import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetModal,
   BottomSheetModalProvider,
+  useBottomSheetTimingConfigs
 } from '@gorhom/bottom-sheet';
 import Close from './Close';
 import NetInfo from '@react-native-community/netinfo';
@@ -42,13 +46,21 @@ import MapView, {
   PROVIDER_DEFAULT,
 } from 'react-native-maps';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
+import { Easing } from 'react-native-reanimated';
+import RedLikeSvg from '../assets/svgs/redLikeSvg';
+import WhiteLikeSvg from '../assets/svgs/whiteLikeSvg';
+import RedLikeSvg2 from '../assets/svgs/redLikeSvg2';
+import Carousel from 'react-native-snap-carousel';
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
-const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,swiper,setSwiper,currentVisibleIndex,setLikedId}) => {
+const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,swiper,setSwiper,currentVisibleIndex,setLikedId,}) => {
 
+
+  const appState = useRef(AppState.currentState)
   const videoRef = useRef(null);
+  const pageRef = useRef(null)
   const bottomSheetRef = useRef(null);
   // const isFocused = useIsFocused();
   const [pause, setPause] = useState(false)
@@ -57,11 +69,17 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   const [disable, setDisable] = useState(false)
   const [pagerEnabled, setPagerEnabled] = useState(false)
   const [fadeAnim, setFadeAnim] = useState(new Animated.Value(1))
+  let sheetDuration = 300
+  const [loading, setLoading] = useState(false)
   // let fadeAnim = new Animated.Value(1)
 
 
   // variables
   const snapPoints = useMemo(() => ['24%', '90%'], []);
+  const animationConfigs = useBottomSheetTimingConfigs({
+    duration: sheetDuration,
+    easing: Easing.linear,
+  });
 
   // const [mute, setMute] = useState(false);
   // const [visible, setVisible] = useState(true);
@@ -81,23 +99,34 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   // const [likeOpacity, setLikeOpacity] = useState(0);
 
   // useEffect(() => {
-  //   if (currentIndex !== index) {
-  //     bottomSheetRef.current?.dismiss();
+  //   AppState.addEventListener("change",handleAppStateChange)
+  //   return ()=>{
+  //     AppState.removeEventListener("change",handleAppStateChange)
   //   }
-  // }, [currentIndex]);
+  // }, []);
+
+  // const handleAppStateChange=(nextAppState)=>{
+  //   if(nextAppState==='active'){
+  //     console.log('App has come to foreground');
+  //     setPause(false)
+  //   }else{
+  //     setPause(true)
+  //     console.log('nextAppState',nextAppState);
+  //   }
+  // }
 
   const long = item?.address?.loc?.coordinates[0];
-    const lat = item?.address?.loc?.coordinates[1];
+  const lat = item?.address?.loc?.coordinates[1];
 
-  useEffect(() => {
-    // handlePresentModalPress()
-    setMediaFiles(item.image)
-    // setThumbnail(`https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`)
-    if(item.isVideoPresent){
-        setMediaFiles(prev=>[item.videoUrl,...prev])
-    }
-    // setPause(true)
-}, [])
+//   useEffect(() => {
+//     // handlePresentModalPress()
+//     setMediaFiles(item.image)
+//     // setThumbnail(`https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`)
+//     if(item.isVideoPresent){
+//         setMediaFiles(prev=>[item.videoUrl,...prev])
+//     }
+//     // setPause(true)
+// }, [index !== currentVisibleIndex])
 
   // useEffect(() => {
   //   NetInfo.fetch().then(isConnected => {
@@ -152,25 +181,32 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   }, [currentIndex]);
 
   const onError = ({error}) => {
-    console.log('error of video', error);
+    console.log('error of video', index,error);
     // displayToast('error',error.localizedDescription);
   };
 
-  // const onLoadStart = () => {
-  //   setOpacity(1);
-  // };
+  const onLoadStart = () => {
+    // setOpacity(1);
+    console.log('onLoadStart',index);
+  };
 
-  // const onLoad = () => {
-  //   setOpacity(0);
-  // };
+  const onLoad = () => {
+    // setOpacity(0);
+    console.log('onLoad',index);
+    
+  };
 
-  // const onBuffer = ({isBuffering}) => {
-  //   if (isBuffering) {
-  //     setOpacity(1);
-  //   } else {
-  //     setOpacity(0);
-  //   }
-  // };
+  const onBuffer = ({isBuffering}) => {
+    if (isBuffering) {
+      // setOpacity(1);
+      console.log('buffering',index,isBuffering);
+      setLoading(true)
+    } else {
+      // setOpacity(0);
+      console.log('bufferingno',index,isBuffering);
+      setLoading(false)
+    }
+  };
 
   const message = `Hey, checkout this new property I found on the SpaceHub App \n https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`
 
@@ -251,40 +287,22 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   const moreHandler=()=>{
     // let fadeAnim = new Animated.Value(0)
     //   setFadeAnim(fadeAnim)
+
+    bottomSheetRef.current?.present();
     Animated.timing(animatedHeight, {
       toValue: windowHeight/1.30,
-      duration:400,
+      duration:700,
       easing:Easing.linear,
       isInteraction:false
     }).start();
 
     
-    fadeInView()
+    // fadeInView()
     setSwiper(false)
     setPagerEnabled(true)
-    bottomSheetRef.current?.present();
-    // if (!!videoRef.current) {
-    //   videoRef.current.seek(0);
-    // }
-    // setPause(true)
+    sheetDuration = 700
     pauseOnModal=false
-    // navigation.navigate('More',{
-    //   item:item,
-    //   index:index,
-    //   agentImage:agentImage,
-    //   agentData:agentData,
-    //   like:like,
-    //   handleLike:handleLike,
-    //   handleShareVideo:handleShareVideo,
-    //   // handleDismissParentModalPress:handleDismissModalPress,
-    //   expandVisible:expandVisible,
-    //   parentVisible:visible,
-    //   setPause:setPause,
-    //   pause:pause,
-    //   setDisable:setDisable,
-    //   data:data,
-    //   setData:setData
-    // })
+
 
 
     // navigation.navigate('TransionalReelView',{reel:item})
@@ -301,71 +319,144 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
 
   const DisablePagerView = () => {
     // pauseOnModal = false
-    Animated.timing(animatedHeight, {
-      toValue: windowHeight,
-      duration:400,
-      easing:Easing.linear,
-      isInteraction:false
-    }).start();
-
-    fadeOutView()
-    setSwiper(true)
-    setPagerEnabled(false)
-    bottomSheetRef.current?.dismiss();
+    // pageRef.current.setPage(0)
+    setTimeout(() => {
+      Animated.timing(animatedHeight, {
+        toValue: windowHeight,
+        duration:600,
+        easing:Easing.linear,
+        isInteraction:false
+      }).start();
+  
+      // fadeOutView()
+      setSwiper(true)
+      setPagerEnabled(false)
+      
+      bottomSheetRef.current?.dismiss();
+      sheetDuration = 300
+    }, 500);
     // setPause(false)
+
+    
   }
 
 
-  const checkVisible = (isVisible) => {
-    if(isVisible && pageNumber===1){
-      console.log('isVisible 1',isVisible);
-      setPause(false)
-    }else{
-      console.log('isVisible 2',isVisible);
-      setPause(true)
-    }
-  }
+  // const checkVisible = (isVisible) => {
+  //   if(isVisible && pageNumber===1){
+  //     console.log('isVisible 1',isVisible);
+  //     setPause(false)
+  //   }else{
+  //     console.log('isVisible 2',isVisible);
+  //     setPause(true)
+  //   }
+  // }
 
   // console.log('pause at reel',pause);
 
-    useEffect(() => {
-      // setIsScreenFocused(true)
-      setLike(item.isLiked)
-      fadeInView()
-      // let fadeAnim = new Animated.Value(1)
-      // setFadeAnim(fadeAnim)
-    }, [])
+    // useEffect(() => {
+    //   // setIsScreenFocused(true)
+    //   setLike(item.isLiked)
+    //   fadeInView()
+      
+    // }, [])
 
-    const fadeInView=()=>{
-      // let fadeAnim = new Animated.Value(0)
-      // setFadeAnim(fadeAnim)
-
-      // Animated.timing(fadeAnim, {
-      //   toValue: 0,
-      //   duration: 500,
-      // }).start();
-
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-      }).start();
-    }
-
-    const fadeOutView=()=>{
-      // let fadeAnim = new Animated.Value(0)
-      // setFadeAnim(fadeAnim)
-
-      // Animated.timing(fadeAnim, {
-      //   toValue: 0,
-      //   duration: 500,
-      // }).start();
-
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 100,
-      }).start();
-    }
+    // const fadeInView=()=>{
     
+
+    //   Animated.timing(fadeAnim, {
+    //     toValue: 1,
+    //     duration: 500,
+    //   }).start();
+    // }
+
+    // const fadeOutView=()=>{
+
+    //   Animated.timing(fadeAnim, {
+    //     toValue: 1,
+    //     duration: 100,
+    //   }).start();
+    // }
+    
+
+    // console.log('mediaFiles--single time',mediaFiles);
+
+  // const  _renderItem = ({item, indx}) => {
+  //     return (
+  //       <>
+  //       {(indx===0) ?
+  //         <Video
+  //             // key={index}
+  //             ref={videoRef}
+  //             onBuffer={onBuffer}
+  //             onLoad={onLoad}
+  //             onLoadStart={onLoadStart}
+  //             playInBackground={false}
+  //             onVideoLoad={() => {
+  //             console.log('load');
+  //             }}
+  //             onError={onError}
+  //             repeat
+  //             resizeMode="cover"
+  //             // paused={pause}
+  //             paused={(index !== currentVisibleIndex || pause)}
+  //             source={{
+  //             uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item}`,
+  //             }}
+  //             // source={require('../assets/Illustrations/space_testing.mp4')}
+  //             // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
+  //             // posterResizeMode="cover"
+  //             style={{
+  //             // width: windowWidth,
+  //             // height: windowHeight/1.30,
+  //             flex:1
+  //             // position: 'absolute',
+  //             }}
+  //             // onLoad={onLoad}
+  //             // onLoadStart={onLoadStart}
+  //             // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
+  //             posterResizeMode='cover'
+  //         />
+  //         :
+  //         <>
+  //         {pagerEnabled &&
+  //           <FastImage 
+  //               source={{uri:`https://andspace.s3.ap-south-1.amazonaws.com/${item}`}} 
+  //               style={{flex:1,height:'100%',width:'100%'}}
+  //           />
+  //         }
+  //         </>
+          
+  //         }
+  //       </>
+  //     );
+  // }
+
+  function handleOnScroll(event){
+    //calculate screenIndex by contentOffset and screen width
+    // console.log('event',event);
+    // console.log('currentScreenIndex', parseInt(event.nativeEvent.contentOffset.x/windowWidth));
+    const currentScreenIndex = parseInt(event.nativeEvent.contentOffset.x/windowWidth)
+    setPageNumber(currentScreenIndex+1)
+  }
+
+  const handleAgent = e => {
+    let phoneNo = `${e.countryCode}${e.phoneNumber}`;
+
+    if (Platform.OS === 'android') {
+    phoneNo = `tel:${phoneNo}`;
+    } else {
+    phoneNo = `telprompt:${phoneNo}`;
+    }
+
+    Linking.openURL(phoneNo);
+  };
+
+  const handleMessageAgent = e => {
+    // console.log('e', e);
+    // let phoneNo = `${e.countryCode}${e.phoneNumber}`;
+    const operator = Platform.select({ios: '&', android: '?'});
+    Linking.openURL(`sms:${e.phoneNumber}${operator}body=hi`);
+  };
 
   return (
     <>
@@ -377,7 +468,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
         //   // }
         // }}
         // disabled={disable}
-        // style={{backgroundColor:'#000',flex:1,}}
+        style={{backgroundColor:'#000',flex:1,}}
         >
           <Animated.View style={{
             backgroundColor:'#000',
@@ -385,34 +476,37 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
             opacity:fadeAnim,
             height:animatedHeight
             }}>
-            <PagerView 
+            {/* <PagerView 
                 style={{
                   flex: 1,
                   // height:'70%'
                   // width:'100%'
                 }} 
+                ref={pageRef}
                 initialPage={0}
                 scrollEnabled={pagerEnabled}
                 // onPageScroll={(e)=>console.log(e.nativeEvent)}
                 onPageSelected={e=>{
-                    if(item.isVideoPresent && e.nativeEvent.position===0){
-                        videoRef.current.seek(0)
-                        setPause(false)
-                    }else{
-                        setPause(true)
-                        console.log('hoja pause');
-                    }
+                    // if(item.isVideoPresent && e.nativeEvent.position===0){
+                    //     videoRef.current.seek(0)
+                    //     setPause(false)
+                    // }else{
+                    //     setPause(true)
+                    //     console.log('hoja pause');
+                    // }
                     setPageNumber(e.nativeEvent.position+1)}
                 }
                 >
-                {mediaFiles && mediaFiles.map((element,indx)=>
+                {item.videoWithImages && item.videoWithImages.map((element,indx)=>
                 <View key={indx}>
                   
                     {(item.isVideoPresent && indx===0) ?
                     <Video
                         // key={index}
                         ref={videoRef}
-                        // onBuffer={onBuffer}
+                        onBuffer={onBuffer}
+                        onLoad={onLoad}
+                        onLoadStart={onLoadStart}
                         playInBackground={false}
                         onVideoLoad={() => {
                         console.log('load');
@@ -422,10 +516,10 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                         resizeMode="cover"
                         // paused={pause}
                         paused={(index !== currentVisibleIndex || pause)}
-                        source={{
-                        uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.videoUrl}`,
-                        }}
-                        // source={require('../../assets/Illustrations/space_testing.mp4')}
+                        // source={{
+                        // uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.videoUrl}`,
+                        // }}
+                        source={require('../assets/Illustrations/space_testing.mp4')}
                         // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
                         // posterResizeMode="cover"
                         style={{
@@ -436,25 +530,102 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                         }}
                         // onLoad={onLoad}
                         // onLoadStart={onLoadStart}
-                        poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
+                        // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
                         posterResizeMode='cover'
                     />
                     :
-                    
-                    <FastImage 
-                        source={{uri:`https://andspace.s3.ap-south-1.amazonaws.com/${element}`}} 
-                        style={{flex:1,height:'100%',width:'100%'}}
-                    />
+                    <>
+                    {pagerEnabled &&
+                      <FastImage 
+                          source={{uri:`https://andspace.s3.ap-south-1.amazonaws.com/${element}`}} 
+                          style={{flex:1,height:'100%',width:'100%'}}
+                      />
+                    }
+                    </>
                     
                     }
-                    {/* {pagerEnabled &&
-                    <View style={{height:'24%',backgroundColor:'#000'}}/>
-                    } */}
+                    
                 </View>
               
                 )}
-            </PagerView>
-            {mediaFiles.length>1 && pagerEnabled &&
+            </PagerView> */}
+            <ScrollView 
+              horizontal 
+              contentContainerStyle={{flexGrow:1,}}
+              scrollEnabled={pagerEnabled}
+              pagingEnabled
+              onScroll={(e)=>handleOnScroll(e)}
+              // scrollEventThrottle={5}
+              >  
+              {item.videoWithImages && item.videoWithImages.map((element,indx)=>
+               <View>
+                    {(indx===0) ?
+                    <>
+                    
+                      <Video
+                          // key={index}
+                          ref={videoRef}
+                          onBuffer={onBuffer}
+                          onLoad={onLoad}
+                          onLoadStart={onLoadStart}
+                          // playWhenInactive={true}
+                          playInBackground={false}
+                          // preventsDisplaySleepDuringVideoPlayback={false}
+                          automaticallyWaitsToMinimizeStalling={false}
+                          onVideoLoad={() => {
+                          console.log('load');
+                          }}
+                          onError={onError}
+                          repeat
+                          resizeMode="cover"
+                          // paused={pause}
+                          paused={(index !== currentVisibleIndex || pause)}
+                          source={{
+                          uri: `https://andspace.s3.ap-south-1.amazonaws.com/${element}`,
+                      //    type:'mp4'
+                          }}
+                          // source={require('../assets/Illustrations/space_testing.mp4')}
+                          // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
+                          // posterResizeMode="cover"
+                          style={{
+                          width: windowWidth,
+                          // height: windowHeight/1.30,
+                          flex:1
+                          // position: 'absolute',
+                          }}
+                          // onLoad={onLoad}
+                          // onLoadStart={onLoadStart}
+                          poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
+                          posterResizeMode='cover'
+                      />
+                      
+                    </>
+                   
+                    :
+                    <>
+                    {pagerEnabled &&
+                      <FastImage 
+                          source={{uri:`https://andspace.s3.ap-south-1.amazonaws.com/${element}`}} 
+                          style={{height:'100%',width:windowWidth}}
+                      />
+                    }
+                    </>
+                    
+                    }
+                    
+                </View>
+              
+              )}
+            
+            </ScrollView>
+            {/* <Carousel
+              ref={pageRef}
+              data={item.videoWithImages}
+              renderItem={_renderItem}
+              sliderWidth={windowWidth}
+              itemWidth={windowWidth}
+            /> */}
+            {item.videoWithImages.length>1 && pagerEnabled &&
                 <View style={{
                     position:'absolute',
                     bottom:20,
@@ -464,7 +635,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                     paddingHorizontal:12,
                     paddingVertical:2
                 }}>
-                    <Text style={styles.pageNumber}>{pageNumber} / {mediaFiles.length}</Text>
+                    <Text style={styles.pageNumber}>{pageNumber} / {item.videoWithImages.length}</Text>
                 </View>
                 }
           </Animated.View>
@@ -505,7 +676,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
               </View>
               <View style={{marginBottom:40,}}>
                 <TouchableOpacity activeOpacity={0.7} onPress={() => handleLike()}>
-                  <Image
+                  {/* <Image
                     source={
                       item.isLiked === false
                         ? require('../assets/icons/like.png')
@@ -513,7 +684,12 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                     }
                     // resizeMode="contain"
                     style={styles.icon}
-                  />
+                  /> */}
+                  {item.isLiked === false ?
+                  <WhiteLikeSvg />
+                  :
+                  <RedLikeSvg2 />
+                  }
                 </TouchableOpacity>
               </View>
               <View style={{paddingBottom:28,}}>
@@ -546,9 +722,25 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                         justifyContent: 'space-between',
                         alignItems: 'center',
                       }}>
-                      <Text style={styles.rate}>
-                        £{item?.price.toLocaleString()}
-                      </Text>
+                        {(item?.price && item?.price!=='' && item?.price!==null) ?
+                        <Text style={styles.rate}>
+                          
+                          {item?.currency.toLocaleString()+item?.price.toLocaleString()}
+                          
+                        </Text>
+                        :
+                        <>
+                        {(item?.heading && item?.heading!=='' && item?.heading!==null) ?
+                        <Text style={styles.rate}>
+                          
+                          {item?.heading.toLocaleString()}
+                          
+                        </Text>
+                        :
+                        <Text></Text>
+                        }
+                        </>
+                        }
                       <Pressable 
                         // onPress={handlePresentModalPress}
                         onPress={moreHandler}
@@ -641,6 +833,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
       <BottomSheetModal
                 ref={bottomSheetRef}
                 snapPoints={snapPoints}
+                animationConfigs={animationConfigs}
                 enablePanDownToClose={false}
                 backgroundStyle={{
                 backgroundColor: '#000',
@@ -800,7 +993,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                 borderRadius: 12,
                                 }}
                                 activeOpacity={0.7}
-                                onPress={() => handleMessageAgent(agentData)}>
+                                onPress={() => handleMessageAgent(item.agentId)}>
                                 <Text
                                 style={[
                                     styles.price,
@@ -822,7 +1015,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                 borderRadius: 12,
                                 }}
                                 activeOpacity={0.7}
-                                onPress={() => handleAgent(agentData)}>
+                                onPress={() => handleAgent(item.agentId)}>
                                 <Text
                                 style={[
                                     styles.price,
@@ -1000,7 +1193,7 @@ const styles = StyleSheet.create({
       // paddingTop:24
   },
   propertyTypeContainer:{
-    marginTop:4
+    marginTop:8
   },
   propertyType:{
     width:140,

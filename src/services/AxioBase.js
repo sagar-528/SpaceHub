@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const AxiosBase = axios.create({
-  baseURL: API_URL,
+  baseURL: 'http://52.44.223.123:5000',
 });
 
 const getToken = async () => {

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef,memo} from 'react';
+import React, {useState, useEffect, useRef,memo,useMemo,useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -26,6 +26,7 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import { load,displayToast } from '../../utils';
 import { Set } from "immutable";
+import { typography } from '../../themes';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -37,12 +38,14 @@ const Feed = props => {
   const videoRef = useRef(null);
   const [videoRefs, setVideoRefs] = useState([])
   const [paused, setPaused] = useState([])
+  const [notFirstTime, setNotFirstTime] = useState(false)
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentVisibleIndex, setCurrentVisibleIndex] = useState(0)
+  // const [currentIndex, setCurrentIndex] = useState(0);
+  // const [currentVisibleIndex, setCurrentVisibleIndex] = useState(0)
   const [feedData, setFeedData] = useState([]);
+  const [errorStatus, setErrorStatus] = useState(0)
   const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(true);
+  // const [refreshing, setRefreshing] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [page, setPage] = useState(0)
   const [swiper, setSwiper] = useState(true)
@@ -86,40 +89,27 @@ const Feed = props => {
         })
           .then(response => {
             setLoading(false);
-            // console.log('feeds response', response?.data?.data);
+            console.log(`feeds response${page}`, response?.data?.data);
             let data = response?.data?.data
-            if(data.length===0){
-              // setFeedData([])
-              // setPage(0)
-              // AxiosBase.get('app/property/videoProperty', {
-              //   params: {
-              //     limit: 10,
-              //     page: 0,
-              //     isVideoPresent: true,
-              //   },
-              // }).then(res=>{
-              //   let initialDataToShowAtFirst = res?.data?.data
-              //   console.log('initialDataToShowAtFirst',initialDataToShowAtFirst);
-              //   setFeedData(initialDataToShowAtFirst);
-              // }).catch(err=>{
-              //   setLoading(false)
-              //   setRefreshing(false);
-              //   console.log('error in feeds api', error.message);
-              // })
-              // getData()
-            }else{
-              setFeedData(prev=>[...prev,...data]);
-              // setFeedData(data);
-              setLoading(false);
-              setPage(page+1)
-              // setRefreshing(!refreshing)
-            }
+            const newObject = data.map((obj)=>({
+              ...obj,
+              videoWithImages:[obj.videoUrl,...obj.image]
+            }))
+            // console.log('newObject',newObject);
+            setFeedData(prev=>[...prev,...newObject]);
+            // setFeedData(data);
+            setLoading(false);
+            setPage(page+1)
+            setErrorStatus(0)
+            // setRefreshing(!refreshing)
+            
           })
           .catch(error => {
             setLoading(false);
             setRefreshing(false);
             // setRefreshing(!refreshing)
-            console.log('error in feeds api', error.message);
+            console.log('error in feeds api', error);
+            setErrorStatus(1)
           })
           // .finally(() => {
           //   // setRefreshing(false);
@@ -133,9 +123,9 @@ const Feed = props => {
     });
   };
 
-  const handleChangeIndexValue = ({index}) => {
-    setCurrentIndex(index);
-  };
+  // const handleChangeIndexValue = ({index}) => {
+  //   setCurrentIndex(index);
+  // };
 
 
   useEffect(() => {
@@ -161,9 +151,11 @@ const Feed = props => {
       const updatedItemIndex = feedData.findIndex(obj => obj._id === likedId)
       // feedData.map((item)=>console.log('logggggg111',item))
       console.log('updatedItemIndex',updatedItemIndex);
-      let temp = [...feedData]
-      temp[updatedItemIndex].isLiked = false
-      setFeedData(temp)
+      if(updatedItemIndex!==-1){
+        let temp = [...feedData]
+        temp[updatedItemIndex].isLiked = false
+        setFeedData(temp)
+      }
     }
   }, [likedId])
   
@@ -183,119 +175,27 @@ const Feed = props => {
     if(!loading){
       getData()
     }
+    setNotFirstTime(true)
   }
 
-  const _renderFooter=()=>{
-    return(
-      <View style={{height:20,marginTop:12}}>
-        <ActivityIndicator size={30}/>
-      </View>
-    )
+  function _renderFooter(){
+    if(loading){
+      return(
+        <View style={{height:20,marginTop:12}}>
+          <ActivityIndicator size={30}/>
+        </View>
+      )
+    }
+    else{
+      return null
+    }
   }
 
-  const windowSize = feedData.length > 50 ? feedData.length / 2 : 21;
+  
 
-  // const onClickUseCallBack = React.useCallback(
-  //   id => {
-  //     setSelectedItems((selectedItems) => {
-  //       const newSelectedItems = selectedItems.has(id)
-  //         ? selectedItems.delete(id)
-  //         : selectedItems.add(id);
-
-  //       return newSelectedItems
-  //     });
-  //   },
-  //   []
-  // );
-
-  function itemEq(prevItem, nextItem) {
-    return prevItem.id === nextItem.id && prevItem.isLiked === nextItem.isLiked;
-  }
-
-  const MemoizedItem = memo(Reels,itemEq);
-
-  const Items = ({ data, selectedItems, }) => {
-    // const windowSize = feedData.length > 50 ? feedData.length / 2 : 21;
-    // const [hook, setHook] = useState(false);
-    // const [currentIndex, setCurrentIndex] = useState(0);
-    console.log("rendering items");
-    // Replace <Item /> with <MemoizedItem /> or <MemoizedItem2 /> to see effect
-    // const handleChangeIndexValue = ({index}) => {
-    //   setCurrentIndex(index);
-    // };
-    const _renderItem = ({ item,index }) => (
-      <MemoizedItem
-        id={index}
-        // title={`${item.name.title} ${item.name.first} ${item.name.last}`}
-        // avatarUrl={item.picture.thumbnail}
-        selected={selectedItems.has(item.isLiked)}
-        // onClick={onClick}
-        item={item}
-        index={index}
-        // cellRef={videoRefs[index]}
-        // paused={paused[index]}
-        // currentIndex={currentIndex}
-        // currentVisibleIndex={currentVisibleIndex}
-        navigation={navigation}
-        setHook={setHook}
-        hook={hook}
-        data={data}
-        setData={setFeedData}
-        // refreshing={refreshing}
-        // setRefreshing={setRefreshing}
-        swiper={swiper}
-        setSwiper={setSwiper}
-      />
-    );
-    return (
-      <SwiperFlatList
-        // style={{flex:1}}
-        scrollEnabled={swiper}
-        refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={getData} />
-      }
-      // extraData={refreshing}
-        data={feedData}
-        // windowSize={101}
-        maxToRenderPerBatch={windowSize}
-        // removeClippedSubviews={true}
-        // initialNumToRender={5}
-        vertical
-        // onChangeIndex={handleChangeIndexValue}
-        // renderItem={({item, index}) => (
-        //   <Reels
-        //     item={item}
-        //     index={index}
-        //     // cellRef={videoRefs[index]}
-        //     // paused={paused[index]}
-        //     currentIndex={currentIndex}
-        //     currentVisibleIndex={currentVisibleIndex}
-        //     navigation={navigation}
-        //     setHook={setHook}
-        //     hook={hook}
-        //     data={feedData}
-        //     setData={setFeedData}
-        //     refreshing={refreshing}
-        //     setRefreshing={setRefreshing}
-        //     swiper={swiper}
-        //     setSwiper={setSwiper}
-        //   />
-        // )}
-        renderItem={_renderItem}
-        keyExtractor={(items, index) => {
-          return index;
-        }}
-        decelerationRate={'fast'}
-        onEndReached={LoadMoreData}
-        onEndReachedThreshold={0.2}
-        // refreshing={refreshing}
-        // onRefresh={getData}
-        // onViewableItemsChanged={onViewRef.current}
-        // viewabilityConfig={viewConfigRef.current}
-        ListFooterComponent={_renderFooter}
-      />
-    );
-  };
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentVisibleIndex, setCurrentVisibleIndex] = useState(0)
+  const [refreshing, setRefreshing] = useState(true);
 
   const _onViewableItemsChanged = ({ viewableItems, changed }) => {
     if (viewableItems && viewableItems.length > 0) {
@@ -304,66 +204,123 @@ const Feed = props => {
     }
   };
 
+  const windowSize = feedData.length > 42 ? feedData.length / 2 : 21;
 
-  console.log('resfresh',feedData);
+  const handleChangeIndexValue = ({index}) => {
+    setCurrentIndex(index);
+  };
+
+  function _renderItem({ item,index }){
+    return(
+      <Reels
+        // id={item._id}
+        // selected={selectedItems.has(item.isLiked)}
+        // onClick={onClick}
+        item={item}
+        index={index}
+        currentIndex={currentIndex}
+        currentVisibleIndex={currentVisibleIndex}
+        navigation={navigation}
+        setHook={setHook}
+        hook={hook}
+        loading={loading}
+        data={feedData}
+        setData={setFeedData}
+        // refreshing={refreshing}
+        // setRefreshing={setRefreshing}
+        swiper={swiper}
+        setSwiper={setSwiper}
+        setLikedId={setLikedId} // to clear the id if pressed again for like
+      />
+    )
+  };
+
+  function EmptyListMessage(){
+    if(loading){
+      return null
+    }
+    else if(errorStatus===0 && feedData.length===0){
+      return(
+        <View style={{flex:1,justifyContent:'center',alignItems:'center',marginTop:windowHeight/3}}>
+          <Text style={{fontFamily:typography.Bold,fontSize:20}}>No data found</Text>
+        </View>
+      )
+    }
+    else{
+      return(
+        <View style={{flex:1,justifyContent:'center',alignItems:'center',marginTop:windowHeight/3}}>
+          <Text style={{fontFamily:typography.Bold,fontSize:16}}>Server Down :( Please try after sometimes</Text>
+        </View>
+      )
+    }
+  }
+
+  const keyExtractor = useCallback((item,index) => { 
+    return index
+}, []);
+
+
+
+  // console.log('resfresh',feedData);
   return (
-    // <BottomSheetModalProvider>
 
         <View style={{flex:1}}>
           
           <SwiperFlatList
             // style={{flex:1}}
+            
+            disableVirtualization={false}
+            legacyImplementation={true}
+            overScrollMode='never'
             scrollEnabled={swiper}
             refreshControl={
               <RefreshControl refreshing={isRefreshing} onRefresh={getData} />
           }
           // extraData={refreshing}
             data={feedData}
-            // windowSize={101}
-            maxToRenderPerBatch={windowSize}
-            // removeClippedSubviews={false}
-            // initialNumToRender={5}
+            windowSize={windowSize}
+            maxToRenderPerBatch={3}
+            removeClippedSubviews={true}
+            initialNumToRender={3}
+            // updateCellsBatchingPeriod={10}
             vertical
             onChangeIndex={handleChangeIndexValue}
-            renderItem={({item, index}) => (
-              <Reels
-                item={item}
-                index={index}
-                // cellRef={videoRefs[index]}
-                // paused={paused[index]}
-                currentIndex={currentIndex}
-                currentVisibleIndex={currentVisibleIndex}
-                navigation={navigation}
-                setHook={setHook}
-                hook={hook}
-                data={feedData}
-                setData={setFeedData}
-                refreshing={refreshing}
-                setRefreshing={setRefreshing}
-                swiper={swiper}
-                setSwiper={setSwiper}
-                setLikedId={setLikedId} // to clear the id if pressed again for like
-              />
-            )}
-            // renderItem={_renderItem}
-            keyExtractor={(item, index) => {
-              return item._id+index;
-            }}
+            renderItem={_renderItem}
+            // renderItem={({ item,index }) => <RenderItem item={item} index={index} />}
+            keyExtractor={(item,index)=>keyExtractor(item,index)}
             decelerationRate={'fast'}
             onEndReached={LoadMoreData}
-            onEndReachedThreshold={0.1}
+            onEndReachedThreshold={0.2}
             // refreshing={refreshing}
             // onRefresh={getData}
             onViewableItemsChanged={_onViewableItemsChanged}
             // viewabilityConfig={viewConfigRef.current}
             ListFooterComponent={_renderFooter}
+            ListEmptyComponent={EmptyListMessage}
           />
+
+          {/* <Items data={feedData} selectedItems={selectedItems}/> */}
+          {/* <ITEMS data={feedData}/> */}
           
         </View>
-    // </BottomSheetModalProvider>
   );
 };
 
 export default Feed;
 
 const styles = StyleSheet.create({});
+
+
+
+// first optional solution
+
+// windowSize={4}
+// initialNumToRender={0}
+// maxToRenderPerBatch={1}
+// removeClippedSubviews
+
+// 2ndworkign solution without viewpager
+// windowSize={windowSize}
+// maxToRenderPerBatch={3}
+// removeClippedSubviews={true}
+// initialNumToRender={3}

@@ -221,7 +221,9 @@ const LocationDetails = props => {
                             fontSize: 12,
                             color: item.isVideoPresent === false ? 'black' : colors.white,
                           }}>
-                          {`£${nFormatter(item.price)}`}
+                          {
+                          `${nFormatter(parseInt(`${item.price}`.replace(",", "")))}`
+                          }
                         </Text>
                       </View>
                     </TouchableOpacity>

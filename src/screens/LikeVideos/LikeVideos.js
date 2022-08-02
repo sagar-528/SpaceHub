@@ -121,14 +121,25 @@ const LikeVideos = props => {
               // navigation: navigation,
             });
           }}>
-          <FastImage
-            source={{
-              uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`,
-              priority: FastImage.priority.high
-            }}
-            resizeMode="cover"
-            style={{height: 180, width:(windowWidth/3)-10}}
-          />
+            {item.isVideoPresent ?
+              <FastImage
+                source={{
+                  uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`,
+                  priority: FastImage.priority.high
+                }}
+                resizeMode="cover"
+                style={{height: 180, width:(windowWidth/3)-10}}
+              />
+              :
+              <FastImage
+                source={{
+                  uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
+                  priority: FastImage.priority.high
+                }}
+                resizeMode="cover"
+                style={{height: 180, width:(windowWidth/3)-10}}
+              />
+            }
         </TouchableOpacity>
       </View>
     );

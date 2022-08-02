@@ -5,8 +5,9 @@ import {
   StatusBar,
   Platform,
   LogBox,
+  AppState
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect,useRef} from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
 import RootNavigations from './src/routes/RootNavigations';
@@ -15,13 +16,29 @@ import {
   gestureHandlerRootHOC,
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import {BottomSheetModalProvider,useBottomSheetTimingConfigs} from '@gorhom/bottom-sheet';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
+import { Key } from './src/Constant/constant';
 
 const App = () => {
-  useEffect(() => {
-    SystemNavigationBar.navigationHide();
-  }, []);
+  // const appState = useRef(AppState.currentState)
+
+  // useEffect(() => {
+  //   AppState.addEventListener("change",handleAppStateChange)
+  //   return ()=>{
+  //     AppState.removeEventListener("change",handleAppStateChange)
+  //   }
+  // }, []);
+
+  // const handleAppStateChange=(nextAppState)=>{
+  //   if(nextAppState==='active'){
+  //     console.log('App has come to foreground');
+  //     Key.backgroundPause = false
+  //   }else{
+  //     Key.backgroundPause = true
+  //     console.log('nextAppState',nextAppState);
+  //   }
+  // }
 
   LogBox.ignoreLogs([
     'ViewPropTypes will be removed',
@@ -29,8 +46,8 @@ const App = () => {
   ]);
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-    {/* <View style={{flex:1}}> */}
+    // <GestureHandlerRootView style={{flex: 1}}>
+    <View style={{flex:1}}>
       <StatusBar barStyle="default" translucent backgroundColor="transparent" />
       <SafeAreaProvider>
         <NavigationContainer>
@@ -39,8 +56,8 @@ const App = () => {
           </BottomSheetModalProvider>
         </NavigationContainer>
       </SafeAreaProvider>
-    </GestureHandlerRootView>
-    // </View>
+    </View>
+    // </GestureHandlerRootView>
   );
 };
 

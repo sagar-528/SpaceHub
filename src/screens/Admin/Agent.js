@@ -43,7 +43,7 @@ const Agent = props => {
             console.log("response for agent", response.data.data);
             setAgentData(response.data.data);
           })
-          .catch(error => {
+          .catch(error => { 
             console.log('error for api', error);
           });
       } else {
@@ -126,7 +126,7 @@ const Agent = props => {
     showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.container}
       style={{backgroundColor: colors.backgroundShadow, opacity: 0.95}}>
-      <View style={{flex: 1}} />
+      {/* <View style={{flex: 1}} /> */}
       <View>
         <View style={{alignSelf: 'center', marginTop: 24}}>
           <Image
@@ -171,7 +171,7 @@ const Agent = props => {
             // justifyContent: 'space-between',
             // backgroundColor: 'pink'
           }}
-          style={{marginHorizontal:4}}
+          style={{marginHorizontal:4,}}
           // columnWrapperStyle={{justifyContent:'space-between'}}
           // style={{marginHorizontal:4,flex:1}}
         />

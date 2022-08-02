@@ -22,26 +22,40 @@ const WIDTH = Dimensions.get('window').width;
 const SearchModal = props => {
   const [maxRange, setMaxRange] = useState();
   const [minRange, setMinRange] = useState();
-  const [bed, setBed] = useState('1');
+  const [bed, setBed] = useState(1);
 
   const handleSearch = () => {
-    if (maxRange !== undefined && minRange === undefined) {
-      setMaxRange();
-    } else if (minRange !== undefined && maxRange === undefined) {
-      setMinRange();
-    } else {
+    props.setModalVisible(false);
+    // if (maxRange !== undefined && minRange === undefined) {
+    //   setMaxRange();
+    // } else if (minRange !== undefined && maxRange === undefined) {
+    //   setMinRange();
+    // } 
+    // else 
+    // {
+      let param = {
+        limit: 1000000,
+        page: 0,
+        priceMin: minRange === undefined ? 1 : minRange,
+        priceMax: maxRange === undefined ? 100000000000 : maxRange,
+        minBeds: bed,
+        maxBeds: 9,
+      }
+      console.log('param',param);
+      
       AxiosBase.get('app/property/getProperty', {
         params: {
           limit: 1000000,
           page: 0,
-          priceMin: minRange,
-          priceMax: maxRange,
-          minBeds: 1,
-          maxBeds: bed,
+          priceMin: minRange === undefined ? 1 : minRange,
+          priceMax: maxRange === undefined ? 100000000000 : maxRange,
+          minBeds: bed,
+          maxBeds: 9,
         },
       })
         .then(response => {
-          console.log('response', response?.data);
+          console.log('response on map', response);
+          // setIsVisible(false)
           if(response?.data?.code === 200){
             if (response?.data?.data.length !== 0) {
               console.log('data');
@@ -49,23 +63,27 @@ const SearchModal = props => {
               props.setModalVisible(false);
               setMaxRange();
               setMinRange();
-              setBed('1');
+              setBed(1);
             } else {
               console.log('error');
               props.setModalVisible(false);
+              props.setProjects(response?.data?.data);
               setMaxRange();
               setMinRange();
-              setBed('1');
+              setBed(1);
               displayToast('No Data Found.');
             }
           }else{
             displayToast(response?.data?.message)
+            props.setModalVisible(false);
           }
         })
         .catch(error => {
           console.log('error', error.response.data);
+          // setIsVisible(false)
+          props.setModalVisible(false);
         });
-    }
+    // }
   };
 
   return (
