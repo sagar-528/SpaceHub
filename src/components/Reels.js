@@ -915,9 +915,25 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                 // onPress={handlePresentModalPress}
                                 >
                                 <View>
-                                    <Text style={styles.rate}>
-                                    £{item?.price.toLocaleString()}
-                                    </Text>
+                                {(item?.price && item?.price!=='' && item?.price!==null) ?
+                                <Text style={styles.rate}>
+                                  
+                                  {item?.currency.toLocaleString()+item?.price.toLocaleString()}
+                                  
+                                </Text>
+                                :
+                                <>
+                                {(item?.heading && item?.heading!=='' && item?.heading!==null) ?
+                                <Text style={styles.rate}>
+                                  
+                                  {item?.heading.toLocaleString()}
+                                  
+                                </Text>
+                                :
+                                <Text></Text>
+                                }
+                                </>
+                                }
                                 </View>
                                 <Text style={[styles.buldingDetails, {paddingTop: 4}]}>
                                 {(item?.beds && item.beds!==0) ? `${item?.beds} beds |` : null} {(item?.bath && item?.bath!==0) ? `${item?.bath} bath |` : null} {(item?.sqft && item.sqft!==0) ? `${item?.sqft} sqft` : null} 
