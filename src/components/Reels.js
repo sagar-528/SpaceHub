@@ -7,14 +7,11 @@ import {
   TouchableOpacity,
   Pressable,
   Share,
-  ActivityIndicator,
   Platform,
-  ImageBackground,
-  Modal,
   Animated,
   ScrollView,
   Linking,
-  AppState
+  AppState,
   // Easing
 } from 'react-native';
 import React, {useRef, useState, useEffect, useMemo, useCallback,memo} from 'react';
@@ -31,41 +28,27 @@ import BottomSheet, {
   useBottomSheetTimingConfigs
 } from '@gorhom/bottom-sheet';
 import Close from './Close';
-import NetInfo from '@react-native-community/netinfo';
-import {useIsFocused} from '@react-navigation/native';
-import More from '../screens/Feeds/more';
-import ReelInfo from '../screens/Feeds/reelInfo';
-
-import InViewPort from "@coffeebeanslabs/react-native-inviewport";
-import { createSharedElementStackNavigator,SharedElement } from 'react-navigation-shared-element';
-import VisibilitySensor from '@svanboxel/visibility-sensor-react-native'
-import PagerView from 'react-native-pager-view';
 import MapView, {
   Marker,
   PROVIDER_GOOGLE,
   PROVIDER_DEFAULT,
 } from 'react-native-maps';
-import SystemNavigationBar from 'react-native-system-navigation-bar';
 import { Easing } from 'react-native-reanimated';
-import RedLikeSvg from '../assets/svgs/redLikeSvg';
 import WhiteLikeSvg from '../assets/svgs/whiteLikeSvg';
 import RedLikeSvg2 from '../assets/svgs/redLikeSvg2';
-import Carousel from 'react-native-snap-carousel';
 
 const windowWidth = Dimensions.get('screen').width;
-const windowHeight = Dimensions.get('screen').height;
+const windowHeight = Dimensions.get('window').height;
 
-const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,swiper,setSwiper,currentVisibleIndex,setLikedId,}) => {
+const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,swiper,setSwiper,currentVisibleIndex,setLikedId,videoPaused}) => {
 
 
   const appState = useRef(AppState.currentState)
   const videoRef = useRef(null);
-  const pageRef = useRef(null)
+  // const pageRef = useRef(null)
   const bottomSheetRef = useRef(null);
   // const isFocused = useIsFocused();
   const [pause, setPause] = useState(false)
-  // const [isModalVisible, setIsModalVisible] = useState(false)
-  let pauseOnModal=true;
   const [disable, setDisable] = useState(false)
   const [pagerEnabled, setPagerEnabled] = useState(false)
   const [fadeAnim, setFadeAnim] = useState(new Animated.Value(1))
@@ -81,74 +64,12 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
     easing: Easing.linear,
   });
 
-  // const [mute, setMute] = useState(false);
-  // const [visible, setVisible] = useState(true);
-  const [agentImage, setAgentImage] = useState('');
-  const [agentData, setAgentData] = useState();
-  const [like, setLike] = useState(false);
-  // const [itemId, setItemId] = useState('');
-  // const [likeData, setLikeData] = useState([]);
-  // const [opacity, setOpacity] = useState(0);
-  // const [token, setToken] = useState(false);
-  // const [expandVisible, setExpandVisible] = useState(true);
-  // const [isScreenFocused, setIsScreenFocused] = useState(false)
-  const [mediaFiles, setMediaFiles] = useState([])
   const [pageNumber, setPageNumber] = useState(1)
   const [expand, setExpand] = useState(false);
   const [animatedHeight, setAnimatedHeight] = useState(new Animated.Value(windowHeight))
-  // const [likeOpacity, setLikeOpacity] = useState(0);
-
-  // useEffect(() => {
-  //   AppState.addEventListener("change",handleAppStateChange)
-  //   return ()=>{
-  //     AppState.removeEventListener("change",handleAppStateChange)
-  //   }
-  // }, []);
-
-  // const handleAppStateChange=(nextAppState)=>{
-  //   if(nextAppState==='active'){
-  //     console.log('App has come to foreground');
-  //     setPause(false)
-  //   }else{
-  //     setPause(true)
-  //     console.log('nextAppState',nextAppState);
-  //   }
-  // }
 
   const long = item?.address?.loc?.coordinates[0];
   const lat = item?.address?.loc?.coordinates[1];
-
-//   useEffect(() => {
-//     // handlePresentModalPress()
-//     setMediaFiles(item.image)
-//     // setThumbnail(`https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`)
-//     if(item.isVideoPresent){
-//         setMediaFiles(prev=>[item.videoUrl,...prev])
-//     }
-//     // setPause(true)
-// }, [index !== currentVisibleIndex])
-
-  // useEffect(() => {
-  //   NetInfo.fetch().then(isConnected => {
-  //     if (isConnected.isConnected === true) {
-  //       AxiosBase.get('app/agents/singleAgent', {
-  //         params: {
-  //           id: item.agentId,
-  //         },
-  //       })
-  //         .then(response => {
-  //           // console.log("response for agent", response.data.data);
-  //           setAgentData(response.data.data);
-  //           setAgentImage(response?.data?.data?.imageUrl);
-  //         })
-  //         .catch(error => {
-  //           console.log('error for api', error);
-  //         });
-  //     } else {
-  //       displayToast('Internet Connection Problem');
-  //     }
-  //   });
-  // }, []);
 
   useEffect(() => {
       const blur = navigation.addListener('blur', () => {
@@ -165,9 +86,9 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
         videoRef.current.seek(0);
       }
       setDisable(false)
-      // setIsScreenFocused(false)
-      // videoRef.current.seek(0);
     });
+
+    console.log('nav focus ');
 
 
   return blur, focus;
@@ -190,9 +111,9 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
     console.log('onLoadStart',index);
   };
 
-  const onLoad = () => {
+  const onLoad = (e) => {
     // setOpacity(0);
-    console.log('onLoad',index);
+    console.log('onLoad',index,e);
     
   };
 
@@ -221,8 +142,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
         if (result.activityType) {
           // shared with activity type of result.activityType
           console.log('share type');
-          // SystemNavigationBar.navigationShow();
-          // SystemNavigationBar.navigationHide();
         } else {
           console.log('shared');
         }
@@ -285,8 +204,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   };
 
   const moreHandler=()=>{
-    // let fadeAnim = new Animated.Value(0)
-    //   setFadeAnim(fadeAnim)
 
     bottomSheetRef.current?.present();
     Animated.timing(animatedHeight, {
@@ -301,25 +218,11 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
     setSwiper(false)
     setPagerEnabled(true)
     sheetDuration = 700
-    pauseOnModal=false
+    // pauseOnModal=false
 
-
-
-    // navigation.navigate('TransionalReelView',{reel:item})
   }
 
-  // const handlePresentModalPress = useCallback(() => {
-  //   setPause(true)
-  //   // pauseOnModal = true
-  //   bottomSheetRef.current?.present();
-  //   if (!!videoRef.current) {
-  //       videoRef.current.seek(0);
-  //     }
-  // }, []);
-
   const DisablePagerView = () => {
-    // pauseOnModal = false
-    // pageRef.current.setPage(0)
     setTimeout(() => {
       Animated.timing(animatedHeight, {
         toValue: windowHeight,
@@ -341,100 +244,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   }
 
 
-  // const checkVisible = (isVisible) => {
-  //   if(isVisible && pageNumber===1){
-  //     console.log('isVisible 1',isVisible);
-  //     setPause(false)
-  //   }else{
-  //     console.log('isVisible 2',isVisible);
-  //     setPause(true)
-  //   }
-  // }
-
-  // console.log('pause at reel',pause);
-
-    // useEffect(() => {
-    //   // setIsScreenFocused(true)
-    //   setLike(item.isLiked)
-    //   fadeInView()
-      
-    // }, [])
-
-    // const fadeInView=()=>{
-    
-
-    //   Animated.timing(fadeAnim, {
-    //     toValue: 1,
-    //     duration: 500,
-    //   }).start();
-    // }
-
-    // const fadeOutView=()=>{
-
-    //   Animated.timing(fadeAnim, {
-    //     toValue: 1,
-    //     duration: 100,
-    //   }).start();
-    // }
-    
-
-    // console.log('mediaFiles--single time',mediaFiles);
-
-  // const  _renderItem = ({item, indx}) => {
-  //     return (
-  //       <>
-  //       {(indx===0) ?
-  //         <Video
-  //             // key={index}
-  //             ref={videoRef}
-  //             onBuffer={onBuffer}
-  //             onLoad={onLoad}
-  //             onLoadStart={onLoadStart}
-  //             playInBackground={false}
-  //             onVideoLoad={() => {
-  //             console.log('load');
-  //             }}
-  //             onError={onError}
-  //             repeat
-  //             resizeMode="cover"
-  //             // paused={pause}
-  //             paused={(index !== currentVisibleIndex || pause)}
-  //             source={{
-  //             uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item}`,
-  //             }}
-  //             // source={require('../assets/Illustrations/space_testing.mp4')}
-  //             // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
-  //             // posterResizeMode="cover"
-  //             style={{
-  //             // width: windowWidth,
-  //             // height: windowHeight/1.30,
-  //             flex:1
-  //             // position: 'absolute',
-  //             }}
-  //             // onLoad={onLoad}
-  //             // onLoadStart={onLoadStart}
-  //             // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
-  //             posterResizeMode='cover'
-  //         />
-  //         :
-  //         <>
-  //         {pagerEnabled &&
-  //           <FastImage 
-  //               source={{uri:`https://andspace.s3.ap-south-1.amazonaws.com/${item}`}} 
-  //               style={{flex:1,height:'100%',width:'100%'}}
-  //           />
-  //         }
-  //         </>
-          
-  //         }
-  //       </>
-  //     );
-  // }
-
   function handleOnScroll(event){
-    //calculate screenIndex by contentOffset and screen width
-    // console.log('event',event);
-    // console.log('currentScreenIndex', parseInt(event.nativeEvent.contentOffset.x/windowWidth));
     const currentScreenIndex = parseInt(event.nativeEvent.contentOffset.x/windowWidth)
     setPageNumber(currentScreenIndex+1)
   }
@@ -452,22 +262,16 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
   };
 
   const handleMessageAgent = e => {
-    // console.log('e', e);
-    // let phoneNo = `${e.countryCode}${e.phoneNumber}`;
     const operator = Platform.select({ios: '&', android: '?'});
     Linking.openURL(`sms:${e.phoneNumber}${operator}body=hi`);
   };
 
+
+  
+
   return (
     <>
     <View
-        // onChange={(isVisible) => {
-        //   // if(!pause){
-        //     // console.log(isVisible);
-        //     checkVisible(isVisible)
-        //   // }
-        // }}
-        // disabled={disable}
         style={{backgroundColor:'#000',flex:1,}}
         >
           <Animated.View style={{
@@ -476,113 +280,45 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
             opacity:fadeAnim,
             height:animatedHeight
             }}>
-            {/* <PagerView 
-                style={{
-                  flex: 1,
-                  // height:'70%'
-                  // width:'100%'
-                }} 
-                ref={pageRef}
-                initialPage={0}
-                scrollEnabled={pagerEnabled}
-                // onPageScroll={(e)=>console.log(e.nativeEvent)}
-                onPageSelected={e=>{
-                    // if(item.isVideoPresent && e.nativeEvent.position===0){
-                    //     videoRef.current.seek(0)
-                    //     setPause(false)
-                    // }else{
-                    //     setPause(true)
-                    //     console.log('hoja pause');
-                    // }
-                    setPageNumber(e.nativeEvent.position+1)}
-                }
-                >
-                {item.videoWithImages && item.videoWithImages.map((element,indx)=>
-                <View key={indx}>
-                  
-                    {(item.isVideoPresent && indx===0) ?
-                    <Video
-                        // key={index}
-                        ref={videoRef}
-                        onBuffer={onBuffer}
-                        onLoad={onLoad}
-                        onLoadStart={onLoadStart}
-                        playInBackground={false}
-                        onVideoLoad={() => {
-                        console.log('load');
-                        }}
-                        onError={onError}
-                        repeat
-                        resizeMode="cover"
-                        // paused={pause}
-                        paused={(index !== currentVisibleIndex || pause)}
-                        // source={{
-                        // uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.videoUrl}`,
-                        // }}
-                        source={require('../assets/Illustrations/space_testing.mp4')}
-                        // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
-                        // posterResizeMode="cover"
-                        style={{
-                        // width: windowWidth,
-                        // height: windowHeight/1.30,
-                        flex:1
-                        // position: 'absolute',
-                        }}
-                        // onLoad={onLoad}
-                        // onLoadStart={onLoadStart}
-                        // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
-                        posterResizeMode='cover'
-                    />
-                    :
-                    <>
-                    {pagerEnabled &&
-                      <FastImage 
-                          source={{uri:`https://andspace.s3.ap-south-1.amazonaws.com/${element}`}} 
-                          style={{flex:1,height:'100%',width:'100%'}}
-                      />
-                    }
-                    </>
-                    
-                    }
-                    
-                </View>
-              
-                )}
-            </PagerView> */}
             <ScrollView 
               horizontal 
               contentContainerStyle={{flexGrow:1,}}
               scrollEnabled={pagerEnabled}
               pagingEnabled
               onScroll={(e)=>handleOnScroll(e)}
+              contentInsetAdjustmentBehavior='automatic'
               // scrollEventThrottle={5}
               >  
               {item.videoWithImages && item.videoWithImages.map((element,indx)=>
-               <View>
+               <View key={indx}>
                     {(indx===0) ?
                     <>
                     
                       <Video
                           // key={index}
                           ref={videoRef}
-                          onBuffer={onBuffer}
+                          // onBuffer={onBuffer}
+                          muted={videoPaused}
                           onLoad={onLoad}
-                          onLoadStart={onLoadStart}
+                          playWhenReady={true}
+                          // onLoadStart={onLoadStart}
                           // playWhenInactive={true}
+                          // onAudioFocusChanged={(e)=>console.log('onAudioFocusChanged',e)}
+                          // onProgress={(e)=>console.log('onProgree',e)}
                           playInBackground={false}
                           // preventsDisplaySleepDuringVideoPlayback={false}
-                          automaticallyWaitsToMinimizeStalling={false}
-                          onVideoLoad={() => {
-                          console.log('load');
+                          automaticallyWaitsToMinimizeStalling={true}
+                          onVideoLoad={(e) => {
+                          console.log('load',e);
                           }}
                           onError={onError}
                           repeat
                           resizeMode="cover"
                           // paused={pause}
-                          paused={(index !== currentVisibleIndex || pause)}
+                          paused={((index !== currentVisibleIndex || videoPaused) || pause)}
                           source={{
                           uri: `https://andspace.s3.ap-south-1.amazonaws.com/${element}`,
-                      //    type:'mp4'
+                          type:'mp4'
                           }}
                           // source={require('../assets/Illustrations/space_testing.mp4')}
                           // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.image}`}
@@ -595,9 +331,10 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                           }}
                           // onLoad={onLoad}
                           // onLoadStart={onLoadStart}
-                          poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
-                          posterResizeMode='cover'
+                          // poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
+                          // posterResizeMode='cover'
                       />
+                      
                       
                     </>
                    
@@ -710,7 +447,7 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                   <Pressable 
                     style={styles.details} 
                     onPress={()=>{
-                      pauseOnModal=false
+                      // pauseOnModal=false
                       setDisable(true)
                       moreHandler()
                       // setPause(true)
@@ -760,14 +497,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                       {item?.address?.road}, {item?.address?.city},{' '}
                       {item?.address?.postCode}.
                     </Text>
-                    {/* <View
-                      activeOpacity={0.6}
-                      // onPress={handlePresentModalPress}
-                      >
-                      <Text style={styles.buldingDetails}>
-                        Click for more details...
-                      </Text>
-                    </View> */}
                     {item.propertyType==='INFORMATION' ?
                     <View style={styles.propertyTypeContainer}>
                       <Image source={require('../assets/propertyTypes/INFORMATION.png')} style={styles.propertyType}/>
@@ -824,7 +553,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                   style={{width:24,height:24}}
               />
           </TouchableOpacity>
-          {/* <View style={{height:200,backgroundColor:'#fff'}}/> */}
           </>
           }
           
@@ -839,7 +567,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                 backgroundColor: '#000',
                 opacity: 1,
                 borderRadius:0,
-                // paddingTop:0
                 }}
                 >
                 <BottomSheetScrollView>
@@ -854,7 +581,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                       bottomSheetRef.current?.dismiss();
                                         navigation.navigate('Admin', {
                                         Details: item.agentId,
-                                        // videoRef:videoRef
                                         });
                                         setPause(true),
                                         Animated.timing(animatedHeight, {
@@ -902,7 +628,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={()=>{
                                   DisablePagerView()
-                                  // setPagerEnabled(false)
                                   }}>
                                     <Image
                                         source={require('../assets/icons/more.png')}
@@ -912,7 +637,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                 </TouchableOpacity>
                             </View>
                             <View style={{...styles.details}} 
-                                // onPress={handlePresentModalPress}
                                 >
                                 <View>
                                 {(item?.price && item?.price!=='' && item?.price!==null) ?
@@ -945,7 +669,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                 <View
                                     activeOpacity={0.6}
                                     style={{paddingTop:12}}
-                                    // onPress={handlePresentModalPress}
                                     >
                                     <Text style={{...styles.buldingDetails,color:colors.darkSky}}>
                                         Scroll for more information
@@ -1089,30 +812,6 @@ const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,
                                         />
                                     </MapView>
                                 </View>
-                                {/* <View
-                                style={{
-                                    position: 'absolute',
-                                    zIndex: 1,
-                                    bottom: 12,
-                                    alignSelf: 'center',
-                                    backgroundColor: colors.backgroundShadow,
-                                    borderRadius: 12,
-                                }}>
-                                    <Text
-                                        style={[
-                                        styles.buldingDetails,
-                                        {
-                                            padding: 14,
-                                            color: colors.white,
-                                            flexShrink: 1,
-                                            flexWrap: 'wrap',
-                                        },
-                                        ]}>
-                                        {' '}
-                                        {item?.address?.street}, {item?.address?.city},{' '}
-                                        {item?.address?.state}, {item?.address?.country}.
-                                    </Text>
-                                </View> */}
                             </View>
                         </View>
                         )}

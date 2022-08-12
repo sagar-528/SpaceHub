@@ -12,23 +12,23 @@ import {
 import React, {useEffect, useState, useRef, useCallback, useMemo} from 'react';
 import {colors, typography} from '../../themes';
 import AxiosBase from '../../services/AxioBase';
-import OverlayDetails from '../../components/Modals/OverlayDetails';
+// import OverlayDetails from '../../components/Modals/OverlayDetails';
 import Video from 'react-native-video';
 import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetModal,
-  BottomSheetModalProvider,
+  // BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
-import Close from '../../components/Close';
+// import Close from '../../components/Close';
 import {displayToast, loadString} from '../../utils';
 import {useIsFocused} from '@react-navigation/native';
-import More from '../Feeds/more';
+// import More from '../Feeds/more';
 import FastImage from 'react-native-fast-image'
 
-import {
-  SharedElement,
-  createSharedElementStackNavigator,
-} from 'react-navigation-shared-element';
+// import {
+//   SharedElement,
+//   createSharedElementStackNavigator,
+// } from 'react-navigation-shared-element';
 import MapView, {
   Marker,
   PROVIDER_GOOGLE,
@@ -258,7 +258,7 @@ const long = item?.address?.loc?.coordinates[0];
   return (
     // <BottomSheetModalProvider>
 
-      <SharedElement id={item._id} style={{flex:1,backgroundColor: 'black',}}>
+      
           <View style={{flex:1,backgroundColor: 'black',}}>
               <View style={{flex:1,}}>
                   <PagerView 
@@ -616,7 +616,6 @@ const long = item?.address?.loc?.coordinates[0];
                   </BottomSheetScrollView>
               </BottomSheetModal>
           </View>
-      </SharedElement>
     // </BottomSheetModalProvider>
   );
 };

@@ -20,10 +20,10 @@ import MapView, {
   } from 'react-native-maps';
 
 import { createThumbnail } from "react-native-create-thumbnail";
-import {
-    SharedElement,
-    createSharedElementStackNavigator,
-  } from 'react-navigation-shared-element';
+// import {
+//     SharedElement,
+//     createSharedElementStackNavigator,
+//   } from 'react-navigation-shared-element';
 import { Key } from '../../Constant/constant';
 
 
@@ -189,7 +189,7 @@ export default function More({route,navigation}) {
       
       <View style={{flex:1,backgroundColor: 'black',}}>
             <View style={{flex:1,backgroundColor: 'black',}}>
-                <SharedElement id={item._id} style={{flex:1,backgroundColor: 'black',}}>
+                {/* <SharedElement id={item._id} style={{flex:1,backgroundColor: 'black',}}> */}
                 <PagerView 
                     style={styles.pagerView} 
                     initialPage={0}
@@ -247,7 +247,7 @@ export default function More({route,navigation}) {
                     </View>
                     )}
                 </PagerView>
-                </SharedElement>
+                {/* </SharedElement> */}
                 {mediaFiles.length>1 &&
                 <View style={{
                     position:'absolute',

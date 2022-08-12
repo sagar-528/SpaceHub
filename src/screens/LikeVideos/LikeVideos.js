@@ -14,14 +14,14 @@ import React, {useState, useEffect, useRef} from 'react';
 import {colors, typography} from '../../themes';
 import AxiosBase from '../../services/AxioBase';
 import {Loader} from '../../components/Loader';
-import Video from 'react-native-video';
+// import Video from 'react-native-video';
 import {displayToast} from '../../utils';
 import NetInfo from '@react-native-community/netinfo';
 import FastImage from 'react-native-fast-image'
 import { useIsFocused,useRoute } from '@react-navigation/native';
 import CrossIconSvg from '../../assets/svgs/crossIconSvg';
 import RedLikeSvg from '../../assets/svgs/redLikeSvg';
-import {Key} from '../../Constant/constant';
+// import {Key} from '../../Constant/constant';
 import { EventRegister } from 'react-native-event-listeners'
 
 

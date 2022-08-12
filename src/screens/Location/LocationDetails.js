@@ -24,11 +24,11 @@ import {useIsFocused,StackActions} from '@react-navigation/native';
 import AxiosBase from '../../services/AxioBase';
 import CustomMarker from '../../components/CustomMarker';
 import NetInfo from '@react-native-community/netinfo';
-import BottomSheet, {
-  BottomSheetScrollView,
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
+// import BottomSheet, {
+//   BottomSheetScrollView,
+//   BottomSheetModal,
+//   BottomSheetModalProvider,
+// } from '@gorhom/bottom-sheet';
 import { Key } from '../../Constant/constant';
 
 const LocationDetails = props => {

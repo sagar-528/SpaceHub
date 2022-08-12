@@ -8,7 +8,8 @@ import {
   Dimensions,
   RefreshControl,
   ActivityIndicator,
-  Image
+  Image,
+  AppState
 } from 'react-native';
 import {SwiperFlatList} from 'react-native-swiper-flatlist';
 import Reels from '../../components/Reels';
@@ -27,6 +28,9 @@ import BottomSheet, {
 import { load,displayToast } from '../../utils';
 import { Set } from "immutable";
 import { typography } from '../../themes';
+
+import { useFocusEffect } from '@react-navigation/native';
+
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -51,13 +55,16 @@ const Feed = props => {
   const [swiper, setSwiper] = useState(true)
   const [selectedItems, setSelectedItems] = useState(Set());
   const [likedId, setLikedId] = useState('') // updating from liked screen
+  const [firstTimeFocused, setFirstTimeFocused] = useState(true)
+
+  const _isMounted = useRef(true);
 
 
   const [hook, setHook] = useState(false);
 
   
   useEffect(() => {
-    StatusBar.setHidden(true);
+    // StatusBar.setHidden(true);
     
     getData();
     // setRefreshing(!refreshing)
@@ -73,6 +80,12 @@ const Feed = props => {
       .catch(error => {
         console.log(error.message);
       });
+
+      return () => { // ComponentWillUnmount in Class Component
+        _isMounted.current = false;
+    }
+
+    
   }, []);
 
   const getData = () => {
@@ -111,21 +124,12 @@ const Feed = props => {
             console.log('error in feeds api', error);
             setErrorStatus(1)
           })
-          // .finally(() => {
-          //   // setRefreshing(false);
-          //   setLoading(false);
-          //   setRefreshing(!refreshing)
-          // });
       } else {
         setRefreshing(false);
         displayToast('Internet Connection Problem');
       }
     });
   };
-
-  // const handleChangeIndexValue = ({index}) => {
-  //   setCurrentIndex(index);
-  // };
 
 
   useEffect(() => {
@@ -161,14 +165,14 @@ const Feed = props => {
   
 
 
-  // const updateItem=(id)=>{
-  //   const updatedItemIndex = feedData.findIndex(obj => obj._id === id)
-  //   feedData.map((item)=>console.log('logggggg111',item))
-  //   console.log('updatedItemIndex',updatedItemIndex);
-  //   let temp = [...feedData]
-  //   temp[updatedItemIndex].isLiked = false
-  //   setFeedData(temp)
-  // }
+  const updateItem=(id)=>{
+    const updatedItemIndex = feedData.findIndex(obj => obj._id === id)
+    feedData.map((item)=>console.log('logggggg111',item))
+    console.log('updatedItemIndex',updatedItemIndex);
+    let temp = [...feedData]
+    temp[updatedItemIndex].isLiked = false
+    setFeedData(temp)
+  }
 
   const LoadMoreData=()=>{
     // alert('ghjgjhgjh')
@@ -204,7 +208,7 @@ const Feed = props => {
     }
   };
 
-  const windowSize = feedData.length > 42 ? feedData.length / 2 : 21;
+  // const windowSize = feedData.length > 42 ? feedData.length / 2 : 21;
 
   const handleChangeIndexValue = ({index}) => {
     setCurrentIndex(index);
@@ -231,6 +235,7 @@ const Feed = props => {
         swiper={swiper}
         setSwiper={setSwiper}
         setLikedId={setLikedId} // to clear the id if pressed again for like
+        videoPaused={videoPaused}
       />
     )
   };
@@ -256,51 +261,68 @@ const Feed = props => {
   }
 
   const keyExtractor = useCallback((item,index) => { 
-    return index
+    return item._id + index.toString()
 }, []);
 
+  const [videoPaused, toggleVideoPaused] = useState(false);
+  const [appActive, setAppActive] = useState(false);
+
+  const handleAppStateChange = nextAppState => {
+    console.log('App nextAppState',nextAppState);
+    if (nextAppState === 'active') {
+      setAppActive(true);
+    } else {
+      setAppActive(false);
+    }
+  };
+
+  useEffect(() => {
+    AppState.addEventListener('change', handleAppStateChange);
+    return () => AppState.removeEventListener('change', handleAppStateChange);
+  }, []);
+
+  useEffect(() => {
+    if(!firstTimeFocused){
+      appActive ? toggleVideoPaused(false) : toggleVideoPaused(true);
+    }else{
+      setFirstTimeFocused(false)
+    }
+  }, [appActive]);
+  const [pause, setPause] = useState(true)
 
 
-  // console.log('resfresh',feedData);
+
+
+  console.log('_isMounted.current',_isMounted.current);
   return (
 
         <View style={{flex:1}}>
           
           <SwiperFlatList
-            // style={{flex:1}}
-            
             disableVirtualization={false}
             legacyImplementation={true}
             overScrollMode='never'
             scrollEnabled={swiper}
             refreshControl={
               <RefreshControl refreshing={isRefreshing} onRefresh={getData} />
-          }
-          // extraData={refreshing}
+            }
             data={feedData}
-            windowSize={windowSize}
-            maxToRenderPerBatch={3}
+            windowSize={2}
+            maxToRenderPerBatch={1}
             removeClippedSubviews={true}
-            initialNumToRender={3}
-            // updateCellsBatchingPeriod={10}
+            initialNumToRender={1}
+            updateCellsBatchingPeriod={100}
             vertical
             onChangeIndex={handleChangeIndexValue}
             renderItem={_renderItem}
-            // renderItem={({ item,index }) => <RenderItem item={item} index={index} />}
             keyExtractor={(item,index)=>keyExtractor(item,index)}
             decelerationRate={'fast'}
             onEndReached={LoadMoreData}
             onEndReachedThreshold={0.2}
-            // refreshing={refreshing}
-            // onRefresh={getData}
             onViewableItemsChanged={_onViewableItemsChanged}
-            // viewabilityConfig={viewConfigRef.current}
             ListFooterComponent={_renderFooter}
             ListEmptyComponent={EmptyListMessage}
           />
-
-          {/* <Items data={feedData} selectedItems={selectedItems}/> */}
-          {/* <ITEMS data={feedData}/> */}
           
         </View>
   );

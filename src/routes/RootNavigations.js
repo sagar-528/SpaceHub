@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-// import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Splash from '../screens/onBoarding/Splash';
 import OnBoarding from '../screens/onBoarding/OnBoarding';
 import BottomTab from './BottomTab';
@@ -11,14 +11,14 @@ import Support from '../screens/Supports/Support';
 import Feedback from '../screens/Supports/Feedback';
 import Header from '../components/Header';
 import More from '../screens/Feeds/more';
-import SingleReelInfo from '../screens/SingleReel/SingleReelInfo';
+// import SingleReelInfo from '../screens/SingleReel/SingleReelInfo';
 import ReelInfo from '../screens/Feeds/reelInfo';
-import TransionalReelView from '../screens/Feeds/transionalReelView';
+// import TransionalReelView from '../screens/Feeds/transionalReelView';
 
-import { createSharedElementStackNavigator,SharedElement } from 'react-navigation-shared-element';
-import { TransitionPresets } from '@react-navigation/stack';
+// import { createSharedElementStackNavigator,SharedElement } from 'react-navigation-shared-element';
+// import { TransitionPresets } from '@react-navigation/stack';
 
-const Stack = createSharedElementStackNavigator();
+const Stack = createNativeStackNavigator();
 
 // const horizontalAnimation = {
 //   gestureDirection: 'horizontal',
@@ -63,39 +63,39 @@ const RootNavigations = () => {
         component={More}
         options={{
           headerShown: false,
-          ...TransitionPresets.ModalFadeTransition,
+          // ...TransitionPresets.ModalFadeTransition,
         }}
-        sharedElements={(route) => {
-          console.log(route,'transition route');
-          return [route.params.item._id];
-        }}
+        // sharedElements={(route) => {
+        //   console.log(route,'transition route');
+        //   return [route.params.item._id];
+        // }}
       />
       <Stack.Screen 
         name="SingleReel" 
         component={SingleReel} 
-        sharedElements={(route) => {
-          console.log(route,'transition route');
-          return [route.params.item._id];
-        }}
+        // sharedElements={(route) => {
+        //   console.log(route,'transition route');
+        //   return [route.params.item._id];
+        // }}
       />
       {/* <Stack.Screen name="SingleReel" component={SingleReelInfo} /> */}
       <Stack.Screen 
         name="ReelInfo" 
         component={ReelInfo}
-        sharedElements={(route) => {
-          console.log(route,'transition route');
-          return [route.params.item._id];
-        }} 
+        // sharedElements={(route) => {
+        //   console.log(route,'transition route');
+        //   return [route.params.item._id];
+        // }} 
       />
-      <Stack.Screen 
+      {/* <Stack.Screen 
         name="TransionalReelView" 
         component={TransionalReelView} 
-        sharedElements={(route) => {
-          console.log(route,'transition route');
-          return [route.params.reel._id];
-        }}
+        // sharedElements={(route) => {
+        //   console.log(route,'transition route');
+        //   return [route.params.reel._id];
+        // }}
 
-      />
+      /> */}
       <Stack.Screen
         name="Terms"
         component={TermsOfServices}

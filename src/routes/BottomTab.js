@@ -6,11 +6,11 @@ import LocationDetails from "../screens/Location/LocationDetails";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Feed from "../screens/Feeds/Feed";
 import Profile from "../screens/Clients/Profile";
-import { Key } from "../Constant/constant";
+// import { Key } from "../Constant/constant";
 import SignUp from "../screens/Auth/SignUp";
 import Login from "../screens/Auth/Login";
 import LikeVideos from "../screens/LikeVideos/LikeVideos";
-import More from "../screens/Feeds/more";
+// import More from "../screens/Feeds/more";
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const ProfileStack = createNativeStackNavigator();
@@ -88,6 +88,7 @@ const BottomTab = () => {
         },
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
+        // unmountOnBlur:true
       }}
       initialRouteName={'HomeScreen'}
     >

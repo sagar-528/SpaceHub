@@ -30,7 +30,7 @@ import {
   import ReelInfo from '../screens/Feeds/reelInfo';
   
   import InViewPort from "@coffeebeanslabs/react-native-inviewport";
-  import { createSharedElementStackNavigator,SharedElement } from 'react-navigation-shared-element';
+  // import { createSharedElementStackNavigator,SharedElement } from 'react-navigation-shared-element';
   import VisibilitySensor from '@svanboxel/visibility-sensor-react-native'
   
   const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,currentVisibleIndex}) => {
@@ -404,7 +404,7 @@ import {
               </View>
             </View>
           </View>
-          <SharedElement id={item._id} style={{flex:1,width:'100%'}}>
+          {/* <SharedElement id={item._id} style={{flex:1,width:'100%'}}> */}
             <Video
               ref={videoRef}
               onBuffer={onBuffer}
@@ -435,7 +435,7 @@ import {
               onLoadStart={onLoadStart}
               muted={false}
             />
-          </SharedElement>
+          {/* </SharedElement> */}
         </View>
       </InViewPort>
     );

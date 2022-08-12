@@ -11,39 +11,23 @@ import React, {useEffect,useRef} from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
 import RootNavigations from './src/routes/RootNavigations';
-import Animated from 'react-native-reanimated';
-import {
-  gestureHandlerRootHOC,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+// import Animated from 'react-native-reanimated';
+// import {
+//   gestureHandlerRootHOC,
+//   GestureHandlerRootView,
+// } from 'react-native-gesture-handler';
 import {BottomSheetModalProvider,useBottomSheetTimingConfigs} from '@gorhom/bottom-sheet';
-import SystemNavigationBar from 'react-native-system-navigation-bar';
-import { Key } from './src/Constant/constant';
+// import SystemNavigationBar from 'react-native-system-navigation-bar';
+// import { Key } from './src/Constant/constant';
+// import { enableScreens } from 'react-native-screens';
+// enableScreens(false);
 
 const App = () => {
-  // const appState = useRef(AppState.currentState)
 
-  // useEffect(() => {
-  //   AppState.addEventListener("change",handleAppStateChange)
-  //   return ()=>{
-  //     AppState.removeEventListener("change",handleAppStateChange)
-  //   }
-  // }, []);
-
-  // const handleAppStateChange=(nextAppState)=>{
-  //   if(nextAppState==='active'){
-  //     console.log('App has come to foreground');
-  //     Key.backgroundPause = false
-  //   }else{
-  //     Key.backgroundPause = true
-  //     console.log('nextAppState',nextAppState);
-  //   }
-  // }
-
-  LogBox.ignoreLogs([
-    'ViewPropTypes will be removed',
-    'ColorPropType will be removed',
-  ]);
+  // LogBox.ignoreLogs([
+  //   'ViewPropTypes will be removed',
+  //   'ColorPropType will be removed',
+  // ]);
 
   return (
     // <GestureHandlerRootView style={{flex: 1}}>

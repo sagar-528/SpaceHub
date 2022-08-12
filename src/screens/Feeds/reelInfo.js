@@ -19,10 +19,10 @@ import MapView, {
 
 const window = Dimensions.get('screen');
 const windowHeight = Dimensions.get('screen').height;
-import {
-    SharedElement,
-    createSharedElementStackNavigator,
-  } from 'react-navigation-shared-element';
+// import {
+//     SharedElement,
+//     createSharedElementStackNavigator,
+//   } from 'react-navigation-shared-element';
 
 export default function ReelInfo({route,navigation}) {
     const {item,agentImage,agentData,like,handleLike,handleShareVideo} = route.params
@@ -85,7 +85,7 @@ export default function ReelInfo({route,navigation}) {
 
 
   return (
-    <SharedElement id={item._id}>
+    // <SharedElement id={item._id}>
         <View style={{flex:1,backgroundColor:'#000'}}>
             <ParallaxScrollView
 
@@ -432,7 +432,7 @@ export default function ReelInfo({route,navigation}) {
                 />
             </TouchableOpacity>
         </View>
-    </SharedElement>
+    // </SharedElement>
   )
 }
 
