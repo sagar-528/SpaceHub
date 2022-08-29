@@ -16,7 +16,7 @@ const WIDTH = Dimensions.get('window').width;
 const SucessModal = props => {
   const handleNextVideo = () => {
     props.setSucessModal(false);
-    props.currentIndex + 1
+    props.flatRef.current.scrollToIndex({index: props.currentIndex + 1, animated: true});
   };
 
   return (

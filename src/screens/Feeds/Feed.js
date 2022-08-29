@@ -43,6 +43,7 @@ const windowHeight = Dimensions.get('window').height;
 
 const Feed = props => {
   const navigation = props.navigation;
+  const flatRef = useRef(null)
   const isFocused = useIsFocused();
   const videoRef = useRef(null);
   const [videoRefs, setVideoRefs] = useState([]);
@@ -221,6 +222,7 @@ const Feed = props => {
         loading={loading}
         data={feedData}
         setData={setFeedData}
+        flatRef={flatRef}
         // refreshing={refreshing}
         // setRefreshing={setRefreshing}
         swiper={swiper}
@@ -306,6 +308,7 @@ const Feed = props => {
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={getData} />
         }
+        ref={flatRef}
         data={feedData}
         windowSize={2}
         maxToRenderPerBatch={1}

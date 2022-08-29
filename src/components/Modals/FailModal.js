@@ -14,6 +14,11 @@ import {colors, typography} from '../../themes';
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 const FailModal = props => {
+  const handleNextVideo = () => {
+    props.setFailModal(false);
+    props.flatRef.current.scrollToIndex({index: props.currentIndex + 1, animated: true});
+  };
+
   return (
     <Modal
       testID={'modal'}
@@ -30,9 +35,7 @@ const FailModal = props => {
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <Pressable
-            onPress={() => {
-              props.setFailModal(false);
-            }}
+            onPress={() => handleNextVideo()}
             style={{alignSelf: 'flex-end', padding: 4}}
             hitSlop={2}>
             <Image

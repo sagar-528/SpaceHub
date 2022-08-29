@@ -46,7 +46,7 @@ import RedLikeSvg2 from '../assets/svgs/redLikeSvg2';
 import GameInstruction from './Modals/GameInstruction';
 import SucessModal from './Modals/SucessModal';
 import FailModal from './Modals/FailModal';
-// import AnimatedNumbers from 'react-native-animated-numbers';
+import AnimatedNumbers from 'react-native-animated-numbers';
 import qs from 'qs';
 
 const windowWidth = Dimensions.get('screen').width;
@@ -66,6 +66,7 @@ const Reels = ({
   currentVisibleIndex,
   setLikedId,
   videoPaused,
+  flatRef,
 }) => {
   const appState = useRef(AppState.currentState);
 
@@ -76,6 +77,7 @@ const Reels = ({
   const [pause, setPause] = useState(false);
   const [disable, setDisable] = useState(false);
   const [pagerEnabled, setPagerEnabled] = useState(false);
+  const [token, setToken] = useState(false);
 
   //Game states
   const [gameInstructionModal, setGameInstructionModal] = useState(false);
@@ -142,11 +144,19 @@ const Reels = ({
       .catch(error => {
         console.log('async error', error);
       });
+
+    load('token').then(response => {
+      if (response !== null) {
+        setToken(true);
+      } else {
+        setToken(false);
+      }
+    });
   }, [currentIndex]);
 
   //Resart video
   useEffect(() => {
-    setCheck(0)
+    setCheck(0);
 
     if (!!videoRef.current) {
       videoRef.current.seek(0);
@@ -154,7 +164,18 @@ const Reels = ({
   }, [currentIndex]);
 
   // Animated effect
-  useEffect(() => {}, []);
+  useEffect(() => {
+    setTimeout(() => {
+      setTimeout(() => {
+        setAnimateToNumber(animateToNumber + 1999);
+      }, 300);
+    }, 4000);
+    setTimeout(() => {
+      setTimeout(() => {
+        setAnimateToNumber(animateToNumber - 1999);
+      }, 300);
+    }, 4000);
+  }, [currentIndex]);
 
   const onError = ({error}) => {
     console.log('error of video', index, error);
@@ -306,7 +327,7 @@ const Reels = ({
     setLikedId('');
     loadString('token')
       .then(response => {
-        if (response === null) {
+        if (response === null && item.isLiked === undefined) {
           displayToast('Please Login First.');
         } else {
           let temp = [...data];
@@ -400,7 +421,6 @@ const Reels = ({
     Linking.openURL(`mailto:${e.email}`);
   };
 
-  console.log('current index', currentIndex);
   return (
     <>
       <View style={{backgroundColor: '#000', flex: 1}}>
@@ -619,12 +639,12 @@ const Reels = ({
                             <Text style={styles.rate}>
                               {item?.currency.toLocaleString()}
                             </Text>
-                            {/* <AnimatedNumbers
+                            <AnimatedNumbers
                               includeComma
                               animateToNumber={animateToNumber}
                               animationDuration={2000}
                               fontStyle={styles.rate}
-                            /> */}
+                            />
                             <Image
                               source={
                                 check === 1
@@ -1001,12 +1021,16 @@ const Reels = ({
         setSucessModal={setSucessModal}
         price={item.price}
         currentIndex={currentIndex}
+        videoRef={videoRef}
+        flatRef={flatRef}
       />
       <FailModal
         failModal={failModal}
         setFailModal={setFailModal}
         price={item.price}
         currentIndex={currentIndex}
+        videoRef={videoRef}
+        flatRef={flatRef}
       />
       <GameInstruction
         gameInstructionModal={gameInstructionModal}
