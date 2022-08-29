@@ -53,7 +53,7 @@ const Profile = props => {
 
   return (
     <ScrollView
-      style={{backgroundColor: colors.backgroundShadow, opacity: 0.95}}
+      style={{backgroundColor: '#282828', opacity: 0.95}}
       contentContainerStyle={styles.container}>
       <SafeAreaView />
       <Text style={[styles.title, {color: colors.white}]}>
@@ -100,6 +100,23 @@ const Profile = props => {
               }}
               >
               <Text style={styles.userName}>Feedback</Text>
+              <Image
+                source={require('../../assets/icons/Vector.png')}
+                resizeMode="contain"
+                style={{height: 16, width: 16}}
+              />
+            </Pressable>
+          </View>
+        </View>
+        <View style={styles.box}>
+          <View style={styles.view}>
+            <Pressable 
+              style={styles.row}
+              onPress={() => {
+                navigation.navigate('LeaderBorad')
+              }}
+              >
+              <Text style={styles.userName}>Game Mode</Text>
               <Image
                 source={require('../../assets/icons/Vector.png')}
                 resizeMode="contain"

@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler'
 import {
   StyleSheet,
   Text,
@@ -23,11 +24,6 @@ import {BottomSheetModalProvider,useBottomSheetTimingConfigs} from '@gorhom/bott
 // enableScreens(false);
 
 const App = () => {
-
-  // LogBox.ignoreLogs([
-  //   'ViewPropTypes will be removed',
-  //   'ColorPropType will be removed',
-  // ]);
 
   return (
     // <GestureHandlerRootView style={{flex: 1}}>

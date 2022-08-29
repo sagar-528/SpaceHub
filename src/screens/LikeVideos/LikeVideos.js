@@ -152,7 +152,7 @@ const LikeVideos = props => {
   return (
     <ScrollView
       contentContainerStyle={styles.container}
-      style={{backgroundColor: colors.backgroundShadow, opacity: 0.95}}>
+      style={{backgroundColor: '#282828', opacity: 0.95}}>
       <Loader visible={loading} />
       <View style={{marginTop: 47, flex: 1}}>
         <TouchableOpacity

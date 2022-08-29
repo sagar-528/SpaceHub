@@ -12,6 +12,7 @@ import Login from "../screens/Auth/Login";
 import LikeVideos from "../screens/LikeVideos/LikeVideos";
 // import More from "../screens/Feeds/more";
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import LeaderBoard from "../screens/Clients/LeaderBoard";
 
 const ProfileStack = createNativeStackNavigator();
 function ProfileScreen({navigation,route}) {
@@ -38,6 +39,7 @@ function ProfileScreen({navigation,route}) {
       <ProfileStack.Screen name="SignUp" component={SignUp} />
       <ProfileStack.Screen name="Profile" component={Profile} />
       <ProfileStack.Screen name="LikeVideos" component={LikeVideos} />
+      <ProfileStack.Screen name="LeaderBorad" component={LeaderBoard} />
     </ProfileStack.Navigator>
   );
 }

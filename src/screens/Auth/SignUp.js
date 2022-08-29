@@ -92,7 +92,7 @@ const SignUp = props => {
       <Loader visible={loading} />
       {visible === false ? (
         <ScrollView
-          style={{backgroundColor: colors.backgroundShadow, opacity: 0.95}}
+          style={{backgroundColor: '#282828', opacity: 0.95}}
           contentContainerStyle={styles.container}>
           {/* <Loader visible={loading} /> */}
           <ScrollContainer>

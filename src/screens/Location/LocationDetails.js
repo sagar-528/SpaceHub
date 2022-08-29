@@ -20,15 +20,8 @@ import SearchModal from '../../components/Modals/SearchModal';
 import {load, displayToast} from '../../utils';
 import {Loader} from '../../components/Loader';
 import {useIsFocused,StackActions} from '@react-navigation/native';
-// import { StackActions } from '@react-navigation/native';
 import AxiosBase from '../../services/AxioBase';
-import CustomMarker from '../../components/CustomMarker';
 import NetInfo from '@react-native-community/netinfo';
-// import BottomSheet, {
-//   BottomSheetScrollView,
-//   BottomSheetModal,
-//   BottomSheetModalProvider,
-// } from '@gorhom/bottom-sheet';
 import { Key } from '../../Constant/constant';
 
 const LocationDetails = props => {
@@ -38,9 +31,10 @@ const LocationDetails = props => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [longitude, setLongitude] = useState(Key.longitude); // london long
-  const [longitudeDelta, setLongitudeDelta] = useState(0.0421)
+  const [longitudeDelta, setLongitudeDelta] = useState(0.1421)
   const [latitude, setLatitude] = useState(Key.latitude);  // london lat
-  const [latitudeDelta, setLatitudeDelta] = useState(0.0922)
+  const [latitudeDelta, setLatitudeDelta] = useState(0.1922)
+  
 
   const [projects, setProjects] = useState([]);
   const bottomSheetRef = useRef(null);
@@ -59,9 +53,6 @@ const LocationDetails = props => {
       .catch(error => {
         console.log(error.message);
       });
-
-
-      // navigation.dispatch(StackActions.popToTop());
   }, []);
 
   useEffect(() => {
@@ -75,7 +66,7 @@ const LocationDetails = props => {
         })
           .then(response => {
             setLoading(true);
-            // console.log('location response', response?.data?.data);
+            console.log('location response', response?.data?.data);
             setProjects(response?.data?.data);
             setLoading(false);
           })
@@ -87,24 +78,24 @@ const LocationDetails = props => {
         displayToast('Internet Connection Problem');
       }
     });
-  }, [isFocused]);
+  }, []);
 
   const mapRef = useRef(null)
 
-  const _onRegionChangeComplete = location => {
-    // setMemoLatitude(location.latitude), setMemoLongitude(location.longitude);
-    // setMemoLatitudeDelta(location.latitudeDelta),setMemoLongitudeDelta(location.longitudeDelta)
-    // console.log(e);
-    if (location) {
-      console.log('change location, location: ', location)
-      mapRef.current.animateToRegion({
-        latitude: location.latitude,
-        longitude: location.longitude,
-        latitudeDelta: location.latitudeDelta,
-        longitudeDelta: location.longitudeDelta,
-      })
-    }
-  };
+  // const _onRegionChangeComplete = location => {
+  //   // setMemoLatitude(location.latitude), setMemoLongitude(location.longitude);
+  //   // setMemoLatitudeDelta(location.latitudeDelta),setMemoLongitudeDelta(location.longitudeDelta)
+  //   // console.log(e);
+  //   if (location) {
+  //     console.log('change location, location: ', location)
+  //     mapRef.current.animateToRegion({
+  //       latitude: location.latitude,
+  //       longitude: location.longitude,
+  //       latitudeDelta: location.latitudeDelta,
+  //       longitudeDelta: location.longitudeDelta,
+  //     })
+  //   }
+  // };
 
   function nFormatter(num) {
     if (num >= 1000000000) {
@@ -120,17 +111,13 @@ const LocationDetails = props => {
   }
 
   const handleSingleMarker = (item,index) => {
-    // alert('hkjj')
+   
     navigation.navigate('SingleReel', {
       item: item,
       index:index,
       projects:projects,
       setProjects:setProjects
     });
-    // setBorderWidth(2);
-
-    // handlePresentModalPress()
-    
 
   };
 
@@ -176,19 +163,11 @@ const LocationDetails = props => {
             Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
           }
           initialRegion={{
-            latitude: latitude,
-            longitude: longitude,
+            latitude: 51.5299092,
+            longitude: -0.1860307,
             latitudeDelta: latitudeDelta,
             longitudeDelta: longitudeDelta,
           }}
-          // region={{
-          //   latitude: latitude,
-          //   longitude: longitude,
-          //   latitudeDelta: latitudeDelta,
-          //   longitudeDelta: longitudeDelta,
-          // }}
-          // onRegionChangeComplete={_onRegionChangeComplete}
-          // clustering={true}
           showsUserLocation
           // mapType
         >
@@ -203,7 +182,6 @@ const LocationDetails = props => {
               // onSelect={()=>handleSingleMarker(item,index)}
               onPress={()=>handleSingleMarker(item,index)}
               >
-                  {/* <CustomMarker item={item} index={index}/> */}
                   <View style={{}}>
                     <TouchableOpacity
                       // onPress={() => handleSingleMarker(item,index)}
@@ -222,7 +200,7 @@ const LocationDetails = props => {
                             color: item.isVideoPresent === false ? 'black' : colors.white,
                           }}>
                           {
-                          `${nFormatter(parseInt(`${item.price}`.replace(",", "")))}`
+                          `${item.currency}${nFormatter(parseInt(`${item.price}`.replace(",", "")))}`
                           }
                         </Text>
                       </View>
