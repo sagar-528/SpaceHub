@@ -46,7 +46,7 @@ import RedLikeSvg2 from '../assets/svgs/redLikeSvg2';
 import GameInstruction from './Modals/GameInstruction';
 import SucessModal from './Modals/SucessModal';
 import FailModal from './Modals/FailModal';
-import AnimatedNumbers from 'react-native-animated-numbers';
+// import AnimatedNumbers from 'react-native-animated-numbers';
 import qs from 'qs';
 
 const windowWidth = Dimensions.get('screen').width;
@@ -83,8 +83,7 @@ const Reels = ({
   const [failModal, setFailModal] = useState(false);
   const [gameMode, setGameMode] = useState(false);
   const [gameModeVisible, setGameModeVisible] = useState(false);
-  const [gamePressUp, setgamePressUp] = useState(false);
-  const [gamePressDown, setgamePressDown] = useState(false);
+  const [check, setCheck] = useState(0);
 
   //Animation
   const [fadeAnim, setFadeAnim] = useState(new Animated.Value(1));
@@ -147,9 +146,7 @@ const Reels = ({
 
   //Resart video
   useEffect(() => {
-    // console.log('====================================');
-    // console.log('random number', Math.floor(Math.random() * (5 - 1)) + 1);
-    // console.log('====================================');
+    setCheck(0)
 
     if (!!videoRef.current) {
       videoRef.current.seek(0);
@@ -186,12 +183,14 @@ const Reels = ({
             .then(response => {
               console.log('sucessfully game api', response);
               setSucessModal(true);
+              setCheck(2);
             })
             .catch(error => {
               console.log('api error', error);
             });
         } else {
           setFailModal(true);
+          setCheck(1);
         }
       } else if (response !== null && item.gamePrice === undefined) {
         console.log('with token and undefined game price');
@@ -216,8 +215,10 @@ const Reels = ({
         if (Math.abs(result) > item.price) {
           if (e.gamePress == 'up') {
             setSucessModal(true);
+            setCheck(2);
           } else if (e.gamePress == 'down') {
             setFailModal(true);
+            setCheck(1);
           }
         }
       } else {
@@ -231,8 +232,10 @@ const Reels = ({
           if (item.gamePrice > item.price) {
             if (e.gamePress == 'up') {
               setSucessModal(true);
+              setCheck(2);
             } else if (e.gamePress == 'down') {
               setFailModal(true);
+              setCheck(1);
             }
           }
         } else if (response === null && item.gamePrice === undefined) {
@@ -259,8 +262,10 @@ const Reels = ({
           if (Math.abs(result1) > item.price) {
             if (e.gamePress == 'up') {
               setSucessModal(true);
+              setCheck(2);
             } else if (e.gamePress == 'down') {
               setFailModal(true);
+              setCheck(1);
             }
           }
         }
@@ -614,17 +619,23 @@ const Reels = ({
                             <Text style={styles.rate}>
                               {item?.currency.toLocaleString()}
                             </Text>
-                            <AnimatedNumbers
+                            {/* <AnimatedNumbers
                               includeComma
                               animateToNumber={animateToNumber}
                               animationDuration={2000}
                               fontStyle={styles.rate}
-                            />
-                            {/* <Image
-                              source={require('../assets/icons/cross.png')}
+                            /> */}
+                            <Image
+                              source={
+                                check === 1
+                                  ? require('../assets/icons/cross.png')
+                                  : check === 2
+                                  ? require('../assets/icons/tick.png')
+                                  : null
+                              }
                               resizeMode="contain"
                               style={{height: 24, width: 24, marginStart: 8}}
-                            /> */}
+                            />
                           </View>
                         )
                       ) : (
