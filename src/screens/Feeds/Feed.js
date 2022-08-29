@@ -137,7 +137,6 @@ const Feed = props => {
       const updatedItemIndex = feedData.findIndex(obj => obj._id === likedId);
       // feedData.map((item)=>console.log('logggggg111',item))
       console.log('updatedItemIndex', updatedItemIndex);
-      // getData()
     });
 
     return () => {
@@ -146,12 +145,13 @@ const Feed = props => {
     };
   }, []);
 
+
   useEffect(() => {
     console.log('updating LIKED ID', likedId);
     if (likedId !== '') {
       const updatedItemIndex = feedData.findIndex(obj => obj._id === likedId);
       // feedData.map((item)=>console.log('logggggg111',item))
-      console.log('updatedItemIndex', updatedItemIndex);
+      console.log('updatedItemIndex', updatedItemIndex.isLiked);
       if (updatedItemIndex !== -1) {
         let temp = [...feedData];
         temp[updatedItemIndex].isLiked = false;

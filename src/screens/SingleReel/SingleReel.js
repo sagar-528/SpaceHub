@@ -22,6 +22,8 @@ import BottomSheet, {
 // import Close from '../../components/Close';
 import {displayToast, loadString} from '../../utils';
 import {useIsFocused} from '@react-navigation/native';
+import WhiteLikeSvg from '../../assets/svgs/whiteLikeSvg';
+import RedLikeSvg2 from '../../assets/svgs/redLikeSvg2';
 // import More from '../Feeds/more';
 import FastImage from 'react-native-fast-image';
 
@@ -43,7 +45,7 @@ import PagerView from 'react-native-pager-view';
 const SingleReel = ({route, navigation}) => {
   // const navigation = props.navigation;
   const {item, index, projects, setProjects} = route.params;
-  // console.log('navigation', item);
+  console.log('navigation', item);
 
   const videoRef = useRef(null);
   // const bottomSheetRef = useRef(null);
@@ -57,7 +59,6 @@ const SingleReel = ({route, navigation}) => {
   const [agentImage, setAgentImage] = useState('');
   const [agentData, setAgentData] = useState();
   const [like, setLike] = useState(false);
-  const [itemId, setItemId] = useState('');
   const [likeData, setLikeData] = useState([]);
   const [token, setToken] = useState(false);
   const [opacity, setOpacity] = useState(0);
@@ -69,6 +70,7 @@ const SingleReel = ({route, navigation}) => {
   // const [thumbnail, setThumbnail] = useState('')
   const [paused, setPaused] = useState(false);
   const [expand, setExpand] = useState(false);
+  const [icon, setIcon] = useState(false)
 
   const bottomSheetRef = useRef(null);
 
@@ -103,11 +105,11 @@ const SingleReel = ({route, navigation}) => {
         if (response === null) {
           displayToast('Please Login First.');
         } else {
-          let temp = [...projects];
-          if (item.isLiked === false) {
-            // setLike(true);
-            temp[index].isLiked = true;
-            setProjects(temp);
+          // let temp = [...projects];
+          if (icon === false) {
+            setIcon(true)
+            // temp[index].isLiked = true;
+            // setProjects(temp);
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${true}`,
             )
@@ -121,7 +123,8 @@ const SingleReel = ({route, navigation}) => {
               });
           } else {
             // setLike(false);
-            temp[index].isLiked = false;
+            setIcon(false)
+            // temp[index].isLiked = false;
             setProjects(temp);
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${false}`,
@@ -188,7 +191,8 @@ const SingleReel = ({route, navigation}) => {
       setMediaFiles(prev => [item.videoUrl, ...prev]);
     }
     // setPause(true)
-    setLike(item.isLiked);
+
+    // setLike(item.isLiked);
   }, []);
 
   useEffect(() => {
@@ -244,13 +248,10 @@ const SingleReel = ({route, navigation}) => {
                     source={{
                       uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.videoUrl}`,
                     }}
-                   
                     style={{
-                     
                       flex: 1,
                       // position: 'absolute',
                     }}
-                  
                     poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
                     posterResizeMode="cover"
                   />
@@ -342,16 +343,20 @@ const SingleReel = ({route, navigation}) => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.7}
-                    onPress={() => handleLikeHandler()}>
-                    <Image
+                    onPress={() => handleLikeHandler()}
+                    style={{marginEnd: 20}}
+                    >
+                    {/* {console.log('isliked',item.isLiked)} */}
+                    {/* <Image
                       source={
-                        item.isLiked === false
-                          ? require('../../assets/icons/like.png')
-                          : require('../../assets/icons/redicon.png')
+                        like === false
+                          ? require('../../assets/icons/redicon.png')
+                          : require('../../assets/icons/like.png')
                       }
                       resizeMode="contain"
                       style={styles.icon}
-                    />
+                    /> */}
+                    {icon === false ? <WhiteLikeSvg /> : <RedLikeSvg2 />}
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.7}

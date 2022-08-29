@@ -78,6 +78,7 @@ const Reels = ({
   const [disable, setDisable] = useState(false);
   const [pagerEnabled, setPagerEnabled] = useState(false);
   const [token, setToken] = useState(false);
+  const [icon, setIcon] = useState(false);
 
   //Game states
   const [gameInstructionModal, setGameInstructionModal] = useState(false);
@@ -331,9 +332,10 @@ const Reels = ({
           displayToast('Please Login First.');
         } else {
           let temp = [...data];
-          if (item.isLiked === false) {
+          if (icon === false) {
             // setLike(true);
-            temp[index].isLiked = true;
+            // temp[index].isLiked = true;
+            setIcon(true)
             setData(temp);
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${true}`,
@@ -349,7 +351,8 @@ const Reels = ({
               });
           } else {
             // setLike(false);
-            temp[index].isLiked = false;
+            // temp[index].isLiked = false;
+            setIcon(false)
             setData(temp);
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${false}`,
@@ -547,7 +550,7 @@ const Reels = ({
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => handleLike()}>
-                  {item.isLiked === false ? <WhiteLikeSvg /> : <RedLikeSvg2 />}
+                  {icon === false ? <WhiteLikeSvg /> : <RedLikeSvg2 />}
                 </TouchableOpacity>
               </View>
               <View style={{marginBottom: 40}}>
