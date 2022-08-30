@@ -70,7 +70,7 @@ const SingleReel = ({route, navigation}) => {
   // const [thumbnail, setThumbnail] = useState('')
   const [paused, setPaused] = useState(false);
   const [expand, setExpand] = useState(false);
-  const [icon, setIcon] = useState(false)
+  const [icon, setIcon] = useState(false);
 
   const bottomSheetRef = useRef(null);
 
@@ -107,9 +107,9 @@ const SingleReel = ({route, navigation}) => {
         } else {
           // let temp = [...projects];
           if (icon === false) {
-            setIcon(true)
-            // temp[index].isLiked = true;
-            // setProjects(temp);
+            // setIcon(true)
+            temp[index].isLiked = true;
+            setProjects(temp);
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${true}`,
             )
@@ -123,8 +123,8 @@ const SingleReel = ({route, navigation}) => {
               });
           } else {
             // setLike(false);
-            setIcon(false)
-            // temp[index].isLiked = false;
+            // setIcon(false)
+            temp[index].isLiked = false;
             setProjects(temp);
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${false}`,
@@ -344,8 +344,7 @@ const SingleReel = ({route, navigation}) => {
                   <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={() => handleLikeHandler()}
-                    style={{marginEnd: 20}}
-                    >
+                    style={{marginEnd: 20}}>
                     {/* {console.log('isliked',item.isLiked)} */}
                     {/* <Image
                       source={
@@ -356,7 +355,11 @@ const SingleReel = ({route, navigation}) => {
                       resizeMode="contain"
                       style={styles.icon}
                     /> */}
-                    {icon === false ? <WhiteLikeSvg /> : <RedLikeSvg2 />}
+                    {item?.isLiked && item.isLiked ? (
+                      <RedLikeSvg2 />
+                    ) : (
+                      <WhiteLikeSvg />
+                    )} 
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.7}

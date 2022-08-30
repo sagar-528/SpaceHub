@@ -16,7 +16,13 @@ const WIDTH = Dimensions.get('window').width;
 const FailModal = props => {
   const handleNextVideo = () => {
     props.setFailModal(false);
-    props.flatRef.current.scrollToIndex({index: props.currentIndex + 1, animated: true});
+    setTimeout(() => {
+      props.flatRef.current.scrollToIndex({
+        index: props.currentIndex + 1,
+        animated: true,
+        viewOffset: 1,
+      });
+    }, 1000);
   };
 
   return (
@@ -44,7 +50,7 @@ const FailModal = props => {
               resizeMode="contain"
             />
           </Pressable>
-          <View style={{alignItems: 'center', marginBottom: 34}}>
+          <View style={{alignItems: 'center'}}>
             <Image
               source={require('../../assets/icons/sad.png')}
               resizeMode="contain"
@@ -69,7 +75,7 @@ const FailModal = props => {
               flexDirection: 'row',
               alignItems: 'center',
               alignSelf: 'center',
-              marginTop: 24,
+              marginTop: 8,
             }}>
             <Image
               source={require('../../assets/icons/coin.png')}
@@ -108,30 +114,32 @@ const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignSelf: 'center',
     // zIndex: 1
   },
   modalView: {
     backgroundColor: '#282828',
     opacity: 0.9,
     borderRadius: 8,
-    width: WIDTH - 24,
-    height: HEIGHT / 1.6,
+    width: WIDTH - 80,
+    height: HEIGHT / 2.1,
     paddingHorizontal: 12,
     paddingVertical: 12,
+    borderWidth: 2.3,
+    borderColor: colors.darkSky,
   },
   bigtext: {
     fontSize: 28,
     fontFamily: typography.secondary,
     fontWeight: '700',
-    marginBottom: 24,
+    // marginBottom: 24,
     color: colors.white,
   },
   smalltext: {
     fontSize: 16,
     fontFamily: typography.primary,
     fontWeight: '500',
-    marginBottom: 40,
+    marginVertical: 6,
     color: colors.white,
   },
   text1: {

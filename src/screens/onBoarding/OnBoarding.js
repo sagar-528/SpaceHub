@@ -12,7 +12,7 @@ import {
   SafeAreaView,
   Linking,
   Platform,
-  Alert
+  Alert,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import {colors, typography} from '../../themes';
@@ -20,7 +20,7 @@ import Slides from '../../components/Slides';
 
 import {displayToast, load, loadString, save} from '../../utils';
 import Geolocation from 'react-native-geolocation-service';
-import { Key } from '../../Constant/constant';
+import {Key} from '../../Constant/constant';
 
 const OnBoarding = props => {
   const navigation = props.navigation;
@@ -33,27 +33,20 @@ const OnBoarding = props => {
   });
 
   useEffect(() => {
-    // console.log(viewableItems);
     if (!viewableItems[0] || currentPage === viewableItems[0].index) return;
     setCurrentPage(viewableItems[0].index);
   }, [viewableItems]);
 
   const handleNext = () => {
-    console.log('current',currentPage);
-    // if(currentPage===2){
-    //   location()
-    // }
     if (currentPage == Slides.length - 1) return;
-    console.log('currentPage',currentPage);
 
-    if(currentPage!==2){
+    if (currentPage !== 2) {
       flatlistRef.current.scrollToIndex({
         animated: true,
         index: currentPage + 1,
       });
     }
   };
-
 
   const location = async () => {
     if (Platform.OS === 'ios') {
@@ -64,8 +57,8 @@ const OnBoarding = props => {
               info => {
                 console.log('geo location', info);
                 save('coords', info);
-                Key.latitude = info?.coords?.latitude
-                Key.longitude = info?.coords?.longitude
+                Key.latitude = info?.coords?.latitude;
+                Key.longitude = info?.coords?.longitude;
               },
               error => {
                 console.log(error.message);
@@ -144,7 +137,7 @@ const OnBoarding = props => {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          {item.key === '1' ? 
+          {item.key === '1' ? (
             <>
               <Image
                 source={require('../../assets/Illustrations/mobile.png')}
@@ -163,82 +156,79 @@ const OnBoarding = props => {
                 }}
               />
             </>
-           : 
-           <>
-           {item.key==='2' ?
-            <View style={{flexDirection: 'row', marginBottom: 44}}>
-              <Image
-                source={require('../../assets/Illustrations/mobile.png')}
-                resizeMode="contain"
-                style={{
-                  height: 370,
-                  width: 272,
-                }}
-              />
-              <View
-                style={{
-                  alignSelf: 'flex-end',
-                  position: 'absolute',
-                  right: 0,
-                  bottom: -12,
-                }}>
-                <Image
-                  source={require('../../assets/Illustrations/sideArrow.png')}
-                  resizeMode="cover"
-                  style={{
-                    height: 90,
-                    width: 60,
-                  }}
-                />
-              </View>
-            </View>
-            :
-            <View style={{flexDirection: 'row', marginBottom: 44,}}>
-              <View>
-                <ImageBackground
-                  source={require('../../assets/Illustrations/mobile.png')}
-                  resizeMode="contain"
-                  style={{
-                    height: 370,
-                    width: 272,
-                    alignItems:'center',
-                    justifyContent:'center'
-                  }}
-                  
-                >
-                  <View style={{marginBottom:40}}>
+          ) : (
+            <>
+              {item.key === '2' ? (
+                <View style={{flexDirection: 'row', marginBottom: 44}}>
+                  <Image
+                    source={require('../../assets/Illustrations/mobile.png')}
+                    resizeMode="contain"
+                    style={{
+                      height: 370,
+                      width: 272,
+                    }}
+                  />
+                  <View
+                    style={{
+                      alignSelf: 'flex-end',
+                      position: 'absolute',
+                      right: 0,
+                      bottom: -12,
+                    }}>
                     <Image
-                      source={require('../../assets/Illustrations/locationPopUp.png')}
-                      resizeMode="contain"
+                      source={require('../../assets/Illustrations/sideArrow.png')}
+                      resizeMode="cover"
                       style={{
-                        height: 200,
-                        width: 100,
+                        height: 90,
+                        width: 60,
                       }}
                     />
                   </View>
-                </ImageBackground>
-              </View>
-              <View
-                style={{
-                  alignSelf: 'flex-end',
-                  position: 'absolute',
-                  right: 0,
-                  bottom: -12,
-                }}>
-                <Image
-                  source={require('../../assets/Illustrations/sideArrow.png')}
-                  resizeMode="cover"
-                  style={{
-                    height: 90,
-                    width: 60,
-                  }}
-                />
-              </View>
-            </View>
-
-           }
-           </>
-          }
+                </View>
+              ) : (
+                <View style={{flexDirection: 'row', marginBottom: 44}}>
+                  <View>
+                    <ImageBackground
+                      source={require('../../assets/Illustrations/mobile.png')}
+                      resizeMode="contain"
+                      style={{
+                        height: 370,
+                        width: 272,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <View style={{marginBottom: 40}}>
+                        <Image
+                          source={require('../../assets/Illustrations/locationPopUp.png')}
+                          resizeMode="contain"
+                          style={{
+                            height: 200,
+                            width: 100,
+                          }}
+                        />
+                      </View>
+                    </ImageBackground>
+                  </View>
+                  <View
+                    style={{
+                      alignSelf: 'flex-end',
+                      position: 'absolute',
+                      right: 0,
+                      bottom: -12,
+                    }}>
+                    <Image
+                      source={require('../../assets/Illustrations/sideArrow.png')}
+                      resizeMode="cover"
+                      style={{
+                        height: 90,
+                        width: 60,
+                      }}
+                    />
+                  </View>
+                </View>
+              )}
+            </>
+          )}
           <Text style={styles.title}>{item.description}</Text>
         </View>
       </SafeAreaView>
@@ -263,7 +253,7 @@ const OnBoarding = props => {
               style={styles.btnView}
               activeOpacity={0.8}
               onPress={() => {
-                location()
+                location();
                 navigation.navigate('BottomTab');
               }}>
               <Text style={styles.btn}>next</Text>
@@ -274,35 +264,47 @@ const OnBoarding = props => {
     );
   };
 
-
-  const renderDots=()=>{
-    return(
+  const renderDots = () => {
+    return (
       <View style={styles.dotContainer}>
-        <View style={{
-          ...styles.dot,
-          backgroundColor:currentPage===0 ? '#fff' : 'rgba(255,255,255,0.6)',
-          margin:4
-        }}/>
-        <View style={{
-          ...styles.dot,
-          backgroundColor:currentPage===1 ? '#fff' : 'rgba(255,255,255,0.6)',
-          margin:4
-        }}/>
-        <View style={{
-          ...styles.dot,
-          backgroundColor:currentPage===2 ? '#fff' : 'rgba(255,255,255,0.6)',
-          margin:4
-        }}/>
+        <View
+          style={{
+            ...styles.dot,
+            backgroundColor:
+              currentPage === 0 ? '#fff' : 'rgba(255,255,255,0.6)',
+            margin: 4,
+          }}
+        />
+        <View
+          style={{
+            ...styles.dot,
+            backgroundColor:
+              currentPage === 1 ? '#fff' : 'rgba(255,255,255,0.6)',
+            margin: 4,
+          }}
+        />
+        <View
+          style={{
+            ...styles.dot,
+            backgroundColor:
+              currentPage === 2 ? '#fff' : 'rgba(255,255,255,0.6)',
+            margin: 4,
+          }}
+        />
       </View>
-    )
-  }
+    );
+  };
 
   // console.log('current page', currentPage);
   return (
     <View style={styles.container}>
       <ImageBackground
         source={require('../../assets/Illustrations/onBoardBackground.png')}
-        style={{flex: 1, backgroundColor: colors.backgroundShadow, paddingVertical: 50}}
+        style={{
+          flex: 1,
+          backgroundColor: colors.backgroundShadow,
+          paddingVertical: 50,
+        }}
         resizeMode="cover">
         <FlatList
           data={Slides}
@@ -340,7 +342,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
-    marginHorizontal:52
+    marginHorizontal: 52,
     // width: 150,
   },
   btnView: {
@@ -355,15 +357,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.white,
   },
-  dotContainer:{
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'center',
-    marginBottom:36
+  dotContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 36,
   },
-  dot:{
-    width:8,
-    height:8,
-    borderRadius:4,
-  }
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
 });

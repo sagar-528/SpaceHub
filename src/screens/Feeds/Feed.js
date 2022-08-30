@@ -43,7 +43,7 @@ const windowHeight = Dimensions.get('window').height;
 
 const Feed = props => {
   const navigation = props.navigation;
-  const flatRef = useRef(null)
+  const flatRef = useRef(null);
   const isFocused = useIsFocused();
   const videoRef = useRef(null);
   const [videoRefs, setVideoRefs] = useState([]);
@@ -101,7 +101,7 @@ const Feed = props => {
             // limit: 10,
             // page: page,
             isVideoPresent: true,
-            deviceToken: DeviceInfo.getDeviceId()
+            deviceToken: DeviceInfo.getDeviceId(),
           },
         })
           .then(response => {
@@ -145,13 +145,13 @@ const Feed = props => {
     };
   }, []);
 
-
   useEffect(() => {
     console.log('updating LIKED ID', likedId);
-    if (likedId !== '') {
+    
+    if (likedId !== '') {  
       const updatedItemIndex = feedData.findIndex(obj => obj._id === likedId);
-      // feedData.map((item)=>console.log('logggggg111',item))
-      console.log('updatedItemIndex', updatedItemIndex.isLiked);
+      feedData.map((item)=>console.log('logggggg111',item))
+      console.log('updatedItemIndex', updatedItemIndex);
       if (updatedItemIndex !== -1) {
         let temp = [...feedData];
         temp[updatedItemIndex].isLiked = false;
@@ -245,7 +245,7 @@ const Feed = props => {
             alignItems: 'center',
             marginTop: windowHeight / 3,
           }}>
-          <Text style={{fontFamily: typography.Bold, fontSize: 20,}}>
+          <Text style={{fontFamily: typography.Bold, fontSize: 20}}>
             No data found
           </Text>
         </View>
@@ -298,6 +298,7 @@ const Feed = props => {
   const [pause, setPause] = useState(true);
 
   console.log('_isMounted.current', _isMounted.current);
+
   return (
     <View style={{flex: 1, backgroundColor: '#282828'}}>
       <SwiperFlatList
@@ -310,8 +311,8 @@ const Feed = props => {
         }
         ref={flatRef}
         data={feedData}
-        windowSize={2}
-        maxToRenderPerBatch={1}
+        windowSize={5}
+        maxToRenderPerBatch={21}
         removeClippedSubviews={true}
         initialNumToRender={1}
         updateCellsBatchingPeriod={100}

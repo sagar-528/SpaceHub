@@ -114,7 +114,7 @@ const Reels = ({
   // Video process handle for focus and blur
   useEffect(() => {
     const blur = navigation.addListener('blur', () => {
-      // setIsScreenFocused(false)
+      // setCheck(0);
       setPause(true);
       setDisable(true);
     });
@@ -122,6 +122,7 @@ const Reels = ({
     const focus = navigation.addListener('focus', () => {
       // bottomSheetRef.current?.present();
       setPause(false);
+
       if (!!videoRef.current) {
         videoRef.current.seek(0);
       }
@@ -132,6 +133,19 @@ const Reels = ({
 
     return blur, focus;
   }, [navigation]);
+
+  useEffect(() => {
+    // console.log('Appstate', appState.current);
+    if (appState.current === 'active') {
+      setPause(false);
+      // if (!!videoRef.current) {
+      //   videoRef.current.seek(0);
+      // }
+    } else {
+      setPause(true);
+      setGameMode(false);
+    }
+  }, [currentIndex]);
 
   //Game mode UI Visible
   useEffect(() => {
@@ -166,16 +180,22 @@ const Reels = ({
 
   // Animated effect
   useEffect(() => {
-    setTimeout(() => {
+    if (gameMode === true) {
       setTimeout(() => {
-        setAnimateToNumber(animateToNumber + 1999);
-      }, 300);
-    }, 4000);
-    setTimeout(() => {
+        setTimeout(() => {
+          setAnimateToNumber(animateToNumber + 1999);
+        }, 300);
+      }, 4000);
       setTimeout(() => {
-        setAnimateToNumber(animateToNumber - 1999);
-      }, 300);
-    }, 4000);
+        setTimeout(() => {
+          setAnimateToNumber(animateToNumber - 1999);
+        }, 300);
+      }, 4000);
+    } else {
+      // console.log('not in game mode');
+    }
+
+    return setAnimateToNumber(item.price);
   }, [currentIndex]);
 
   const onError = ({error}) => {
@@ -188,7 +208,7 @@ const Reels = ({
   }
 
   const handleGame = e => {
-    console.log('increase', e.gamePress);
+    // console.log('increase', e.gamePress);
 
     const randomNumber = getRandomNumberBetween(1, 5);
     const percent = (25 / 100) * item.price;
@@ -199,11 +219,21 @@ const Reels = ({
 
     loadString('token').then(response => {
       if (response !== null && item.gamePrice !== undefined) {
-        console.log('with token and defined game price');
-        if (item.price > item.gamePrice) {
+        console.log(
+          'with token and defined game price',
+          item.price,
+          item.gamePrice,
+          JSON.parse(item.price) >= JSON.parse(item.gamePrice),
+        );
+
+        if (
+          e.down == 'down'
+            ? JSON.parse(item.price) >= JSON.parse(item.gamePrice)
+            : JSON.parse(item.gamePrice) > JSON.parse(item.price)
+        ) {
           AxiosBase.post('app/property/score', qs.stringify(info))
             .then(response => {
-              console.log('sucessfully game api', response);
+              // console.log('sucessfully game api', response);
               setSucessModal(true);
               setCheck(2);
             })
@@ -215,12 +245,12 @@ const Reels = ({
           setCheck(1);
         }
       } else if (response !== null && item.gamePrice === undefined) {
-        console.log('with token and undefined game price');
-        console.log(
-          'play with api hit in it gameprice undefined',
-          randomNumber,
-          percent,
-        );
+        // console.log('with token and undefined game price');
+        // console.log(
+        //   'play with api hit in it gameprice undefined',
+        //   randomNumber,
+        //   percent,
+        // );
         let result;
         if (randomNumber === 1) {
           result = percent + item.price;
@@ -234,7 +264,7 @@ const Reels = ({
           result = percent - item.price;
         }
 
-        if (Math.abs(result) > item.price) {
+        if (Math.abs(result) >= item.price) {
           if (e.gamePress == 'up') {
             setSucessModal(true);
             setCheck(2);
@@ -245,13 +275,13 @@ const Reels = ({
         }
       } else {
         if (response === null && item.gamePrice !== undefined) {
-          console.log(
-            'without token and defined game price',
-            item.gamePrice,
-            item.price,
-          );
+          // console.log(
+          //   'without token and defined game price',
+          //   item.gamePrice,
+          //   item.price,
+          // );
 
-          if (item.gamePrice > item.price) {
+          if (item.gamePrice >= item.price) {
             if (e.gamePress == 'up') {
               setSucessModal(true);
               setCheck(2);
@@ -261,12 +291,12 @@ const Reels = ({
             }
           }
         } else if (response === null && item.gamePrice === undefined) {
-          console.log('without token and undefined game price');
-          console.log(
-            'play without api hit without game price',
-            randomNumber,
-            percent,
-          );
+          // console.log('without token and undefined game price');
+          // console.log(
+          //   'play without api hit without game price',
+          //   randomNumber,
+          //   percent,
+          // );
           let result1;
           if (randomNumber === 1) {
             result1 = percent + item.price;
@@ -280,8 +310,8 @@ const Reels = ({
             result1 = percent - item.price;
           }
 
-          console.log('result and price', result1, item.price);
-          if (Math.abs(result1) > item.price) {
+          // console.log('result and price', result1, item.price);
+          if (Math.abs(result1) >= item.price) {
             if (e.gamePress == 'up') {
               setSucessModal(true);
               setCheck(2);
@@ -332,18 +362,18 @@ const Reels = ({
           displayToast('Please Login First.');
         } else {
           let temp = [...data];
-          if (icon === false) {
+          if (item.isLiked === false) {
             // setLike(true);
-            // temp[index].isLiked = true;
-            setIcon(true)
+            temp[index].isLiked = true;
+            // setIcon(true);
             setData(temp);
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${true}`,
             )
               .then(response => {
-                console.log('response of like', response.data.data);
+                // console.log('response of like', response.data.data);
                 // setLikeData(response.data.data.likedVideos);
-                setHook(!hook);
+                // setHook(!hook);
                 // let temp = [...data]
               })
               .catch(error => {
@@ -351,15 +381,15 @@ const Reels = ({
               });
           } else {
             // setLike(false);
-            // temp[index].isLiked = false;
-            setIcon(false)
+            temp[index].isLiked = false;
+            // setIcon(false);
             setData(temp);
             AxiosBase.put(
               `app/user/likedVideos?propertyId=${item._id}&flag=${false}`,
             )
               .then(response => {
                 // setLikeData(response.data.data.likedVideos);
-                setHook(!hook);
+                // setHook(!hook);
                 // let temp = [...data]
               })
               .catch(error => {
@@ -521,6 +551,8 @@ const Reels = ({
                 zIndex: 1,
                 bottom: 212,
                 right: 16,
+                // right: 12,
+                alignItems: 'center',
               }}>
               <View style={{marginBottom: 40}}>
                 <TouchableOpacity
@@ -549,8 +581,11 @@ const Reels = ({
               <View style={{marginBottom: 40}}>
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  onPress={() => handleLike()}>
-                  {icon === false ? <WhiteLikeSvg /> : <RedLikeSvg2 />}
+                  onPress={() =>{
+
+                    handleLike()
+                    }}>
+                  {item?.isLiked && item.isLiked ? <RedLikeSvg2 /> : <WhiteLikeSvg /> }
                 </TouchableOpacity>
               </View>
               <View style={{marginBottom: 40}}>
@@ -564,7 +599,7 @@ const Reels = ({
                   />
                 </TouchableOpacity>
               </View>
-              <View style={{paddingBottom: 28}}>
+              <View style={{marginBottom: 40}}>
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => {
@@ -577,8 +612,32 @@ const Reels = ({
                   />
                 </TouchableOpacity>
               </View>
+              {gameModeVisible === false && item?.price !== '' ? null : (
+                <>
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    style={{marginBottom: 28}}
+                    onPress={() => handleGame({gamePress: 'up'})}>
+                    <Image
+                      source={require('../assets/icons/Up.png')}
+                      resizeMode="contain"
+                      style={{height: 50, width: 50}}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    style={{marginBottom: 28}}
+                    onPress={() => handleGame({gamePress: 'down'})}>
+                    <Image
+                      source={require('../assets/icons/down.png')}
+                      resizeMode="contain"
+                      style={{height: 50, width: 50}}
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
-            {gameModeVisible === false && item?.price !== '' ? null : (
+            {/* {gameModeVisible === false && item?.price !== '' ? null : (
               <View
                 style={{
                   position: 'absolute',
@@ -607,7 +666,7 @@ const Reels = ({
                   />
                 </TouchableOpacity>
               </View>
-            )}
+            )} */}
             <View style={[styles.overcontainer]}>
               <View style={styles.rootContainer}>
                 <View style={styles.row}>

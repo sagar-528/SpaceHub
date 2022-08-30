@@ -114,9 +114,8 @@ export default GameInstruction;
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    alignSelf: 'center',
-    marginTop: '30%',
-    // alignItem: 'center'
+    justifyContent: 'center',
+    alignSelf: 'center'
   },
   modalView: {
     backgroundColor: '#282828',

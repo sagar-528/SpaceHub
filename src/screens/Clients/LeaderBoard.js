@@ -33,22 +33,24 @@ const LeaderBoard = props => {
       .catch(error => {
         console.log('async error', error);
       });
+  }, [isFocused]);
 
-      AxiosBase.get('app/property/score')
+  useEffect(() => {
+    const focus = navigation.addListener('focus', () => {
+    AxiosBase.get('app/property/score')
       .then(response => {
         console.log('response from game', response.data.data);
         // setLeadeBoardData(response.data?.data);
-        setLeadeBoardData(response.data.data)
+        setLeadeBoardData(response.data.data);
       })
       .catch(error => {
         console.log('error in api', error);
       });
+    })
+    
+    return focus
 
-  }, [isFocused]);
-
-  // useEffect(() => {
-   
-  // }, [isFocused]);
+  }, [navigation]);
 
   function renderItem({item, index}) {
     return (
@@ -124,7 +126,7 @@ const LeaderBoard = props => {
           data={leadeBoardData}
           renderItem={renderItem}
           keyExtractor={(item, index) => {
-            return index.toString()
+            return index.toString();
           }}
           ItemSeparatorComponent={() => {
             return <View style={{marginBottom: 20}} />;
