@@ -30,7 +30,7 @@ const FailModal = props => {
       testID={'modal'}
       isVisible={props.failModal}
       useNativeDriverForBackdrop
-      animationInTiming={800}
+      animationInTiming={600}
       onBackdropPress={() => {
         props.setFailModal(false);
       }}

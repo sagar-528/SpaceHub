@@ -75,7 +75,7 @@ const Feed = props => {
 
     load('coords')
       .then(response => {
-        console.log('geo response', response);
+        // console.log('geo response', response);
         if (response) {
           Key.latitude = response?.coords?.latitude;
           Key.longitude = response?.coords?.longitude;
@@ -106,7 +106,7 @@ const Feed = props => {
         })
           .then(response => {
             setLoading(false);
-            console.log(`feeds response${page}`, response?.data?.data);
+            // console.log(`feeds response${page}`, response?.data?.data);
             let data = response?.data?.data;
             const newObject = data.map(obj => ({
               ...obj,
@@ -120,7 +120,7 @@ const Feed = props => {
           .catch(error => {
             setLoading(false);
             setRefreshing(false);
-            console.log('error in feeds api', error);
+            // console.log('error in feeds api', error);
             setErrorStatus(1);
           });
       } else {
@@ -136,7 +136,7 @@ const Feed = props => {
       setLikedId(id);
       const updatedItemIndex = feedData.findIndex(obj => obj._id === likedId);
       // feedData.map((item)=>console.log('logggggg111',item))
-      console.log('updatedItemIndex', updatedItemIndex);
+      // console.log('updatedItemIndex', updatedItemIndex);
     });
 
     return () => {
@@ -146,12 +146,12 @@ const Feed = props => {
   }, []);
 
   useEffect(() => {
-    console.log('updating LIKED ID', likedId);
-    
-    if (likedId !== '') {  
+    // console.log('updating LIKED ID', likedId);
+
+    if (likedId !== '') {
       const updatedItemIndex = feedData.findIndex(obj => obj._id === likedId);
-      feedData.map((item)=>console.log('logggggg111',item))
-      console.log('updatedItemIndex', updatedItemIndex);
+      // feedData.map(item => console.log('logggggg111', item));
+      // console.log('updatedItemIndex', updatedItemIndex);
       if (updatedItemIndex !== -1) {
         let temp = [...feedData];
         temp[updatedItemIndex].isLiked = false;
@@ -163,7 +163,7 @@ const Feed = props => {
   const updateItem = id => {
     const updatedItemIndex = feedData.findIndex(obj => obj._id === id);
     feedData.map(item => console.log('logggggg111', item));
-    console.log('updatedItemIndex', updatedItemIndex);
+    // console.log('updatedItemIndex', updatedItemIndex);
     let temp = [...feedData];
     temp[updatedItemIndex].isLiked = false;
     setFeedData(temp);
@@ -195,7 +195,7 @@ const Feed = props => {
 
   const _onViewableItemsChanged = ({viewableItems, changed}) => {
     if (viewableItems && viewableItems.length > 0) {
-      console.log('currentVisibleIndex', viewableItems[0].index);
+      // console.log('currentVisibleIndex', viewableItems[0].index);
       setCurrentVisibleIndex(viewableItems[0].index);
     }
   };
@@ -275,7 +275,7 @@ const Feed = props => {
   const [appActive, setAppActive] = useState(false);
 
   const handleAppStateChange = nextAppState => {
-    console.log('App nextAppState', nextAppState);
+    // console.log('App nextAppState', nextAppState);
     if (nextAppState === 'active') {
       setAppActive(true);
     } else {
@@ -297,7 +297,7 @@ const Feed = props => {
   }, [appActive]);
   const [pause, setPause] = useState(true);
 
-  console.log('_isMounted.current', _isMounted.current);
+  // console.log('_isMounted.current', _isMounted.current);
 
   return (
     <View style={{flex: 1, backgroundColor: '#282828'}}>
@@ -326,6 +326,7 @@ const Feed = props => {
         onViewableItemsChanged={_onViewableItemsChanged}
         ListFooterComponent={_renderFooter}
         ListEmptyComponent={EmptyListMessage}
+        keyboardShouldPersistTaps="handled"
       />
     </View>
   );

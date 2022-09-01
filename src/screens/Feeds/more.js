@@ -8,7 +8,6 @@ import BottomSheet, {
     BottomSheetModalProvider,
   } from '@gorhom/bottom-sheet';
 import Close from '../../components/Close';
-import OverlayDetails from '../../components/Modals/OverlayDetails';
 import { displayToast } from '../../utils';
 import Video from 'react-native-video';
 import FastImage from 'react-native-fast-image'

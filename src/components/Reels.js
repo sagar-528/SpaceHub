@@ -23,7 +23,6 @@ import React, {
   memo,
 } from 'react';
 import {colors, typography} from '../themes';
-import OverlayDetails from './Modals/OverlayDetails';
 import {displayToast, load, loadString} from '../utils';
 import AxiosBase from '../services/AxioBase';
 import Video from 'react-native-video';
@@ -133,7 +132,7 @@ const Reels = ({
       setDisable(false);
     });
 
-    console.log('nav focus ');
+    // console.log('nav focus ');
 
     return blur, focus;
   }, [navigation]);
@@ -142,12 +141,12 @@ const Reels = ({
     // console.log('Appstate', appState.current);
     if (appState.current === 'active') {
       setPause(false);
-      console.log('active');
+      // console.log('active');
     } else {
       if (gameMode === true) {
         clearInterval();
       } else {
-        console.log('gamemode off');
+        // console.log('gamemode off');
       }
       setPause(true);
       setGameMode(false);
@@ -161,6 +160,7 @@ const Reels = ({
         // console.log('game mode', response);
         if (response !== null) {
           setGameModeVisible(response);
+          setGameMode(response);
         }
       })
       .catch(error => {
@@ -190,14 +190,14 @@ const Reels = ({
     if (gameMode === true) {
       setInterval(() => {
         if (item?.gamePrice !== undefined) {
-          console.log('number');
+          // console.log('number');
           let animatedNumberLength = animateToNumber.toString().length - 1;
           setAnimateToNumber(
             animateToNumber + randomWithNdigits(animatedNumberLength),
           );
         } else if (item.gamePrice === undefined) {
           let infoLenght = animateToNumberPercentage.toString().length - 1;
-          console.log('percentage number lenght', infoLenght);
+          // console.log('percentage number lenght', infoLenght);
           setAnimateToNumberPercentage(
             animateToNumberPercentage + randomWithNdigits(infoLenght),
           );
@@ -239,12 +239,12 @@ const Reels = ({
 
     loadString('token').then(response => {
       if (response !== null && item.gamePrice !== undefined) {
-        console.log(
-          'with token and defined game price',
-          item.price,
-          item.gamePrice,
-          JSON.parse(item.price) >= JSON.parse(item.gamePrice),
-        );
+        // console.log(
+        //   'with token and defined game price',
+        //   item.price,
+        //   item.gamePrice,
+        //   JSON.parse(item.price) >= JSON.parse(item.gamePrice),
+        // );
 
         if (
           e.down == 'down'
@@ -340,7 +340,7 @@ const Reels = ({
   };
 
   const onLoad = e => {
-    console.log('onLoad', index, e);
+    // console.log('onLoad', index, e);
   };
 
   const message = `Hey, checkout this new property I found on the SpaceHub App \n https://andspace.s3.ap-south-1.amazonaws.com/${item?.videoUrl}`;
@@ -422,7 +422,7 @@ const Reels = ({
     bottomSheetRef.current?.present();
     Animated.timing(animatedHeight, {
       toValue: windowHeight / 1.3,
-      duration: 700,
+      duration: 500,
       easing: Easing.linear,
       isInteraction: false,
     }).start();
@@ -430,7 +430,7 @@ const Reels = ({
     // fadeInView()
     setSwiper(false);
     setPagerEnabled(true);
-    sheetDuration = 700;
+    sheetDuration = 500;
     // pauseOnModal=false
   };
 
@@ -464,7 +464,6 @@ const Reels = ({
 
   // Email agent function
   const handleEmailAgent = e => {
-    // console.log('agent email', e.email);
     Linking.openURL(`mailto:${e.email}`);
   };
 
@@ -485,6 +484,7 @@ const Reels = ({
             pagingEnabled
             onScroll={e => handleOnScroll(e)}
             contentInsetAdjustmentBehavior="automatic"
+            showsVerticalScrollIndicator={false}
             // scrollEventThrottle={5}
           >
             {item.videoWithImages &&
@@ -564,8 +564,8 @@ const Reels = ({
                 position: 'absolute',
                 zIndex: 1,
                 bottom: 212,
-                right: gameModeVisible === false ? 16 : 6,
-                alignItems: 'center',
+                right: 16 ,
+                alignItems: 'flex-end',
               }}>
               <View style={{marginBottom: 40}}>
                 <TouchableOpacity
@@ -625,7 +625,7 @@ const Reels = ({
               </View>
               {/* {item.propertyType === 'SOLD' ||
               item.propertyType === 'FOR SALE' ? ( */}
-              <View style={{marginBottom: 40}}>
+              <View style={{marginBottom: gameMode === false ? 28 : 40}}>
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => {
@@ -643,23 +643,24 @@ const Reels = ({
               {gameModeVisible === false && item?.price !== '' ? null : (
                 <View>
                   <TouchableOpacity
-                    activeOpacity={0.6}
+                    activeOpacity={0.5}
                     style={{marginBottom: 28}}
+                    // hitSlop={4}
                     onPress={() => handleGame({gamePress: 'up'})}>
                     <Image
                       source={require('../assets/icons/Up.png')}
                       resizeMode="contain"
-                      style={{height: 50, width: 50}}
+                      style={{height: 45, width: 45}}
                     />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    activeOpacity={0.6}
+                    activeOpacity={0.5}
                     style={{marginBottom: 28}}
                     onPress={() => handleGame({gamePress: 'down'})}>
                     <Image
                       source={require('../assets/icons/down.png')}
                       resizeMode="contain"
-                      style={{height: 50, width: 50}}
+                      style={{height: 45, width: 45}}
                     />
                   </TouchableOpacity>
                 </View>
@@ -741,7 +742,7 @@ const Reels = ({
                         // onPress={()=>setIsModalVisible(true)}
                       >
                         <Image
-                          source={require('../assets/icons/more.png')}
+                          source={require('../assets/icons/info.png')}
                           resizeMode="contain"
                           style={[styles.icon, {}]}
                         />

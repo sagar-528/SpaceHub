@@ -14,7 +14,6 @@ import {
   } from 'react-native';
   import React, {useRef, useState, useEffect, useMemo, useCallback} from 'react';
   import {colors, typography} from '../themes';
-  import OverlayDetails from './Modals/OverlayDetails';
   import {displayToast, load, loadString} from '../utils';
   import AxiosBase from '../services/AxioBase';
   import Video from 'react-native-video';

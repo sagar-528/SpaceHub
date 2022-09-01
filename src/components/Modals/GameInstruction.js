@@ -11,30 +11,31 @@ import Modal from 'react-native-modal';
 import {colors, typography} from '../../themes';
 import Switch from 'react-native-switch-pro';
 import {save, load} from '../../utils';
+import {useIsFocused, StackActions} from '@react-navigation/native';
 
 const HEIGHT = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 const GameInstruction = props => {
+  const isFocused = useIsFocused();
 
-  useEffect(() => {
-    load('Game_Mode')
-      .then(response => {
-        if (response !== null) {
-          // props.setGameInstructionModal(response);
-          props.setGameMode(response);
-        }
-      })
-      .catch(error => {
-        console.log('async error', error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   load('Game_Mode')
+  //     .then(response => {
+  //       if (response !== null) {
+  //         props.setGameMode(response);
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.log('async error', error);
+  //     });
+  // }, [isFocused]);
 
   return (
     <Modal
       testID={'modal'}
       isVisible={props.gameInstructionModal}
       useNativeDriverForBackdrop
-      animationInTiming={800}
+      animationInTiming={600}
       onBackdropPress={() => {
         props.setGameInstructionModal(false);
       }}
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: 'center',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   modalView: {
     backgroundColor: '#282828',

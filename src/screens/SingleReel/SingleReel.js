@@ -267,7 +267,7 @@ const SingleReel = ({route, navigation}) => {
                     source={{
                       uri: `https://andspace.s3.ap-south-1.amazonaws.com/${element}`,
                     }}
-                    style={{flex: 1, height: '100%', width: '100%', backgroundColor: 'pink'}}
+                    style={{flex: 1, height: '100%', width: '100%'}}
                   />
                 )}
               </View>
