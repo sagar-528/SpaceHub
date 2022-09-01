@@ -31,7 +31,6 @@ import {
   
   import InViewPort from "@coffeebeanslabs/react-native-inviewport";
   // import { createSharedElementStackNavigator,SharedElement } from 'react-navigation-shared-element';
-  import VisibilitySensor from '@svanboxel/visibility-sensor-react-native'
   
   const Reels = ({item, index,currentIndex,data,setData,navigation, setHook, hook,currentVisibleIndex}) => {
     const windowWidth = Dimensions.get('screen').width;

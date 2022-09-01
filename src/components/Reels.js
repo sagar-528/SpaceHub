@@ -142,9 +142,7 @@ const Reels = ({
     // console.log('Appstate', appState.current);
     if (appState.current === 'active') {
       setPause(false);
-      // if (!!videoRef.current) {
-      //   videoRef.current.seek(0);
-      // }
+      console.log('active');
     } else {
       if (gameMode === true) {
         clearInterval();
@@ -511,6 +509,7 @@ const Reels = ({
                         repeat
                         resizeMode="cover"
                         // paused={pause}
+                        ignoreSilentSwitch={'ignore'}
                         paused={
                           index !== currentVisibleIndex || videoPaused || pause
                         }
@@ -605,7 +604,15 @@ const Reels = ({
                   )}
                 </TouchableOpacity>
               </View>
-              <View style={{marginBottom: 40}}>
+              <View
+                style={{
+                  marginBottom:
+                    // item.propertyType === 'SOLD' ||
+                    // item.propertyType === 'FOR SALE'
+                    //   ? 40
+                    //   :
+                    28,
+                }}>
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => handleShareVideo()}>
@@ -616,6 +623,8 @@ const Reels = ({
                   />
                 </TouchableOpacity>
               </View>
+              {/* {item.propertyType === 'SOLD' ||
+              item.propertyType === 'FOR SALE' ? ( */}
               <View style={{marginBottom: 40}}>
                 <TouchableOpacity
                   activeOpacity={0.7}
@@ -629,6 +638,8 @@ const Reels = ({
                   />
                 </TouchableOpacity>
               </View>
+              {/* ) : null} */}
+
               {gameModeVisible === false && item?.price !== '' ? null : (
                 <View>
                   <TouchableOpacity

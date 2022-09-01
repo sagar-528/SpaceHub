@@ -81,19 +81,19 @@ const SingleReel = ({route, navigation}) => {
       });
   }, []);
 
-  // useEffect(() => {
-  //   AppState.addEventListener('change', handleAppStateChange);
-  //   return () => AppState.removeEventListener('change', handleAppStateChange);
-  // }, []);
+  useEffect(() => {
+    AppState.addEventListener('change', handleAppStateChange);
+    return () => AppState.removeEventListener('change', handleAppStateChange);
+  }, []);
 
-  // const handleAppStateChange = nextAppState => {
-  //   console.log('App nextAppState', nextAppState);
-  //   if (nextAppState !== 'active') {
-  //     setPaused(true);
-  //   } else {
-  //     setPaused(false);
-  //   }
-  // };
+  const handleAppStateChange = nextAppState => {
+    console.log('App nextAppState', nextAppState);
+    if (nextAppState !== 'active') {
+      setPaused(true);
+    } else {
+      setPaused(false);
+    }
+  };
 
   // Email agent function
   const handleEmailAgent = e => {
@@ -260,13 +260,14 @@ const SingleReel = ({route, navigation}) => {
                     }}
                     poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
                     posterResizeMode="cover"
+                    ignoreSilentSwitch="ignore"
                   />
                 ) : (
                   <FastImage
                     source={{
                       uri: `https://andspace.s3.ap-south-1.amazonaws.com/${element}`,
                     }}
-                    style={{flex: 1, height: '100%', width: '100%'}}
+                    style={{flex: 1, height: '100%', width: '100%', backgroundColor: 'pink'}}
                   />
                 )}
               </View>

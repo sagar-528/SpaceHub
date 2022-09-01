@@ -53,7 +53,7 @@ const Agent = props => {
   };
 
   function Item({item, index}) {
-    console.log('flat', item);
+    // console.log('flat', item.image.length === 0);
 
     return (
       <View style={{margin: 4}} key={index}>
@@ -68,7 +68,7 @@ const Agent = props => {
           }}>
           <FastImage
             source={{
-              uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
+              uri: item.image.length === 0 ? `https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}` : `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
             }}
             resizeMode="cover"
             style={{height: 180, width: windowWidth / 3 - 10}}
