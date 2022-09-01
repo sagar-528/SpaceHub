@@ -8,21 +8,21 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import React, {useState, useEffect,useRef,useMemo} from 'react';
+import React, {useState, useEffect, useRef, useMemo} from 'react';
 import MapView, {
   Marker,
   PROVIDER_GOOGLE,
   PROVIDER_DEFAULT,
-  Callout
+  Callout,
 } from 'react-native-maps';
 import {colors, typography} from '../../themes';
 import SearchModal from '../../components/Modals/SearchModal';
 import {load, displayToast} from '../../utils';
 import {Loader} from '../../components/Loader';
-import {useIsFocused,StackActions} from '@react-navigation/native';
+import {useIsFocused, StackActions} from '@react-navigation/native';
 import AxiosBase from '../../services/AxioBase';
 import NetInfo from '@react-native-community/netinfo';
-import { Key } from '../../Constant/constant';
+import {Key} from '../../Constant/constant';
 
 const LocationDetails = props => {
   const navigation = props.navigation;
@@ -31,10 +31,9 @@ const LocationDetails = props => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [longitude, setLongitude] = useState(Key.longitude); // london long
-  const [longitudeDelta, setLongitudeDelta] = useState(0.1421)
-  const [latitude, setLatitude] = useState(Key.latitude);  // london lat
-  const [latitudeDelta, setLatitudeDelta] = useState(0.1922)
-  
+  const [longitudeDelta, setLongitudeDelta] = useState(0.1421);
+  const [latitude, setLatitude] = useState(Key.latitude); // london lat
+  const [latitudeDelta, setLatitudeDelta] = useState(0.1922);
 
   const [projects, setProjects] = useState([]);
   const bottomSheetRef = useRef(null);
@@ -44,8 +43,8 @@ const LocationDetails = props => {
   useEffect(() => {
     load('coords')
       .then(response => {
-        console.log('geo response',response);
-        if(response){
+        console.log('geo response', response);
+        if (response) {
           setLatitude(response?.coords?.latitude);
           setLongitude(response?.coords?.longitude);
         }
@@ -80,7 +79,7 @@ const LocationDetails = props => {
     });
   }, []);
 
-  const mapRef = useRef(null)
+  const mapRef = useRef(null);
 
   // const _onRegionChangeComplete = location => {
   //   // setMemoLatitude(location.latitude), setMemoLongitude(location.longitude);
@@ -110,37 +109,31 @@ const LocationDetails = props => {
     return num;
   }
 
-  const handleSingleMarker = (item,index) => {
-   
+  const handleSingleMarker = (item, index) => {
     navigation.navigate('SingleReel', {
       item: item,
-      index:index,
-      projects:projects,
-      setProjects:setProjects
+      index: index,
+      projects: projects,
+      setProjects: setProjects,
     });
-
   };
 
   useEffect(() => {
-  const blur = navigation.addListener('blur', () => {
-     console.log('blured');
-    
-  });
+    const blur = navigation.addListener('blur', () => {
+      console.log('blured');
+    });
 
-  const focus = navigation.addListener('focus', () => {
-    console.log('focused');
-    // setLatitude(memoLatitude), setLongitude(memoLongitude);
-    // setLatitudeDelta(memoLatitudeDelta),setLongitudeDelta(memoLongitudeDelta)
-  });
+    const focus = navigation.addListener('focus', () => {
+      console.log('focused');
+      // setLatitude(memoLatitude), setLongitude(memoLongitude);
+      // setLatitudeDelta(memoLatitudeDelta),setLongitudeDelta(memoLongitudeDelta)
+    });
 
-
-  return blur, focus;
+    return blur, focus;
   }, [navigation]);
 
-
-
   return (
-    <View style={{flex:1}}>
+    <View style={{flex: 1}}>
       <Loader visible={loading} />
       <TouchableOpacity
         style={styles.searchView}
@@ -171,43 +164,54 @@ const LocationDetails = props => {
           showsUserLocation
           // mapType
         >
-          {projects && projects.map((item, index) => (
-            <Marker
-              key={index}
-              coordinate={{
-                latitude: item.address.loc.coordinates[1],
-                longitude: item.address.loc.coordinates[0],
-              }}
-              // onCalloutPress={()=>handleSingleMarker(item,index)}
-              // onSelect={()=>handleSingleMarker(item,index)}
-              onPress={()=>handleSingleMarker(item,index)}
-              >
-                  <View style={{}}>
-                    <TouchableOpacity
-                      // onPress={() => handleSingleMarker(item,index)}
-                      // activeOpacity={0.8}
-                      >
-                      <Image 
-                        source={item.isVideoPresent ? require('../../assets/icons/videoProperty.png') : require('../../assets/icons/imageProperty.png')}  
-                        style={{width:80,height:30,aspectRatio:2}}/>
-                      <View style={{position:'absolute',left:14,top:4}}>
-                        <Text
-                          style={{
-                            textAlign: 'center',
-                            // padding: 6,
-                            // paddingBottom:12,
-                            fontSize: 12,
-                            color: item.isVideoPresent === false ? 'black' : colors.white,
-                          }}>
-                          {
-                          `${item.currency}${nFormatter(parseInt(`${item.price}`.replace(",", "")))}`
+          {projects &&
+            projects.map((item, index) => (
+              <View key={index}>
+                {item.propertyType === 'SOLD' ||
+                item.propertyType === 'FOR SALE' ? (
+                  <Marker
+                    // key={item.propertyType === 'SOLD' && item.propertyType === 'FOR SALE'}
+
+                    coordinate={{
+                      latitude: item.address.loc.coordinates[1],
+                      longitude: item.address.loc.coordinates[0],
+                    }}
+                    onPress={() => handleSingleMarker(item, index)}>
+                    {/* {console.log('hi')} */}
+                    <View style={{}}>
+                      <TouchableOpacity>
+                        <Image
+                          source={
+                            item.isVideoPresent
+                              ? require('../../assets/icons/videoProperty.png')
+                              : require('../../assets/icons/imageProperty.png')
                           }
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                </View>
-            </Marker>
-          ))}
+                          style={{width: 80, height: 30, aspectRatio: 2}}
+                        />
+                        <View style={{position: 'absolute', left: 14, top: 4}}>
+                          <Text
+                            style={{
+                              textAlign: 'center',
+
+                              fontSize: 12,
+                              color:
+                                item.isVideoPresent === false
+                                  ? 'black'
+                                  : colors.white,
+                            }}>
+                            {`${item.currency}${nFormatter(
+                              parseInt(`${item.price}`.replace(',', '')),
+                            )}`}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </Marker>
+                ) : (
+                  <></>
+                )}
+              </View>
+            ))}
         </MapView>
       )}
       <SearchModal
@@ -217,8 +221,6 @@ const LocationDetails = props => {
         setModalVisible={setVisible}
         setProjects={setProjects}
       />
-
-
     </View>
   );
 };

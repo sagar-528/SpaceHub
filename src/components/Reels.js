@@ -91,6 +91,9 @@ const Reels = ({
   //Animation
   const [fadeAnim, setFadeAnim] = useState(new Animated.Value(1));
   const [animateToNumber, setAnimateToNumber] = useState(item?.price);
+  const [animateToNumberPercentage, setAnimateToNumberPercentage] = useState(
+    (25 / 100) * item.price,
+  );
 
   let sheetDuration = 300;
   const [loading, setLoading] = useState(false);
@@ -117,6 +120,7 @@ const Reels = ({
       // setCheck(0);
       setPause(true);
       setDisable(true);
+      clearInterval();
     });
 
     const focus = navigation.addListener('focus', () => {
@@ -142,6 +146,11 @@ const Reels = ({
       //   videoRef.current.seek(0);
       // }
     } else {
+      if (gameMode === true) {
+        clearInterval();
+      } else {
+        console.log('gamemode off');
+      }
       setPause(true);
       setGameMode(false);
     }
@@ -181,22 +190,35 @@ const Reels = ({
   // Animated effect
   useEffect(() => {
     if (gameMode === true) {
-      setTimeout(() => {
-        setTimeout(() => {
-          setAnimateToNumber(animateToNumber + 1999);
-        }, 300);
-      }, 4000);
-      setTimeout(() => {
-        setTimeout(() => {
-          setAnimateToNumber(animateToNumber - 1999);
-        }, 300);
-      }, 4000);
-    } else {
-      // console.log('not in game mode');
+      setInterval(() => {
+        if (item?.gamePrice !== undefined) {
+          console.log('number');
+          let animatedNumberLength = animateToNumber.toString().length - 1;
+          setAnimateToNumber(
+            animateToNumber + randomWithNdigits(animatedNumberLength),
+          );
+        } else if (item.gamePrice === undefined) {
+          let infoLenght = animateToNumberPercentage.toString().length - 1;
+          console.log('percentage number lenght', infoLenght);
+          setAnimateToNumberPercentage(
+            animateToNumberPercentage + randomWithNdigits(infoLenght),
+          );
+        }
+      }, 5000);
     }
-
-    return setAnimateToNumber(item.price);
   }, [currentIndex]);
+
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+  }
+
+  function randomWithNdigits(n) {
+    let start = 10 ** (n - 1);
+    let end = 10 ** n - 1;
+    return getRandomInt(start, end);
+  }
 
   const onError = ({error}) => {
     console.log('error of video', index, error);
@@ -291,12 +313,6 @@ const Reels = ({
             }
           }
         } else if (response === null && item.gamePrice === undefined) {
-          // console.log('without token and undefined game price');
-          // console.log(
-          //   'play without api hit without game price',
-          //   randomNumber,
-          //   percent,
-          // );
           let result1;
           if (randomNumber === 1) {
             result1 = percent + item.price;
@@ -546,12 +562,10 @@ const Reels = ({
           <>
             <View
               style={{
-                // paddingEnd: 12,
                 position: 'absolute',
                 zIndex: 1,
                 bottom: 212,
-                right: 16,
-                // right: 12,
+                right: gameModeVisible === false ? 16 : 6,
                 alignItems: 'center',
               }}>
               <View style={{marginBottom: 40}}>
@@ -581,11 +595,14 @@ const Reels = ({
               <View style={{marginBottom: 40}}>
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  onPress={() =>{
-
-                    handleLike()
-                    }}>
-                  {item?.isLiked && item.isLiked ? <RedLikeSvg2 /> : <WhiteLikeSvg /> }
+                  onPress={() => {
+                    handleLike();
+                  }}>
+                  {item?.isLiked && item.isLiked ? (
+                    <RedLikeSvg2 />
+                  ) : (
+                    <WhiteLikeSvg />
+                  )}
                 </TouchableOpacity>
               </View>
               <View style={{marginBottom: 40}}>
@@ -613,7 +630,7 @@ const Reels = ({
                 </TouchableOpacity>
               </View>
               {gameModeVisible === false && item?.price !== '' ? null : (
-                <>
+                <View>
                   <TouchableOpacity
                     activeOpacity={0.6}
                     style={{marginBottom: 28}}
@@ -634,39 +651,9 @@ const Reels = ({
                       style={{height: 50, width: 50}}
                     />
                   </TouchableOpacity>
-                </>
+                </View>
               )}
             </View>
-            {/* {gameModeVisible === false && item?.price !== '' ? null : (
-              <View
-                style={{
-                  position: 'absolute',
-                  zIndex: 1,
-                  bottom: 212,
-                  left: 16,
-                }}>
-                <TouchableOpacity
-                  activeOpacity={0.6}
-                  style={{marginBottom: 8}}
-                  onPress={() => handleGame({gamePress: 'up'})}>
-                  <Image
-                    source={require('../assets/icons/Up.png')}
-                    resizeMode="contain"
-                    style={{height: 64, width: 64}}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  activeOpacity={0.6}
-                  style={{paddingBottom: 28}}
-                  onPress={() => handleGame({gamePress: 'down'})}>
-                  <Image
-                    source={require('../assets/icons/down.png')}
-                    resizeMode="contain"
-                    style={{height: 64, width: 64}}
-                  />
-                </TouchableOpacity>
-              </View>
-            )} */}
             <View style={[styles.overcontainer]}>
               <View style={styles.rootContainer}>
                 <View style={styles.row}>
@@ -703,8 +690,12 @@ const Reels = ({
                             </Text>
                             <AnimatedNumbers
                               includeComma
-                              animateToNumber={animateToNumber}
-                              animationDuration={2000}
+                              animateToNumber={
+                                item.gamePrice && item.gamePrice !== ''
+                                  ? animateToNumber
+                                  : animateToNumberPercentage
+                              }
+                              animationDuration={4000}
                               fontStyle={styles.rate}
                             />
                             <Image

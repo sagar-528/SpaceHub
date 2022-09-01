@@ -311,8 +311,8 @@ const Feed = props => {
         }
         ref={flatRef}
         data={feedData}
-        windowSize={5}
-        maxToRenderPerBatch={21}
+        windowSize={2}
+        maxToRenderPerBatch={1}
         removeClippedSubviews={true}
         initialNumToRender={1}
         updateCellsBatchingPeriod={100}

@@ -16,13 +16,13 @@ const WIDTH = Dimensions.get('window').width;
 const FailModal = props => {
   const handleNextVideo = () => {
     props.setFailModal(false);
-    setTimeout(() => {
-      props.flatRef.current.scrollToIndex({
-        index: props.currentIndex + 1,
-        animated: true,
-        viewOffset: 1,
-      });
-    }, 1000);
+    // setTimeout(() => {
+    //   props.flatRef.current.scrollToIndex({
+    //     index: props.currentIndex + 1,
+    //     animated: true,
+    //     viewOffset: 1,
+    //   });
+    // }, 1000);
   };
 
   return (

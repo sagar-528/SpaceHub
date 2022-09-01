@@ -8,29 +8,21 @@ import {
   ActivityIndicator,
   Dimensions,
   Linking,
+  AppState,
 } from 'react-native';
 import React, {useEffect, useState, useRef, useCallback, useMemo} from 'react';
 import {colors, typography} from '../../themes';
 import AxiosBase from '../../services/AxioBase';
-// import OverlayDetails from '../../components/Modals/OverlayDetails';
 import Video from 'react-native-video';
 import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetModal,
-  // BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
-// import Close from '../../components/Close';
 import {displayToast, loadString} from '../../utils';
 import {useIsFocused} from '@react-navigation/native';
 import WhiteLikeSvg from '../../assets/svgs/whiteLikeSvg';
 import RedLikeSvg2 from '../../assets/svgs/redLikeSvg2';
-// import More from '../Feeds/more';
 import FastImage from 'react-native-fast-image';
-
-// import {
-//   SharedElement,
-//   createSharedElementStackNavigator,
-// } from 'react-navigation-shared-element';
 import MapView, {
   Marker,
   PROVIDER_GOOGLE,
@@ -88,6 +80,20 @@ const SingleReel = ({route, navigation}) => {
         console.log('error for api', error);
       });
   }, []);
+
+  // useEffect(() => {
+  //   AppState.addEventListener('change', handleAppStateChange);
+  //   return () => AppState.removeEventListener('change', handleAppStateChange);
+  // }, []);
+
+  // const handleAppStateChange = nextAppState => {
+  //   console.log('App nextAppState', nextAppState);
+  //   if (nextAppState !== 'active') {
+  //     setPaused(true);
+  //   } else {
+  //     setPaused(false);
+  //   }
+  // };
 
   // Email agent function
   const handleEmailAgent = e => {
@@ -283,21 +289,6 @@ const SingleReel = ({route, navigation}) => {
           </View>
         )}
       </View>
-      {/* <TouchableOpacity
-        style={{
-          backgroundColor: 'black',
-          padding: 8,
-          borderRadius: 50,
-          position: 'absolute',
-          right: 20,
-          top: 20,
-        }}
-        onPress={goBackHandler}>
-        <Image
-          source={require('../../assets/icons/close.png')}
-          style={{width: 24, height: 24}}
-        />
-      </TouchableOpacity> */}
       <View style={{height: '24%'}} />
 
       <BottomSheetModal
@@ -359,7 +350,7 @@ const SingleReel = ({route, navigation}) => {
                       <RedLikeSvg2 />
                     ) : (
                       <WhiteLikeSvg />
-                    )} 
+                    )}
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.7}
