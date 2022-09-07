@@ -21,15 +21,23 @@ const Splash = props => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
+    load('Game_Mode')
+      .then(response => {
+        if (response !== null) {
+          Key.gamemode = response;
+        }
+      })
+      .catch(error => {
+        console.log('async error', error);
+      });
     loadString('token').then(res => {
-      Key.token = res
+      Key.token = res;
       setTimeout(() => {
         navigation.replace(res !== null ? 'BottomTab' : 'OnBoarding');
       }, 3000);
     });
   }, []);
 
-  
   return (
     <View style={styles.container}>
       <ImageBackground

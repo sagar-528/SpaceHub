@@ -14,6 +14,7 @@ import Switch from 'react-native-switch-pro';
 import {load, save} from '../../utils/storage';
 import {useIsFocused} from '@react-navigation/native';
 import AxiosBase from '../../services/AxioBase';
+import {Key} from '../../Constant/constant';
 
 const LeaderBoard = props => {
   const navigation = props.navigation;
@@ -28,6 +29,7 @@ const LeaderBoard = props => {
         console.log('async response', res);
         if (res !== null) {
           setGameMode(res);
+          Key.gamemode = res;
         }
       })
       .catch(error => {
@@ -37,19 +39,18 @@ const LeaderBoard = props => {
 
   useEffect(() => {
     const focus = navigation.addListener('focus', () => {
-    AxiosBase.get('app/property/score')
-      .then(response => {
-        console.log('response from game', response.data.data);
-        // setLeadeBoardData(response.data?.data);
-        setLeadeBoardData(response.data.data);
-      })
-      .catch(error => {
-        console.log('error in api', error);
-      });
-    })
-    
-    return focus
+      AxiosBase.get('app/property/score')
+        .then(response => {
+          console.log('response from game', response.data.data);
+          // setLeadeBoardData(response.data?.data);
+          setLeadeBoardData(response.data.data);
+        })
+        .catch(error => {
+          console.log('error in api', error);
+        });
+    });
 
+    return focus;
   }, [navigation]);
 
   function renderItem({item, index}) {
@@ -118,6 +119,7 @@ const LeaderBoard = props => {
             onSyncPress={value => {
               setGameMode(value);
               save('Game_Mode', value);
+              Key.gamemode = value
             }}
           />
         </View>
@@ -135,6 +137,7 @@ const LeaderBoard = props => {
             flex: 1,
             paddingHorizontal: 24,
             paddingVertical: 24,
+            marginBottom: 75
           }}
         />
       </View>

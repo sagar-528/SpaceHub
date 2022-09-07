@@ -12,16 +12,10 @@ import {
   ScrollView,
   Linking,
   AppState,
+  PixelRatio
   // Easing
 } from 'react-native';
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  memo,
-} from 'react';
+import React, {useRef, useState, useEffect, useMemo, memo} from 'react';
 import {colors, typography} from '../themes';
 import {displayToast, load, loadString} from '../utils';
 import AxiosBase from '../services/AxioBase';
@@ -33,7 +27,6 @@ import BottomSheet, {
   BottomSheetModalProvider,
   useBottomSheetTimingConfigs,
 } from '@gorhom/bottom-sheet';
-import Close from './Close';
 import MapView, {
   Marker,
   PROVIDER_GOOGLE,
@@ -47,6 +40,7 @@ import SucessModal from './Modals/SucessModal';
 import FailModal from './Modals/FailModal';
 import AnimatedNumbers from 'react-native-animated-numbers';
 import qs from 'qs';
+import {Key} from '../Constant/constant';
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('window').height;
@@ -83,8 +77,7 @@ const Reels = ({
   const [gameInstructionModal, setGameInstructionModal] = useState(false);
   const [sucessModal, setSucessModal] = useState(false);
   const [failModal, setFailModal] = useState(false);
-  const [gameMode, setGameMode] = useState(false);
-  const [gameModeVisible, setGameModeVisible] = useState(false);
+  const [gameMode, setGameMode] = useState(Key.gamemode);
   const [check, setCheck] = useState(0);
 
   //Animation
@@ -94,7 +87,7 @@ const Reels = ({
     (25 / 100) * item.price,
   );
 
-  let sheetDuration = 300;
+  let sheetDuration = 200;
   const [loading, setLoading] = useState(false);
 
   // variables
@@ -159,21 +152,13 @@ const Reels = ({
       .then(response => {
         // console.log('game mode', response);
         if (response !== null) {
-          setGameModeVisible(response);
-          setGameMode(response);
+          Key.gamemode = response;
+          // setGameMode(Key.gamemode);
         }
       })
       .catch(error => {
         console.log('async error', error);
       });
-
-    load('token').then(response => {
-      if (response !== null) {
-        setToken(true);
-      } else {
-        setToken(false);
-      }
-    });
   }, [currentIndex]);
 
   //Resart video
@@ -187,7 +172,7 @@ const Reels = ({
 
   // Animated effect
   useEffect(() => {
-    if (gameMode === true) {
+    if (Key.gamemode === true) {
       setInterval(() => {
         if (item?.gamePrice !== undefined) {
           // console.log('number');
@@ -202,8 +187,10 @@ const Reels = ({
             animateToNumberPercentage + randomWithNdigits(infoLenght),
           );
         }
-      }, 5000);
+      }, 10000);
     }
+
+    // return setAnimateToNumber(item.gamePrice);
   }, [currentIndex]);
 
   function getRandomInt(min, max) {
@@ -500,7 +487,6 @@ const Reels = ({
                         onLoad={onLoad}
                         playWhenReady={true}
                         playInBackground={false}
-                        // preventsDisplaySleepDuringVideoPlayback={false}
                         automaticallyWaitsToMinimizeStalling={true}
                         onVideoLoad={e => {
                           console.log('load', e);
@@ -508,7 +494,6 @@ const Reels = ({
                         onError={onError}
                         repeat
                         resizeMode="cover"
-                        // paused={pause}
                         ignoreSilentSwitch={'ignore'}
                         paused={
                           index !== currentVisibleIndex || videoPaused || pause
@@ -521,8 +506,15 @@ const Reels = ({
                           width: windowWidth,
                           // height: windowHeight/1.30,
                           flex: 1,
-                          // position: 'absolute',
                         }}
+                        bufferConfig={{
+                          minBufferMs: 15000,
+                          maxBufferMs: 50000,
+                          bufferForPlaybackMs: 2500,
+                          bufferForPlaybackAfterRebufferMs: 5000,
+                        }}
+                        preferredForwardBufferDuration={2500}
+                        // controls
                       />
                     </>
                   ) : (
@@ -564,7 +556,7 @@ const Reels = ({
                 position: 'absolute',
                 zIndex: 1,
                 bottom: 212,
-                right: 16 ,
+                right: 16,
                 alignItems: 'flex-end',
               }}>
               <View style={{marginBottom: 40}}>
@@ -625,7 +617,7 @@ const Reels = ({
               </View>
               {/* {item.propertyType === 'SOLD' ||
               item.propertyType === 'FOR SALE' ? ( */}
-              <View style={{marginBottom: gameMode === false ? 28 : 40}}>
+              <View style={{marginBottom: 28}}>
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => {
@@ -640,17 +632,17 @@ const Reels = ({
               </View>
               {/* ) : null} */}
 
-              {gameModeVisible === false && item?.price !== '' ? null : (
-                <View>
+              {Key.gamemode === false && item?.price !== '' ? null : (
+                <View style={{left: 8}}>
                   <TouchableOpacity
                     activeOpacity={0.5}
-                    style={{marginBottom: 28}}
+                    style={{}}
                     // hitSlop={4}
                     onPress={() => handleGame({gamePress: 'up'})}>
                     <Image
                       source={require('../assets/icons/Up.png')}
                       resizeMode="contain"
-                      style={{height: 45, width: 45}}
+                      style={{height: 70, width: 70}}
                     />
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -658,9 +650,9 @@ const Reels = ({
                     style={{marginBottom: 28}}
                     onPress={() => handleGame({gamePress: 'down'})}>
                     <Image
-                      source={require('../assets/icons/down.png')}
+                      source={require('../assets/icons/Down.png')}
                       resizeMode="contain"
-                      style={{height: 45, width: 45}}
+                      style={{height: 70, width: 70}}
                     />
                   </TouchableOpacity>
                 </View>
@@ -686,7 +678,7 @@ const Reels = ({
                       {item?.price &&
                       item?.price !== '' &&
                       item?.price !== null ? (
-                        gameModeVisible === false ? (
+                        Key.gamemode === false ? (
                           <Text style={styles.rate}>
                             {item?.currency.toLocaleString() +
                               item?.price.toLocaleString()}
@@ -707,7 +699,7 @@ const Reels = ({
                                   ? animateToNumber
                                   : animateToNumberPercentage
                               }
-                              animationDuration={4000}
+                              animationDuration={5000}
                               fontStyle={styles.rate}
                             />
                             <Image
@@ -744,7 +736,10 @@ const Reels = ({
                         <Image
                           source={require('../assets/icons/info.png')}
                           resizeMode="contain"
-                          style={[styles.icon, {}]}
+                          style={[
+                            styles.icon,
+                            {marginEnd: Key.gamemode === true ? 4 : 0},
+                          ]}
                         />
                       </Pressable>
                     </View>
@@ -1188,9 +1183,6 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
-    // alignItems:'center',
-    // paddingHorizontal:20,
-    // paddingTop:24
   },
   propertyTypeContainer: {
     marginTop: 8,

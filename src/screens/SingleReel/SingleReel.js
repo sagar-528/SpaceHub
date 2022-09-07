@@ -261,6 +261,13 @@ const SingleReel = ({route, navigation}) => {
                     poster={`https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`}
                     posterResizeMode="cover"
                     ignoreSilentSwitch="ignore"
+                    bufferConfig={{
+                      minBufferMs: 15000,
+                      maxBufferMs: 50000,
+                      bufferForPlaybackMs: 2500,
+                      bufferForPlaybackAfterRebufferMs: 5000,
+                    }}
+                    preferredForwardBufferDuration={2500}
                   />
                 ) : (
                   <FastImage

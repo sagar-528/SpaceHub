@@ -2,8 +2,6 @@ import React, {
   useState,
   useEffect,
   useRef,
-  memo,
-  useMemo,
   useCallback,
 } from 'react';
 import {
@@ -11,32 +9,22 @@ import {
   Text,
   View,
   StatusBar,
-  FlatList,
   Dimensions,
   RefreshControl,
   ActivityIndicator,
-  Image,
   AppState,
 } from 'react-native';
 import {SwiperFlatList} from 'react-native-swiper-flatlist';
 import Reels from '../../components/Reels';
-import {Loader} from '../../components/Loader';
 import AxiosBase from '../../services/AxioBase';
 import {useIsFocused} from '@react-navigation/native';
-import Video from 'react-native-video';
 import NetInfo from '@react-native-community/netinfo';
 import {Key} from '../../Constant/constant';
 import {EventRegister} from 'react-native-event-listeners';
-import BottomSheet, {
-  BottomSheetScrollView,
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
-import {load, displayToast} from '../../utils';
+import {load, displayToast, save} from '../../utils';
 import {Set} from 'immutable';
 import {typography} from '../../themes';
 import DeviceInfo from 'react-native-device-info';
-import {useFocusEffect} from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -50,12 +38,9 @@ const Feed = props => {
   const [paused, setPaused] = useState([]);
   const [notFirstTime, setNotFirstTime] = useState(false);
 
-  // const [currentIndex, setCurrentIndex] = useState(0);
-  // const [currentVisibleIndex, setCurrentVisibleIndex] = useState(0)
   const [feedData, setFeedData] = useState([]);
   const [errorStatus, setErrorStatus] = useState(0);
   const [loading, setLoading] = useState(false);
-  // const [refreshing, setRefreshing] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [page, setPage] = useState(0);
   const [swiper, setSwiper] = useState(true);
@@ -98,8 +83,6 @@ const Feed = props => {
         setLoading(true);
         AxiosBase.get('app/property/videoProperty', {
           params: {
-            // limit: 10,
-            // page: page,
             isVideoPresent: true,
             deviceToken: DeviceInfo.getDeviceId(),
           },
@@ -120,7 +103,6 @@ const Feed = props => {
           .catch(error => {
             setLoading(false);
             setRefreshing(false);
-            // console.log('error in feeds api', error);
             setErrorStatus(1);
           });
       } else {
@@ -207,6 +189,10 @@ const Feed = props => {
   };
 
   function _renderItem({item, index}) {
+    // console.log('====================================');
+    // console.log('video count', index);
+    // console.log('====================================');
+
     return (
       <Reels
         // id={item._id}
@@ -298,7 +284,7 @@ const Feed = props => {
   const [pause, setPause] = useState(true);
 
   // console.log('_isMounted.current', _isMounted.current);
-
+  // console.log('current index and page', currentIndex, page);
   return (
     <View style={{flex: 1, backgroundColor: '#282828'}}>
       <SwiperFlatList
@@ -327,6 +313,7 @@ const Feed = props => {
         ListFooterComponent={_renderFooter}
         ListEmptyComponent={EmptyListMessage}
         keyboardShouldPersistTaps="handled"
+        scrollTo
       />
     </View>
   );

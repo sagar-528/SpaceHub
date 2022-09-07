@@ -17,13 +17,12 @@ import {Loader} from '../../components/Loader';
 // import Video from 'react-native-video';
 import {displayToast} from '../../utils';
 import NetInfo from '@react-native-community/netinfo';
-import FastImage from 'react-native-fast-image'
-import { useIsFocused,useRoute } from '@react-navigation/native';
+import FastImage from 'react-native-fast-image';
+import {useIsFocused, useRoute} from '@react-navigation/native';
 import CrossIconSvg from '../../assets/svgs/crossIconSvg';
 import RedLikeSvg from '../../assets/svgs/redLikeSvg';
 // import {Key} from '../../Constant/constant';
-import { EventRegister } from 'react-native-event-listeners'
-
+import {EventRegister} from 'react-native-event-listeners';
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
@@ -34,8 +33,7 @@ const LikeVideos = props => {
   const [likeVideoData, setLikeVideoData] = useState([]);
   const [loading, setLoading] = useState(false);
   const isFocused = useIsFocused();
-  const route = useRoute()
-
+  const route = useRoute();
 
   const videoRef = useRef(null);
 
@@ -60,7 +58,7 @@ const LikeVideos = props => {
   }, [isFocused]);
 
   // useEffect(() => {
-    
+
   //   const blur = navigation.addListener('blur', () => {
   //     // let nav = navigation.getState()
   //     // console.log('NAV',nav);
@@ -79,8 +77,8 @@ const LikeVideos = props => {
           console.log('remove from like screen', response?.data?.data);
           let data = likeVideoData.filter((item, idx) => idx !== index);
           setLikeVideoData(data);
-          
-          EventRegister.emit('updateFeeds',item._id)
+
+          EventRegister.emit('updateFeeds', item._id);
         })
         .catch(error => {
           console.log('error', error.response.data);
@@ -88,11 +86,12 @@ const LikeVideos = props => {
     };
 
     return (
-      <View style={{
-          margin:4,
+      <View
+        style={{
+          margin: 4,
           // flex:1
-          }} 
-          key={index}>
+        }}
+        key={index}>
         <TouchableOpacity
           activeOpacity={0.6}
           style={{
@@ -108,7 +107,7 @@ const LikeVideos = props => {
             // resizeMode="contain"
             style={styles.icon}
           /> */}
-          <RedLikeSvg/>
+          <RedLikeSvg />
         </TouchableOpacity>
         <TouchableOpacity
           // style={{margin: 6,}}
@@ -121,25 +120,25 @@ const LikeVideos = props => {
               // navigation: navigation,
             });
           }}>
-            {item.isVideoPresent ?
-              <FastImage
-                source={{
-                  uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`,
-                  priority: FastImage.priority.high
-                }}
-                resizeMode="cover"
-                style={{height: 180, width:(windowWidth/3)-10}}
-              />
-              :
-              <FastImage
-                source={{
-                  uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
-                  priority: FastImage.priority.high
-                }}
-                resizeMode="cover"
-                style={{height: 180, width:(windowWidth/3)-10}}
-              />
-            }
+          {item.isVideoPresent ? (
+            <FastImage
+              source={{
+                uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}`,
+                priority: FastImage.priority.high,
+              }}
+              resizeMode="cover"
+              style={{height: 180, width: windowWidth / 3 - 10}}
+            />
+          ) : (
+            <FastImage
+              source={{
+                uri: `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
+                priority: FastImage.priority.high,
+              }}
+              resizeMode="cover"
+              style={{height: 180, width: windowWidth / 3 - 10}}
+            />
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -155,19 +154,14 @@ const LikeVideos = props => {
       style={{backgroundColor: '#282828', opacity: 0.95}}>
       <Loader visible={loading} />
       <View style={{marginTop: 47, flex: 1}}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => {
             navigation.goBack();
           }}
           activeOpacity={0.8}
           style={{alignSelf: 'flex-end', marginEnd: 24, marginBottom: 14}}>
-          {/* <Image
-            source={require('../../assets/icons/close.png')}
-            // resizeMode="contain"
-            style={{height: 24, width: 24}}
-          /> */}
-          <CrossIconSvg width={24} height={24}/>
-        </TouchableOpacity>
+          <CrossIconSvg width={24} height={24} />
+        </TouchableOpacity> */}
         <View style={styles.divider} />
         <Text style={styles.title}>Liked Videos</Text>
         <View
@@ -186,11 +180,28 @@ const LikeVideos = props => {
               flex: 1,
               // marginBottom: 4,
             }}
-            style={{marginHorizontal:4}}
+            style={{marginHorizontal: 4}}
             // columnWrapperStyle={{justifyContent:'space-between'}}
             // style={{marginHorizontal:4,flex:1}}
           />
         </View>
+      </View>
+      <View
+        style={{
+          paddingLeft: 24,
+          paddingTop: 22,
+          position: 'absolute',
+          right: 0,
+        }}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+            // setPaused(false)
+          }}
+          activeOpacity={0.8}
+          style={{alignSelf: 'flex-end', marginEnd: 24, marginBottom: 14}}>
+          <CrossIconSvg width={24} height={24} />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -208,7 +219,7 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: colors.text,
-    marginBottom: 20,
+    marginVertical: 20,
   },
   title: {
     fontSize: 14,

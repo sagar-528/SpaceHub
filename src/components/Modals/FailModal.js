@@ -6,6 +6,8 @@ import {
   Pressable,
   Image,
   ImageBackground,
+  ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import React from 'react';
 import Modal from 'react-native-modal';
@@ -39,69 +41,98 @@ const FailModal = props => {
         // zIndex: -1,
       }}>
       <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Pressable
-            onPress={() => handleNextVideo()}
-            style={{alignSelf: 'flex-end', padding: 4}}
-            hitSlop={2}>
-            <Image
-              source={require('../../assets/icons/cross1.png')}
-              // style={}
-              resizeMode="contain"
-            />
-          </Pressable>
-          <View style={{alignItems: 'center'}}>
-            <Image
-              source={require('../../assets/icons/sad.png')}
-              resizeMode="contain"
-            />
-          </View>
-          <View style={{alignItems: 'center'}}>
-            <Text style={styles.bigtext}>Oops!</Text>
-            <Text style={styles.smalltext}>Better Luck Next Time</Text>
-            <Text style={styles.text1}>ACTUAL LISTING PRICE</Text>
-          </View>
+        <View style={{width: WIDTH - 50, height: HEIGHT / 2}}>
           <ImageBackground
-            source={require('../../assets/icons/button.png')}
-            resizeMode="cover"
-            style={{height: 52}}>
-            <View
-              style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-              <Text style={styles.price}>{props.price}</Text>
-            </View>
+            source={require('../../assets/Illustrations/ohno.png')}
+            resizeMode="stretch"
+            style={styles.modalView}>
+            <ScrollView
+              contentContainerStyle={{flexGrow: 1}}
+              showsVerticalScrollIndicator={false}>
+              <Pressable
+                onPress={handleNextVideo}
+                style={{alignSelf: 'flex-end', padding: 8, marginEnd: 16}}
+                hitSlop={2}>
+                <Image
+                  source={require('../../assets/icons/cross1.png')}
+                  // style={}
+                  resizeMode="contain"
+                />
+              </Pressable>
+              <View style={{alignItems: 'center'}}>
+                <Text style={styles.bigtext}>OH NO!</Text>
+                <Text style={styles.smalltext}>YOU MISSED IT</Text>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 30,
+                }}>
+                <Image
+                  source={require('../../assets/Illustrations/LINE.png')}
+                  resizeMode="contain"
+                  style={{width: WIDTH - 80}}
+                />
+                <Text style={styles.price}>{props.price}</Text>
+                <Image
+                  source={require('../../assets/Illustrations/LINE.png')}
+                  resizeMode="contain"
+                  style={{width: WIDTH - 80}}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                  marginTop: 8,
+                }}>
+                <Image
+                  source={require('../../assets/icons/GEM.png')}
+                  resizeMode="center"
+                  style={{width: 44, height: 44}}
+                />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: colors.white,
+                    marginHorizontal: 24,
+                    fontFamily: typography.primary,
+                    fontWeight: '500',
+                  }}>
+                  X
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 24,
+                    color: colors.white,
+                    fontFamily: typography.secondary,
+                    fontWeight: '600',
+                  }}>
+                  0
+                </Text>
+              </View>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={{
+                  flex: 1,
+                  marginVertical: 20,
+                  alignSelf: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}
+                onPress={handleNextVideo}>
+                <Text style={styles.continue}>Continue</Text>
+                <Image
+                  source={require('../../assets/icons/ARROW.png')}
+                  resizeMode="contain"
+                  style={{height: 18, width: 18, marginStart: 8}}
+                />
+              </TouchableOpacity>
+            </ScrollView>
           </ImageBackground>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              alignSelf: 'center',
-              marginTop: 8,
-            }}>
-            <Image
-              source={require('../../assets/icons/coin.png')}
-              resizeMode="center"
-              style={{width: 44, height: 44}}
-            />
-            <Text
-              style={{
-                fontSize: 16,
-                color: colors.white,
-                marginHorizontal: 24,
-                fontFamily: typography.primary,
-                fontWeight: '500',
-              }}>
-              X
-            </Text>
-            <Text
-              style={{
-                fontSize: 24,
-                color: colors.white,
-                fontFamily: typography.secondary,
-                fontWeight: '600',
-              }}>
-              0
-            </Text>
-          </View>
         </View>
       </View>
     </Modal>
@@ -118,29 +149,24 @@ const styles = StyleSheet.create({
     // zIndex: 1
   },
   modalView: {
-    backgroundColor: '#282828',
-    opacity: 0.9,
-    borderRadius: 8,
-    width: WIDTH - 80,
-    height: HEIGHT / 2.1,
+    width: WIDTH - 50,
+    height: HEIGHT / 2,
     paddingHorizontal: 12,
     paddingVertical: 12,
-    borderWidth: 2.3,
-    borderColor: colors.darkSky,
   },
   bigtext: {
     fontSize: 28,
     fontFamily: typography.secondary,
     fontWeight: '700',
-    // marginBottom: 24,
     color: colors.white,
   },
   smalltext: {
     fontSize: 16,
     fontFamily: typography.primary,
     fontWeight: '500',
-    marginVertical: 6,
     color: colors.white,
+    marginTop: 10,
+    marginBottom: 30,
   },
   text1: {
     fontSize: 18,
@@ -154,5 +180,12 @@ const styles = StyleSheet.create({
     fontFamily: typography.primary,
     fontWeight: '800',
     color: colors.white,
+    paddingVertical: 10,
+  },
+  continue: {
+    fontSize: 18,
+    fontFamily: typography.primary,
+    fontWeight: '500',
+    color: 'yellow',
   },
 });

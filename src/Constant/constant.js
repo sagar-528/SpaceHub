@@ -4,7 +4,8 @@ export const Key = {
   initialViewPort:false,
   latitude:51.509865,
   longitude:-0.118092,
-  backgroundPause:false
+  backgroundPause:false,
+  gamemode: false
 };
 
 export const Amount = {

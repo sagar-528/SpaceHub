@@ -135,7 +135,7 @@ const SignUp = props => {
                   secureTextEntry
                 />
               </View>
-              <View style={{flex: 1, justifyContent: 'center'}}>
+              <View style={{flex: 1, justifyContent: 'center', marginBottom: 24}}>
                 <TouchableOpacity
                   style={{
                     backgroundColor: colors.darkSky,
