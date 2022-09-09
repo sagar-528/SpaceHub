@@ -15,12 +15,14 @@ import {displayToast, load, loadString, save} from '../../utils';
 import {Key} from '../../Constant/constant';
 import {useIsFocused} from '@react-navigation/native';
 import Geolocation from 'react-native-geolocation-service';
+import DeviceInfo from 'react-native-device-info';
 
 const Splash = props => {
   const navigation = props.navigation;
   const isFocused = useIsFocused();
 
   useEffect(() => {
+    // console.log('id', await DeviceInfo.getUniqueId());
     load('Game_Mode')
       .then(response => {
         if (response !== null) {

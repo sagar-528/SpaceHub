@@ -38,102 +38,99 @@ const SucessModal = props => {
       }}
       style={{
         margin: 0,
-        // zIndex: -1,
       }}>
       <View style={styles.centeredView}>
-        <View style={{width: WIDTH - 50, height: HEIGHT / 2}}>
-          <ImageBackground
-            source={require('../../assets/Illustrations/yeah.png')}
-            resizeMode="stretch"
-            style={styles.modalView}>
-            <ScrollView
-              contentContainerStyle={{flexGrow: 1}}
-              showsVerticalScrollIndicator={false}>
-              <Pressable
-                onPress={handleNextVideo}
-                style={{alignSelf: 'flex-end', padding: 8, marginEnd: 8}}
-                hitSlop={2}>
-                <Image
-                  source={require('../../assets/icons/cross1.png')}
-                  // style={}
-                  resizeMode="contain"
-                />
-              </Pressable>
-              <View style={{alignItems: 'center'}}>
-                <Text style={styles.bigtext}>YEAH!</Text>
-                <Text style={styles.smalltext}>YOU NAILED IT</Text>
-              </View>
-              <View
+        <ImageBackground
+          source={require('../../assets/Illustrations/yeah.png')}
+          resizeMode="stretch"
+          style={styles.modalView}>
+          <ScrollView
+            contentContainerStyle={{flexGrow: 1}}
+            showsVerticalScrollIndicator={false}>
+            <Pressable
+              onPress={handleNextVideo}
+              style={{alignSelf: 'flex-end', padding: 8, marginEnd: 8}}
+              hitSlop={2}>
+              <Image
+                source={require('../../assets/icons/cross1.png')}
+                // style={}
+                resizeMode="contain"
+              />
+            </Pressable>
+            <View style={{alignItems: 'center'}}>
+              <Text style={styles.bigtext}>YEAH!</Text>
+              <Text style={styles.smalltext}>YOU NAILED IT</Text>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                // marginBottom: 30,
+              }}>
+              <Image
+                source={require('../../assets/Illustrations/LINE.png')}
+                resizeMode="contain"
+                style={{width: WIDTH - 80}}
+              />
+              <Text style={styles.price}>{props.currency} {props.price}</Text>
+              <Image
+                source={require('../../assets/Illustrations/LINE.png')}
+                resizeMode="contain"
+                style={{width: WIDTH - 80}}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                alignSelf: 'center',
+                marginVertical: 4
+              }}>
+              <Image
+                source={require('../../assets/icons/GEM.png')}
+                resizeMode="contain"
+                style={{width: 34, height: 34}}
+              />
+              <Text
                 style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 30,
+                  fontSize: 24,
+                  color: '#CD8ABF',
+                  marginHorizontal: 24,
+                  fontFamily: typography.primary,
+                  fontWeight: '500',
                 }}>
-                <Image
-                  source={require('../../assets/Illustrations/LINE.png')}
-                  resizeMode="contain"
-                  style={{width: WIDTH - 80}}
-                />
-                <Text style={styles.price}>{props.price}</Text>
-                <Image
-                  source={require('../../assets/Illustrations/LINE.png')}
-                  resizeMode="contain"
-                  style={{width: WIDTH - 80}}
-                />
-              </View>
-              <View
+                X
+              </Text>
+              <Text
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  alignSelf: 'center',
-                  marginTop: 8,
+                  fontSize: 24,
+                  color: '#CD8ABF',
+                  fontFamily: typography.secondary,
+                  fontWeight: '600',
                 }}>
-                <Image
-                  source={require('../../assets/icons/GEM.png')}
-                  resizeMode="center"
-                  style={{width: 44, height: 44}}
-                />
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: colors.white,
-                    marginHorizontal: 24,
-                    fontFamily: typography.primary,
-                    fontWeight: '500',
-                  }}>
-                  X
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 24,
-                    color: colors.white,
-                    fontFamily: typography.secondary,
-                    fontWeight: '600',
-                  }}>
-                  100
-                </Text>
-              </View>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                style={{
-                  flex: 1,
-                  marginVertical: 20,
-                  alignSelf: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}
-                onPress={handleNextVideo}>
-                <Text style={styles.continue}>Continue</Text>
-                <Image
-                  source={require('../../assets/icons/ARROW.png')}
-                  resizeMode="contain"
-                  style={{height: 18, width: 18, marginStart: 8}}
-                />
-              </TouchableOpacity>
-            </ScrollView>
-          </ImageBackground>
-        </View>
+                100
+              </Text>
+            </View>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={{
+                flex: 1,
+                // marginVertical: 20,
+                alignSelf: 'center',
+                alignItems: 'center',
+                flexDirection: 'row',
+              }}
+              onPress={handleNextVideo}>
+              <Text style={styles.continue}>Continue</Text>
+              <Image
+                source={require('../../assets/icons/ARROW.png')}
+                resizeMode="contain"
+                style={{height: 18, width: 18, marginStart: 8}}
+              />
+            </TouchableOpacity>
+          </ScrollView>
+        </ImageBackground>
       </View>
     </Modal>
   );
@@ -149,30 +146,29 @@ const styles = StyleSheet.create({
     // zIndex: 1
   },
   modalView: {
-    width: WIDTH - 50,
-    height: HEIGHT / 2,
+    width: WIDTH - 100,
+    height: HEIGHT / 2.6,
     paddingHorizontal: 12,
     paddingVertical: 12,
   },
   bigtext: {
     fontSize: 28,
     fontFamily: typography.secondary,
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.white,
   },
   smalltext: {
     fontSize: 16,
-    fontFamily: typography.primary,
-    fontWeight: '500',
-    color: colors.white,
-    marginTop: 10,
-    marginBottom: 30,
+    fontFamily: typography.secondary,
+    fontWeight: '600',
+    color: '#CD8ABF',
+    marginVertical: 6
   },
   text1: {
     fontSize: 18,
     fontFamily: typography.primary,
     fontWeight: '600',
-    marginBottom: 24,
+    // marginBottom: 24,
     color: colors.white,
   },
   price: {

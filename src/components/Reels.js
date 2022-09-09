@@ -499,7 +499,7 @@ const Reels = ({
                           index !== currentVisibleIndex || videoPaused || pause
                         }
                         source={{
-                          uri: `https://andspace.s3.ap-south-1.amazonaws.com/${element}`,
+                          uri: `https://andspace.s3.ap-south-1.amazonaws.com/${element}`.replaceAll(' ', ''),
                           type: 'mp4',
                         }}
                         style={{
@@ -516,6 +516,7 @@ const Reels = ({
                         preferredForwardBufferDuration={2500}
                         // controls
                       />
+                      {console.log('asda', `https://andspace.s3.ap-south-1.amazonaws.com/${element}`.replaceAll(' ', ''))}
                     </>
                   ) : (
                     <>
@@ -1083,6 +1084,7 @@ const Reels = ({
         currentIndex={currentIndex}
         videoRef={videoRef}
         flatRef={flatRef}
+        currency={item?.currency.toLocaleString()}
       />
       <FailModal
         failModal={failModal}
@@ -1091,6 +1093,7 @@ const Reels = ({
         currentIndex={currentIndex}
         videoRef={videoRef}
         flatRef={flatRef}
+        currency={item?.currency.toLocaleString()}
       />
       <GameInstruction
         gameInstructionModal={gameInstructionModal}

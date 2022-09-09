@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     opacity: 0.9,
     borderRadius: 16,
     width: WIDTH - 80,
-    height: HEIGHT / 2.2,
+    height: HEIGHT / 2.6,
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderWidth: 2.3,

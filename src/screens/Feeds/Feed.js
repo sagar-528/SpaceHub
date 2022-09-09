@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -76,20 +71,20 @@ const Feed = props => {
     };
   }, []);
 
-  const getData = () => {
-    console.log('PAGE', page);
-    NetInfo.fetch().then(isConnected => {
+  const getData = async() => {
+    console.log('PAGE', page, await DeviceInfo.getUniqueId());
+    NetInfo.fetch().then(async isConnected => {
       if (isConnected.isConnected === true) {
         setLoading(true);
         AxiosBase.get('app/property/videoProperty', {
           params: {
             isVideoPresent: true,
-            deviceToken: DeviceInfo.getDeviceId(),
+            deviceToken: await DeviceInfo.getUniqueId(),
           },
         })
           .then(response => {
             setLoading(false);
-            // console.log(`feeds response${page}`, response?.data?.data);
+            console.log(`feeds response${page}`, response?.data?.data);
             let data = response?.data?.data;
             const newObject = data.map(obj => ({
               ...obj,
@@ -286,7 +281,7 @@ const Feed = props => {
   // console.log('_isMounted.current', _isMounted.current);
   // console.log('current index and page', currentIndex, page);
   return (
-    <View style={{flex: 1, backgroundColor: '#282828'}}>
+    <View style={{flex: 1}}>
       <SwiperFlatList
         disableVirtualization={false}
         legacyImplementation={true}
