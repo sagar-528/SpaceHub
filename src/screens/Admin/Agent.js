@@ -69,6 +69,7 @@ const Agent = props => {
           <FastImage
             source={{
               uri: item.image.length === 0 ? `https://andspace.s3.ap-south-1.amazonaws.com/${item.thumbnailName}` : `https://andspace.s3.ap-south-1.amazonaws.com/${item.image[0]}`,
+              priority: FastImage.priority.high,
             }}
             resizeMode="cover"
             style={{height: 180, width: windowWidth / 3 - 10}}

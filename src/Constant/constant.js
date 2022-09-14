@@ -5,7 +5,8 @@ export const Key = {
   latitude:51.509865,
   longitude:-0.118092,
   backgroundPause:false,
-  gamemode: false
+  gamemode: false,
+  skip: false
 };
 
 export const Amount = {

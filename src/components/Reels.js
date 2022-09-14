@@ -12,7 +12,7 @@ import {
   ScrollView,
   Linking,
   AppState,
-  PixelRatio
+  PixelRatio,
   // Easing
 } from 'react-native';
 import React, {useRef, useState, useEffect, useMemo, memo} from 'react';
@@ -45,6 +45,7 @@ import {Key} from '../Constant/constant';
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('window').height;
 
+let interval;
 const Reels = ({
   item,
   index,
@@ -87,7 +88,7 @@ const Reels = ({
     (25 / 100) * item.price,
   );
 
-  let sheetDuration = 200;
+  let sheetDuration = 300;
   const [loading, setLoading] = useState(false);
 
   // variables
@@ -173,24 +174,21 @@ const Reels = ({
   // Animated effect
   useEffect(() => {
     if (Key.gamemode === true) {
-      setInterval(() => {
+      interval = setInterval(() => {
         if (item?.gamePrice !== undefined) {
-          // console.log('number');
           let animatedNumberLength = animateToNumber.toString().length - 1;
           setAnimateToNumber(
             animateToNumber + randomWithNdigits(animatedNumberLength),
           );
         } else if (item.gamePrice === undefined) {
           let infoLenght = animateToNumberPercentage.toString().length - 1;
-          // console.log('percentage number lenght', infoLenght);
           setAnimateToNumberPercentage(
             animateToNumberPercentage + randomWithNdigits(infoLenght),
           );
         }
       }, 10000);
     }
-
-    // return setAnimateToNumber(item.gamePrice);
+    return () => clearInterval(interval);
   }, [currentIndex]);
 
   function getRandomInt(min, max) {
@@ -426,7 +424,7 @@ const Reels = ({
     setTimeout(() => {
       Animated.timing(animatedHeight, {
         toValue: windowHeight,
-        duration: 600,
+        duration: 200,
         easing: Easing.linear,
         isInteraction: false,
       }).start();
@@ -436,8 +434,8 @@ const Reels = ({
       setPagerEnabled(false);
 
       bottomSheetRef.current?.dismiss();
-      sheetDuration = 300;
-    }, 500);
+      sheetDuration = 500;
+    }, 200);
     // setPause(false)
   };
 
@@ -499,7 +497,10 @@ const Reels = ({
                           index !== currentVisibleIndex || videoPaused || pause
                         }
                         source={{
-                          uri: `https://andspace.s3.ap-south-1.amazonaws.com/${element}`.replaceAll(' ', ''),
+                          uri: `https://andspace.s3.ap-south-1.amazonaws.com/${element}`.replaceAll(
+                            ' ',
+                            '',
+                          ),
                           type: 'mp4',
                         }}
                         style={{
@@ -514,9 +515,13 @@ const Reels = ({
                           bufferForPlaybackAfterRebufferMs: 5000,
                         }}
                         preferredForwardBufferDuration={2500}
+                        selectedVideoTrack={{
+                          type: 'resolution',
+                          value: 1080,
+                        }}
                         // controls
                       />
-                      {console.log('asda', `https://andspace.s3.ap-south-1.amazonaws.com/${element}`.replaceAll(' ', ''))}
+                      {/* {console.log('asda', `https://andspace.s3.ap-south-1.amazonaws.com/${element}`.replaceAll(' ', ''))} */}
                     </>
                   ) : (
                     <>
@@ -599,12 +604,7 @@ const Reels = ({
               </View>
               <View
                 style={{
-                  marginBottom:
-                    // item.propertyType === 'SOLD' ||
-                    // item.propertyType === 'FOR SALE'
-                    //   ? 40
-                    //   :
-                    28,
+                  marginBottom: 40,
                 }}>
                 <TouchableOpacity
                   activeOpacity={0.7}
@@ -616,8 +616,6 @@ const Reels = ({
                   />
                 </TouchableOpacity>
               </View>
-              {/* {item.propertyType === 'SOLD' ||
-              item.propertyType === 'FOR SALE' ? ( */}
               <View style={{marginBottom: 28}}>
                 <TouchableOpacity
                   activeOpacity={0.7}
@@ -631,12 +629,10 @@ const Reels = ({
                   />
                 </TouchableOpacity>
               </View>
-              {/* ) : null} */}
-
               {Key.gamemode === false && item?.price !== '' ? null : (
                 <View style={{left: 8}}>
-                  <TouchableOpacity
-                    activeOpacity={0.5}
+                  <Pressable
+                    hitSlop={1}
                     style={{}}
                     // hitSlop={4}
                     onPress={() => handleGame({gamePress: 'up'})}>
@@ -645,9 +641,9 @@ const Reels = ({
                       resizeMode="contain"
                       style={{height: 70, width: 70}}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    activeOpacity={0.5}
+                  </Pressable>
+                  <Pressable
+                    hitSlop={1}
                     style={{marginBottom: 28}}
                     onPress={() => handleGame({gamePress: 'down'})}>
                     <Image
@@ -655,7 +651,7 @@ const Reels = ({
                       resizeMode="contain"
                       style={{height: 70, width: 70}}
                     />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               )}
             </View>
@@ -1084,7 +1080,7 @@ const Reels = ({
         currentIndex={currentIndex}
         videoRef={videoRef}
         flatRef={flatRef}
-        currency={item?.currency.toLocaleString()}
+        currency={item?.currency}
       />
       <FailModal
         failModal={failModal}

@@ -44,12 +44,12 @@ const SucessModal = props => {
           source={require('../../assets/Illustrations/yeah.png')}
           resizeMode="stretch"
           style={styles.modalView}>
-          <ScrollView
+          {/* <ScrollView
             contentContainerStyle={{flexGrow: 1}}
-            showsVerticalScrollIndicator={false}>
+            showsVerticalScrollIndicator={false}> */}
             <Pressable
               onPress={handleNextVideo}
-              style={{alignSelf: 'flex-end', padding: 8, marginEnd: 8}}
+              style={{alignSelf: 'flex-end', padding: 8, marginEnd: 12, marginTop: 4}}
               hitSlop={2}>
               <Image
                 source={require('../../assets/icons/cross1.png')}
@@ -71,13 +71,13 @@ const SucessModal = props => {
               <Image
                 source={require('../../assets/Illustrations/LINE.png')}
                 resizeMode="contain"
-                style={{width: WIDTH - 80}}
+                style={{width: WIDTH - 150}}
               />
-              <Text style={styles.price}>{props.currency} {props.price}</Text>
+              <Text style={styles.price}>{props.currency} {props.price.toLocaleString()}</Text>
               <Image
                 source={require('../../assets/Illustrations/LINE.png')}
                 resizeMode="contain"
-                style={{width: WIDTH - 80}}
+                style={{width: WIDTH - 150}}
               />
             </View>
             <View
@@ -129,7 +129,7 @@ const SucessModal = props => {
                 style={{height: 18, width: 18, marginStart: 8}}
               />
             </TouchableOpacity>
-          </ScrollView>
+          {/* </ScrollView> */}
         </ImageBackground>
       </View>
     </Modal>
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // zIndex: 1
+    backgroundColor: 'transparent',
   },
   modalView: {
     width: WIDTH - 100,
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   price: {
-    fontSize: 20,
+    fontSize: 24,
     fontFamily: typography.primary,
     fontWeight: '800',
     color: colors.white,

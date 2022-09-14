@@ -1,40 +1,38 @@
-import { StyleSheet, Text, View, Image, StatusBar,Platform } from "react-native";
-import React, { useEffect, useState } from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { colors } from "../themes";
-import LocationDetails from "../screens/Location/LocationDetails";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Feed from "../screens/Feeds/Feed";
-import Profile from "../screens/Clients/Profile";
+import {StyleSheet, Text, View, Image, StatusBar, Platform} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {colors} from '../themes';
+import LocationDetails from '../screens/Location/LocationDetails';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Feed from '../screens/Feeds/Feed';
+import Profile from '../screens/Clients/Profile';
 // import { Key } from "../Constant/constant";
-import SignUp from "../screens/Auth/SignUp";
-import Login from "../screens/Auth/Login";
-import LikeVideos from "../screens/LikeVideos/LikeVideos";
+import SignUp from '../screens/Auth/SignUp';
+import Login from '../screens/Auth/Login';
+import LikeVideos from '../screens/LikeVideos/LikeVideos';
 // import More from "../screens/Feeds/more";
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import LeaderBoard from "../screens/Clients/LeaderBoard";
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import LeaderBoard from '../screens/Clients/LeaderBoard';
 
 const ProfileStack = createNativeStackNavigator();
-function ProfileScreen({navigation,route}) {
+function ProfileScreen({navigation, route}) {
   React.useLayoutEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route);
-    if (routeName === "SignUp") {
-      console.log('route:--',routeName);
+    if (routeName === 'SignUp') {
+      console.log('route:--', routeName);
       // navigation.setOptions({ headerShown: false });
     } else {
       // navigation.setOptions({ headerShown: true });
-      console.log('route:--',routeName);
-
+      console.log('route:--', routeName);
     }
   }, [navigation, route]);
-  
+
   return (
     <ProfileStack.Navigator
-      initialRouteName={"SignUp"}
+      initialRouteName={'SignUp'}
       screenOptions={{
         headerShown: false,
-      }}
-    >
+      }}>
       <ProfileStack.Screen name="Login" component={Login} />
       <ProfileStack.Screen name="SignUp" component={SignUp} />
       <ProfileStack.Screen name="Profile" component={Profile} />
@@ -44,31 +42,29 @@ function ProfileScreen({navigation,route}) {
   );
 }
 
-const HomeStack = createNativeStackNavigator()
-function HomeScreen(){
-  return(
-    <HomeStack.Navigator initialRouteName="Feeds" >
-      <HomeStack.Screen 
+const HomeStack = createNativeStackNavigator();
+function HomeScreen() {
+  return (
+    <HomeStack.Navigator initialRouteName="Feeds">
+      <HomeStack.Screen
         name="Feeds"
         component={Feed}
         options={{
-          headerShown: false
+          headerShown: false,
         }}
       />
-      
     </HomeStack.Navigator>
-  )
+  );
 }
 
 const Tab = createBottomTabNavigator();
 const BottomTab = () => {
-  const unactiveFeedsIcon = require("../assets/icons/unacctiveFeed.png");
-  const unactiveMapIcon = require("../assets/icons/unacctiveLocation.png");
-  const unactiveProfileIcon = require("../assets/icons/unacctiveProfile.png");
-  const activeFeedIcon = require("../assets/icons/activeFeed.png");
-  const activeMapIcon = require("../assets/icons/activeLocation.png");
-  const activeProfileIcon = require("../assets/icons/activeProfile.png");
-
+  const unactiveFeedsIcon = require('../assets/icons/unacctiveFeed.png');
+  const unactiveMapIcon = require('../assets/icons/unacctiveLocation.png');
+  const unactiveProfileIcon = require('../assets/icons/unacctiveProfile.png');
+  const activeFeedIcon = require('../assets/icons/activeFeed.png');
+  const activeMapIcon = require('../assets/icons/activeLocation.png');
+  const activeProfileIcon = require('../assets/icons/activeProfile.png');
 
   return (
     <Tab.Navigator
@@ -76,10 +72,10 @@ const BottomTab = () => {
         headerShown: false,
         tabBarStyle: {
           height: 66,
-          paddingTop:6,
-          position: "absolute",
+          paddingTop: 6,
+          position: 'absolute',
           // alignItems:'center',
-          bottom: Platform.OS==='android' ? 16 : 16,
+          bottom: Platform.OS === 'android' ? 16 : 16,
           right: 16,
           left: 16,
           borderRadius: 24,
@@ -92,13 +88,12 @@ const BottomTab = () => {
         tabBarHideOnKeyboard: true,
         // unmountOnBlur:true
       }}
-      initialRouteName={'HomeScreen'}
-    >
+      initialRouteName={'HomeScreen'}>
       <Tab.Screen
         name="HomeScreen"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ focused, color, size }) => (
+          tabBarIcon: ({focused, color, size}) => (
             <View style={[styles.tabBarIconWrapper]}>
               <Image
                 style={styles.icon}
@@ -123,7 +118,7 @@ const BottomTab = () => {
         name="Map"
         component={LocationDetails}
         options={{
-          tabBarIcon: ({ focused, color, size }) => (
+          tabBarIcon: ({focused, color, size}) => (
             <View style={[styles.tabBarIconWrapper]}>
               <Image
                 style={styles.icon}
@@ -148,7 +143,7 @@ const BottomTab = () => {
         name="ProfileScreen"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ focused, color, size }) => (
+          tabBarIcon: ({focused, color, size}) => (
             <View style={[styles.tabBarIconWrapper]}>
               <Image
                 style={styles.icon}
@@ -177,9 +172,9 @@ export default BottomTab;
 
 const styles = StyleSheet.create({
   tabBarIconWrapper: {
-    height: "100%",
-    width: "100%",
-    alignItems: "center",
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
     flex: 1,
     position: 'absolute',
     top: 16,
@@ -188,6 +183,6 @@ const styles = StyleSheet.create({
   icon: {
     width: 20,
     height: 20,
-    resizeMode:'contain'
+    resizeMode: 'contain',
   },
 });

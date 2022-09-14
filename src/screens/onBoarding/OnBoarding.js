@@ -38,7 +38,10 @@ const OnBoarding = props => {
   }, [viewableItems]);
 
   const handleNext = () => {
-    if (currentPage == Slides.length - 1) return;
+    if (currentPage == Slides.length - 1) {
+      Key.skip = true;
+      return;
+    }
 
     if (currentPage !== 2) {
       flatlistRef.current.scrollToIndex({
@@ -254,7 +257,11 @@ const OnBoarding = props => {
               activeOpacity={0.8}
               onPress={() => {
                 location();
-                navigation.navigate('BottomTab');
+                navigation.reset({
+                  index: 0,
+                  routes: [{name: 'BottomTab'}],
+                });
+                // navigation.navigate('BottomTab');
               }}>
               <Text style={styles.btn}>next</Text>
             </TouchableOpacity>
