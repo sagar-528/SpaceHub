@@ -647,7 +647,7 @@ const Reels = ({
                     style={{marginBottom: 28}}
                     onPress={() => handleGame({gamePress: 'down'})}>
                     <Image
-                      source={require('../assets/icons/Down.png')}
+                      source={require('../assets/icons/down.png')}
                       resizeMode="contain"
                       style={{height: 70, width: 70}}
                     />
